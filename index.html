@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies | Track & Trace</title>
+    <title>AOM Supplies | Live Track & Trace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Firebase SDK + Config -->
@@ -37,6 +37,7 @@
         window.onSnapshot = onSnapshot;
         window.query = query;
         window.orderBy = orderBy;
+        console.log("Firebase geladen");
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap');
@@ -59,6 +60,7 @@
         .badge-admin { background: #3b82f6; color: white; border-radius: 40px; font-size: 0.7rem; padding: 2px 10px; font-weight: 800; margin-left: 8px; }
         .share-link { font-size: 0.75rem; background: #f1f5f9; padding: 4px 8px; border-radius: 40px; cursor: pointer; display: inline-block; margin-top: 4px; }
         .share-link:hover { background: #e2e8f0; }
+        .last-updated { font-size: 0.7rem; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 20px; }
         @keyframes fadeSlide { 0% { opacity: 0; transform: translateY(8px);} 100% { opacity: 1; transform: translateY(0);} }
         .fade-slide { animation: fadeSlide 0.3s ease forwards; }
         .choice-button { transition: all 0.2s; cursor: pointer; }
@@ -121,7 +123,6 @@
 
     <!-- MAIN APP (ADMIN DASHBOARD) -->
     <div id="mainApp" class="hidden">
-        <!-- (zelfde admin interface als eerder, maar zonder emojis waar overbodig) -->
         <div class="flex min-h-screen">
             <aside class="fixed w-72 bg-white/90 backdrop-blur-sm border-r border-slate-200 h-full z-30 hidden md:block">
                 <div class="p-6 border-b border-slate-100">
@@ -149,7 +150,10 @@
             <main class="flex-1 md:ml-72 p-5 md:p-8 mb-16 md:mb-0">
                 <!-- Dashboard -->
                 <div id="page-dashboard" class="page-section">
-                    <div class="mb-6"><h1 id="welcomeText" class="text-3xl md:text-4xl font-black"></h1><p class="text-slate-500">Live Firebase data</p></div>
+                    <div class="mb-6 flex justify-between items-center">
+                        <div><h1 id="welcomeText" class="text-3xl md:text-4xl font-black"></h1><p class="text-slate-500">Live Firebase data</p></div>
+                        <div class="last-updated" id="lastUpdatedTime">Laatste update: --:--:--</div>
+                    </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <div class="stat-card p-4 text-center"><div class="text-2xl font-black" id="dashTotalSales">0</div><div class="text-xs">Sales</div></div>
                         <div class="stat-card p-4 text-center"><div class="text-2xl font-black" id="dashTotalProfit">€0</div><div class="text-xs">Winst</div></div>
@@ -165,7 +169,7 @@
                 <!-- Tracking (admin) -->
                 <div id="page-tracking" class="page-section hidden"><div class="vibrant-card p-6"><h2 class="text-2xl font-bold">Track & Trace beheer</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-field mb-2" placeholder="Tracking code"><input id="trackingCarrier" class="input-field mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-field mb-2" placeholder="Klantnaam"><input id="trackingDestination" class="input-field mb-2" placeholder="Bestemming"><button onclick="addTrackingFirebase()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><h4 class="font-bold">Zoek & update</h4><input id="searchTrackingInput" class="input-field mb-2" placeholder="Tracking code"><button onclick="searchTrackingFirebase()" class="btn-outline w-full">Zoek</button><div id="trackingSearchResult" class="mt-3 text-sm"></div></div></div><div><div id="trackingList" class="max-h-[500px] overflow-y-auto space-y-3"></div></div></div></div></div>
 
-                <!-- Shipping (demo) -->
+                <!-- Shipping -->
                 <div id="page-shipping" class="page-section hidden"><div class="vibrant-card p-6"><h2 class="text-2xl font-bold">Shipping Calculator</h2><p class="mb-4">(Originele functionaliteit beschikbaar)</p><button onclick="alert('Demo: volledige calculator werkt in productie')" class="btn-primary">Bereken</button></div></div>
 
                 <!-- Sales -->
@@ -199,7 +203,7 @@
             document.getElementById('startScreen').style.display = 'flex';
         }
 
-        // Admin login functionaliteit (zelfde als voorheen maar aangepast)
+        // Admin login functionaliteit
         let currentUser = null;
         let sales = [], orders = [], trackingRecords = [];
         let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
@@ -238,8 +242,8 @@
             }
         }
         
-        // Firebase CRUD (zelfde als voorheen, maar met window object)
-        async function addSaleFirebase() { /* zelfde code als eerder */ 
+        // Firebase CRUD
+        async function addSaleFirebase() {
             const name = document.getElementById('saleName').value;
             const cust = document.getElementById('customerName').value;
             const date = document.getElementById('saleDate').value || new Date().toISOString().split('T')[0];
@@ -305,7 +309,7 @@
         }
         function copyToClipboard(text) { navigator.clipboard.writeText(text); alert('Link gekopieerd!'); }
         
-        // Publieke tracking (op het publieke scherm)
+        // Publieke tracking
         window.publicSearchTracking = async () => {
             const code = document.getElementById('publicTrackingCode').value.trim();
             if(!code) return;
@@ -315,12 +319,13 @@
             resultDiv.innerHTML = `<div class="bg-white border rounded-xl p-4"><h3 class="font-bold">${found.trackingCode} (${found.carrier})</h3><p>Klant: ${found.customer || '-'}</p><div class="mt-2"><b>Updates & QC foto's:</b><div class="max-h-64 overflow-y-auto mt-2">${(found.updates || []).slice().reverse().map(u=>`<div class="border-b py-2"><small>${new Date(u.timestamp).toLocaleString()}</small><br>${u.text} ${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-500 block">Bekijk QC foto</a>` : ''}</div>`).join('') || 'Geen updates'}</div></div></div>`;
         };
         
-        // Firebase listeners (admin)
+        // Firebase listeners (realtime)
         function subscribeToSales() {
             const q = window.query(window.collection(window.db, "sales"), window.orderBy("date", "desc"));
             window.onSnapshot(q, (snap) => {
                 sales = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 updateSalesUI(); updateDashboardStats(); renderCharts();
+                updateLastUpdatedTime();
             });
         }
         function subscribeToOrders() {
@@ -328,6 +333,7 @@
             window.onSnapshot(q, (snap) => {
                 orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 updateOrdersUI(); updateDashboardStats();
+                updateLastUpdatedTime();
             });
         }
         function subscribeToTracking() {
@@ -335,9 +341,34 @@
             window.onSnapshot(q, (snap) => {
                 trackingRecords = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 updateTrackingUI(); updateDashboardStats();
+                updateLastUpdatedTime();
             });
         }
-        function updateSalesUI() { /* zelfde code als eerder */ 
+        
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('nl-NL');
+            const el = document.getElementById('lastUpdatedTime');
+            if(el) el.innerText = `Laatste update: ${timeStr}`;
+        }
+        
+        // Optionele periodieke refresh (elke minuut) – zorgt dat UI altijd klopt
+        let refreshInterval = null;
+        function startAutoRefresh() {
+            if(refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                // Forceer opnieuw tekenen met huidige data (onSnapshot heeft al de actuele arrays)
+                updateSalesUI();
+                updateOrdersUI();
+                updateTrackingUI();
+                updateDashboardStats();
+                renderCharts();
+                updateLastUpdatedTime();
+                console.log("Auto-refresh UI om 60 seconden");
+            }, 60000); // elke 60 seconden
+        }
+        
+        function updateSalesUI() {
             const container = document.getElementById('salesList');
             if(!container) return;
             if(sales.length===0) container.innerHTML = '<div class="text-slate-400">Geen verkopen</div>';
@@ -425,8 +456,10 @@
             document.getElementById('userBadge').innerHTML = `${user} <span class="badge-admin">ADMIN</span>`;
             document.getElementById('welcomeText').innerHTML = `Hallo ${user.replace('T','')}!`;
             subscribeToSales(); subscribeToOrders(); subscribeToTracking();
+            startAutoRefresh(); // start auto refresh elke minuut
         }
         function doLogout() {
+            if(refreshInterval) clearInterval(refreshInterval);
             document.getElementById('mainApp').classList.add('hidden');
             document.getElementById('startScreen').style.display = 'flex';
             currentUser = null;
