@@ -9,7 +9,7 @@
     <!-- Firebase SDK + Config -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, addDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyDXoY8KxIihvi35RCAMKVFlYlntHOPdiZk",
@@ -37,6 +37,7 @@
         window.onSnapshot = onSnapshot;
         window.query = query;
         window.orderBy = orderBy;
+        window.where = where;
         console.log("Firebase geladen");
     </script>
     <style>
@@ -242,7 +243,7 @@
             }
         }
         
-        // Firebase CRUD
+        // Firebase CRUD (admin)
         async function addSaleFirebase() {
             const name = document.getElementById('saleName').value;
             const cust = document.getElementById('customerName').value;
@@ -309,17 +310,48 @@
         }
         function copyToClipboard(text) { navigator.clipboard.writeText(text); alert('Link gekopieerd!'); }
         
-        // Publieke tracking
+        // 🔧 FIX: Publieke tracking zoekt direct in Firestore
         window.publicSearchTracking = async () => {
             const code = document.getElementById('publicTrackingCode').value.trim();
-            if(!code) return;
-            const found = trackingRecords.find(t=>t.trackingCode === code);
             const resultDiv = document.getElementById('publicTrackingResult');
-            if(!found) { resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Geen tracking gevonden</div>'; return; }
-            resultDiv.innerHTML = `<div class="bg-white border rounded-xl p-4"><h3 class="font-bold">${found.trackingCode} (${found.carrier})</h3><p>Klant: ${found.customer || '-'}</p><div class="mt-2"><b>Updates & QC foto's:</b><div class="max-h-64 overflow-y-auto mt-2">${(found.updates || []).slice().reverse().map(u=>`<div class="border-b py-2"><small>${new Date(u.timestamp).toLocaleString()}</small><br>${u.text} ${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-500 block">Bekijk QC foto</a>` : ''}</div>`).join('') || 'Geen updates'}</div></div></div>`;
+            if(!code) {
+                resultDiv.innerHTML = '<div class="bg-yellow-50 p-3 rounded-xl">Voer een trackingcode in</div>';
+                return;
+            }
+            resultDiv.innerHTML = '<div class="text-slate-500">Bezig met zoeken...</div>';
+            try {
+                const q = window.query(window.collection(window.db, "tracking"), window.where("trackingCode", "==", code));
+                const snapshot = await window.getDocs(q);
+                if(snapshot.empty) {
+                    resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Geen tracking gevonden. Controleer de code.</div>';
+                    return;
+                }
+                const doc = snapshot.docs[0];
+                const tr = { id: doc.id, ...doc.data() };
+                resultDiv.innerHTML = `
+                    <div class="bg-white border rounded-xl p-4">
+                        <h3 class="font-bold text-lg">${tr.trackingCode} (${tr.carrier || 'AOM'})</h3>
+                        <p class="text-sm">Klant: ${tr.customer || '-'}</p>
+                        <div class="mt-3"><b>Updates & QC foto's:</b>
+                            <div class="max-h-64 overflow-y-auto mt-2 space-y-2">
+                                ${(tr.updates || []).slice().reverse().map(u => `
+                                    <div class="border-b pb-2">
+                                        <div class="text-xs text-slate-500">${new Date(u.timestamp).toLocaleString()}</div>
+                                        <div>📌 ${u.text}</div>
+                                        ${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-600 text-sm block mt-1">📸 Bekijk QC foto</a>` : ''}
+                                    </div>
+                                `).join('') || '<div class="text-slate-400">Geen updates beschikbaar</div>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch(err) {
+                console.error(err);
+                resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Fout bij het ophalen van data. Probeer opnieuw.</div>';
+            }
         };
         
-        // Firebase listeners (realtime)
+        // Firebase listeners (admin)
         function subscribeToSales() {
             const q = window.query(window.collection(window.db, "sales"), window.orderBy("date", "desc"));
             window.onSnapshot(q, (snap) => {
@@ -352,20 +384,18 @@
             if(el) el.innerText = `Laatste update: ${timeStr}`;
         }
         
-        // Optionele periodieke refresh (elke minuut) – zorgt dat UI altijd klopt
         let refreshInterval = null;
         function startAutoRefresh() {
             if(refreshInterval) clearInterval(refreshInterval);
             refreshInterval = setInterval(() => {
-                // Forceer opnieuw tekenen met huidige data (onSnapshot heeft al de actuele arrays)
                 updateSalesUI();
                 updateOrdersUI();
                 updateTrackingUI();
                 updateDashboardStats();
                 renderCharts();
                 updateLastUpdatedTime();
-                console.log("Auto-refresh UI om 60 seconden");
-            }, 60000); // elke 60 seconden
+                console.log("Auto-refresh UI (60 sec)");
+            }, 60000);
         }
         
         function updateSalesUI() {
@@ -456,7 +486,7 @@
             document.getElementById('userBadge').innerHTML = `${user} <span class="badge-admin">ADMIN</span>`;
             document.getElementById('welcomeText').innerHTML = `Hallo ${user.replace('T','')}!`;
             subscribeToSales(); subscribeToOrders(); subscribeToTracking();
-            startAutoRefresh(); // start auto refresh elke minuut
+            startAutoRefresh();
         }
         function doLogout() {
             if(refreshInterval) clearInterval(refreshInterval);
@@ -491,7 +521,6 @@
                 modalDiv.innerHTML = `<div class="bg-white rounded-2xl p-6 w-full max-w-md"><h3 class="font-bold text-xl mb-3">Statusupdate toevoegen</h3><input id="updateText" class="input-field mb-3" placeholder="Bijv: Sorteercentrum"><input id="updateTimestamp" class="input-field mb-3" type="datetime-local"><input id="photoUrlInput" class="input-field mb-3" placeholder="QC foto URL"><div class="flex gap-3"><button onclick="addUpdateToTracking()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal()" class="btn-outline flex-1">Annuleren</button></div></div>`;
                 document.body.appendChild(modalDiv);
             }
-            // Check URL hash voor directe publieke tracking link
             const hash = window.location.hash.substring(1);
             if(hash.startsWith('track=')) {
                 const code = hash.split('=')[1];
