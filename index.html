@@ -2,10 +2,12 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies | Track & Trace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>AOM Supplies | Complete T&T + Receipts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf for receipt generation (optional, but we'll use window.print) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
         import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, addDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
@@ -43,27 +45,532 @@
         * { font-family: 'Inter', sans-serif; }
         body { background: linear-gradient(145deg, #f8fafc 0%, #eef2ff 100%); min-height: 100vh; }
         
-        /* Nieuw T&T design */
-        .tracking-card {
-            background: white;
-            border-radius: 2rem;
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
+        /* Mobile-friendly adjustments */
+        @media (max-width: 768px) {
+            .step .step-icon { width: 36px; height: 36px; font-size: 1rem; }
+            .step-label { font-size: 0.6rem; }
+            .step-connector { top: 18px; }
+            .container-padding { padding-left: 1rem; padding-right: 1rem; }
+            .btn-primary, .btn-outline { padding: 0.6rem 1rem; font-size: 0.9rem; }
         }
-        .tracking-card:hover { transform: translateY(-2px); box-shadow: 0 25px 40px -12px rgba(0,0,0,0.15); }
+        
+        .tracking-card { background: white; border-radius: 2rem; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .tracking-card:hover { transform: translateY(-2px); }
         .step-indicator { display: flex; justify-content: space-between; margin: 1.5rem 0; position: relative; flex-wrap: wrap; gap: 0.5rem; }
-        .step { flex: 1; text-align: center; position: relative; z-index: 1; min-width: 70px; }
-        .step .step-icon { width: 48px; height: 48px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: all 0.2s; }
-        .step.active .step-icon { background: #3b82f6; border-color: #3b82f6; color: white; box-shadow: 0 0 0 4px rgba(59,130,246,0.2); transform: scale(1.05); }
+        .step { flex: 1; text-align: center; position: relative; z-index: 1; min-width: 60px; }
+        .step .step-icon { width: 44px; height: 44px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 50%; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.2s; }
+        .step.active .step-icon { background: #3b82f6; border-color: #3b82f6; color: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); transform: scale(1.05); }
         .step.completed .step-icon { background: #22c55e; border-color: #22c55e; color: white; }
-        .step-label { font-size: 0.7rem; font-weight: 600; color: #64748b; }
+        .step-label { font-size: 0.65rem; font-weight: 600; color: #64748b; }
         .step.active .step-label { color: #1e293b; font-weight: 800; }
-        .step-connector { position: absolute; top: 24px; left: 0; right: 0; height: 3px; background: #e2e8f0; z-index: 0; }
+        .step-connector { position: absolute; top: 22px; left: 0; right: 0; height: 3px; background: #e2e8f0; z-index: 0; }
         .progress-bar { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 10px; transition: width 0.4s ease; }
-        .timeline-item { border-left: 2px solid #cbd5e1; padding-left: 1rem; margin-bottom: 1rem; position: relative; transition: all 0.2s; }
+        .timeline-item { border-left: 2px solid #cbd5e1; padding-left: 1rem; margin-bottom: 1rem; position: relative; }
         .timeline-item:hover { border-left-color: #3b82f6; }
-        .timeline-item:before { content: ""; position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; transition: background 0.2s; }
+        .timeline-item:before { content: ""; position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; }
+        .timeline-item:hover:before { background: #3b82f6; }
+        .status-badge { display: inline-block; padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.7rem; font-weight: 700; background: #e2e8f0; }
+        .status-delivered { background: #22c55e; color: white; }
+        .status-transit { background: #3b82f6; color: white; }
+        .status-pending { background: #f59e0b; color: white; }
+        .btn-primary { background: linear-gradient(95deg, #1e293b, #0f172a); color: white; font-weight: 600; border-radius: 40px; padding: 0.7rem 1.5rem; transition: all 0.2s; cursor: pointer; border: none; }
+        .btn-primary:hover { background: linear-gradient(95deg, #3b82f6, #2563eb); transform: scale(0.98); }
+        .btn-outline { border: 2px solid #1e293b; background: white; border-radius: 40px; font-weight: 600; transition: 0.2s; cursor: pointer; }
+        .btn-outline:hover { background: #1e293b; color: white; }
+        .input-field { border-radius: 28px; border: 1.5px solid #e2e8f0; background: white; padding: 0.75rem 1rem; width: 100%; transition: all 0.2s; }
+        .input-field:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .nav-item { border-radius: 20px; font-weight: 600; transition: 0.2s; cursor: pointer; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; }
+        .nav-item.active { background: #0f172a; color: white; }
+        .nav-item:hover:not(.active) { background: #eef2ff; }
+        .stat-card { background: white; border-radius: 2rem; padding: 1rem; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
+        .pin-btn { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; font-weight: 800; padding: 12px; text-align: center; cursor: pointer; transition: 0.1s; }
+        .pin-btn:active { transform: scale(0.94); }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-slide { animation: fadeSlide 0.3s ease forwards; }
+        @media print {
+            body * { visibility: hidden; }
+            .receipt-print, .receipt-print * { visibility: visible; }
+            .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- START SCREEN -->
+    <div id="startScreen" class="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-50 z-50 p-4">
+        <div class="text-center max-w-2xl w-full">
+            <h1 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-slate-800 to-blue-700 bg-clip-text text-transparent mb-4">AOM Supplies</h1>
+            <p class="text-slate-500 mb-8">Complete Track & Trace + Receipts</p>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div onclick="showAdminLogin()" class="bg-white rounded-3xl shadow-xl p-6 hover:shadow-2xl transition cursor-pointer">
+                    <div class="text-4xl mb-2">🔐</div>
+                    <h2 class="text-xl font-bold">Admin Login</h2>
+                </div>
+                <div onclick="showPublicTracking()" class="bg-white rounded-3xl shadow-xl p-6 hover:shadow-2xl transition cursor-pointer">
+                    <div class="text-4xl mb-2">📍</div>
+                    <h2 class="text-xl font-bold">Track & Trace</h2>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-center gap-4">
+                <button onclick="showTerms()" class="text-sm text-slate-400 underline">Terms</button>
+                <button onclick="showFeedbackPublic()" class="text-sm text-slate-400 underline">Feedback</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN -->
+    <div id="adminLoginScreen" class="hidden fixed inset-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-50 z-50 p-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md">
+            <button onclick="backToStart()" class="text-slate-400 mb-4">← Terug</button>
+            <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
+            <select id="loginUser" class="input-field mb-3">
+                <option value="MiroT">MiroT</option>
+                <option value="AppieT">AppieT</option>
+                <option value="ObaiT">ObaiT</option>
+            </select>
+            <input type="password" id="loginPass" class="input-field mb-4" placeholder="Wachtwoord">
+            <button onclick="doLogin()" class="btn-primary w-full py-3">Inloggen</button>
+            <div id="loginError" class="text-red-600 text-center mt-3 hidden"></div>
+        </div>
+    </div>
+
+    <!-- PUBLIEKE TRACK & TRACE (met carrier link) -->
+    <div id="publicTrackingScreen" class="hidden fixed inset-0 bg-gradient-to-br from-slate-100 to-blue-50 z-50 overflow-y-auto p-4">
+        <div class="max-w-4xl mx-auto mt-8">
+            <button onclick="backToStart()" class="text-slate-400 mb-4">← Terug</button>
+            <div class="tracking-card p-6 md:p-8">
+                <h2 class="text-3xl font-bold mb-2">Track & Trace</h2>
+                <p class="text-slate-500 mb-6">Voer uw AOM trackingcode in</p>
+                <div class="flex flex-col sm:flex-row gap-3 mb-8">
+                    <input type="text" id="publicTrackingCode" class="input-field" placeholder="Bijv. AOM483920175NL">
+                    <button onclick="publicSearchTracking()" class="btn-primary sm:w-auto">Zoeken</button>
+                </div>
+                <div id="publicTrackingResult" class="text-sm"></div>
+                <div class="text-center mt-6"><button onclick="showFeedbackForTracking()" class="text-blue-600 underline">Feedback</button></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEEDBACK PUBLIC -->
+    <div id="publicFeedbackScreen" class="hidden fixed inset-0 bg-gradient-to-br from-slate-100 to-blue-50 z-50 overflow-y-auto p-4">
+        <div class="max-w-md mx-auto mt-8">
+            <button onclick="backToStart()" class="text-slate-400 mb-4">← Terug</button>
+            <div class="bg-white rounded-3xl shadow-xl p-6">
+                <h2 class="text-2xl font-bold mb-4">Feedback</h2>
+                <input type="text" id="feedbackName" class="input-field mb-3" placeholder="Naam (optioneel)">
+                <input type="text" id="feedbackTrackingCode" class="input-field mb-3" placeholder="Trackingcode">
+                <textarea id="feedbackMessage" rows="4" class="input-field mb-3" placeholder="Uw bericht..."></textarea>
+                <button onclick="submitPublicFeedback()" class="btn-primary w-full">Versturen</button>
+                <div id="feedbackResult" class="mt-3 text-sm"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TERMS -->
+    <div id="termsScreen" class="hidden fixed inset-0 bg-gradient-to-br from-slate-100 to-blue-50 z-50 overflow-y-auto p-4">
+        <div class="max-w-3xl mx-auto mt-8">
+            <button onclick="backToStart()" class="text-slate-400 mb-4">← Terug</button>
+            <div class="bg-white rounded-3xl shadow-xl p-8">
+                <h1 class="text-3xl font-bold mb-6">Terms & Conditions</h1>
+                <div class="space-y-4 text-sm">
+                    <p><strong>1. No-Refund Policy</strong><br>Alle verkopen zijn definitief. Geen restitutie.</p>
+                    <p><strong>2. Track & Trace</strong><br>Carrier tracking numbers worden geleverd door vervoerders. AOM is niet verantwoordelijk voor fouten.</p>
+                    <p><strong>3. Privacy</strong><br>Uw gegevens worden vertrouwelijk behandeld.</p>
+                    <p class="text-xs text-slate-400 mt-4">Laatste update: 24 mei 2026</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="mainApp" class="hidden">
+        <div class="flex flex-col md:flex-row min-h-screen">
+            <!-- Mobile navigation (hidden on desktop) -->
+            <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 z-40">
+                <button onclick="navigate('dashboard')" class="p-2">📊</button>
+                <button onclick="navigate('orders')" class="p-2">📦</button>
+                <button onclick="navigate('tracking')" class="p-2">📍</button>
+                <button onclick="navigate('sales')" class="p-2">💰</button>
+                <button onclick="navigate('admin')" class="p-2">⚙️</button>
+            </div>
+            <!-- Sidebar desktop -->
+            <aside class="w-72 bg-white/90 backdrop-blur-sm border-r border-slate-200 h-full z-30 hidden md:block fixed">
+                <div class="p-6 border-b"><h2 class="text-2xl font-black">AOM Supplies</h2><span id="userBadge" class="text-sm"></span></div>
+                <nav class="p-4 space-y-1">
+                    <div class="nav-item active" onclick="navigate('dashboard')">Dashboard</div>
+                    <div class="nav-item" onclick="navigate('orders')">Orders</div>
+                    <div class="nav-item" onclick="navigate('tracking')">Track & Trace</div>
+                    <div class="nav-item" onclick="navigate('sales')">Sales</div>
+                    <div class="nav-item" onclick="navigate('pricecheck')">Prijs Checker</div>
+                    <div class="nav-item" onclick="navigate('analytics')">Analytics</div>
+                    <div class="nav-item" onclick="navigate('feedback')">Feedback</div>
+                    <div class="nav-item" onclick="navigate('admin')">Admin</div>
+                </nav>
+                <div class="absolute bottom-5 p-4 w-full"><button onclick="doLogout()" class="btn-outline w-full">Uitloggen</button></div>
+            </aside>
+            <main class="flex-1 md:ml-72 p-4 md:p-8 pb-20 md:pb-8">
+                <!-- Dashboard -->
+                <div id="page-dashboard" class="page-section">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6"><h1 id="welcomeText" class="text-3xl font-black"></h1><span class="last-updated text-sm text-slate-500" id="lastUpdatedTime"></span></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                        <div class="stat-card"><div class="text-2xl font-black" id="dashTotalSales">0</div><div>Sales</div></div>
+                        <div class="stat-card"><div class="text-2xl font-black" id="dashTotalProfit">€0</div><div>Winst</div></div>
+                        <div class="stat-card"><div class="text-2xl font-black" id="dashOrderCount">0</div><div>Orders</div></div>
+                        <div class="stat-card"><div class="text-2xl font-black" id="dashTrackingCount">0</div><div>Tracking</div></div>
+                    </div>
+                    <div class="grid lg:grid-cols-2 gap-6"><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold">Recente feedback</h3><div id="recentFeedbackList"></div></div><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold">Snelle acties</h3><button onclick="navigate('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigate('tracking')" class="btn-outline w-full">Tracking beheren</button></div></div>
+                </div>
+
+                <!-- Orders -->
+                <div id="page-orders" class="page-section hidden"><div class="bg-white p-4 md:p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Orders</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-field mb-2" placeholder="Klantnaam"><input id="orderProduct" class="input-field mb-2" placeholder="Product"><input id="orderAmount" class="input-field mb-2" type="number" placeholder="Bedrag"><input id="orderDate" class="input-field mb-2" type="date"><select id="orderStatus" class="input-field mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
+
+                <!-- TRACKING ADMIN (met carrier tracking nummer) -->
+                <div id="page-tracking" class="page-section hidden"><div class="bg-white p-4 md:p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Tracking beheer</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-field mb-2" placeholder="AOM code (intern)"><input id="carrierTrackingNumber" class="input-field mb-2" placeholder="Carrier tracking nummer (DHL/PostNL)"><input id="carrierName" class="input-field mb-2" placeholder="Vervoerder (bv. DHL)"><input id="trackingCustomer" class="input-field mb-2" placeholder="Klantnaam"><input id="trackingDestination" class="input-field mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-field mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-field mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button><div id="trackingSearchResult" class="mt-3 text-sm"></div></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-[500px] overflow-y-auto space-y-3"></div></div></div></div></div>
+
+                <!-- Sales -->
+                <div id="page-sales" class="page-section hidden"><div class="bg-white p-4 md:p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Sales</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="saleName" class="input-field mb-2" placeholder="Product"><input id="customerName" class="input-field mb-2" placeholder="Klant"><input id="saleDate" class="input-field mb-2" type="date"><div>Inkoop <span id="displayCost" class="inline-block bg-gray-100 px-3 py-1 rounded-full">0</span></div><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div><div>Verkoop <span id="displaySell" class="inline-block bg-gray-100 px-3 py-1 rounded-full">0</span></div><div id="sellPinpad" class="grid grid-cols-4 gap-1 my-2"></div><div>Verzendkosten <span id="displayShipCost" class="inline-block bg-gray-100 px-3 py-1 rounded-full">0</span></div><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div><div>Overig <span id="displayOther" class="inline-block bg-gray-100 px-3 py-1 rounded-full">0</span></div><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div><select id="saleSeller" class="input-field mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
+
+                <!-- Prijs Checker -->
+                <div id="page-pricecheck" class="page-section hidden"><div class="bg-white p-6 rounded-2xl max-w-xl mx-auto"><h2 class="text-2xl font-bold mb-4">Prijs Checker</h2><select id="priceCategory" class="input-field mb-3"><option value="schoenen">Schoenen (+€75)</option><option value="shirt">Shirt (+€40)</option><option value="airpods">AirPods (+€90)</option><option value="other">Overig (+€60)</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-slate-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-black"></div><div id="priceBreakdown" class="text-sm"></div></div></div></div>
+
+                <!-- Analytics -->
+                <div id="page-analytics" class="page-section hidden"><h2 class="text-2xl font-bold mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl"><canvas id="chartRevenue" width="400" height="300"></canvas></div><div class="bg-white p-4 rounded-2xl"><canvas id="chartProfit" width="400" height="300"></canvas></div></div></div>
+
+                <!-- Feedback admin -->
+                <div id="page-feedback" class="page-section hidden"><div class="bg-white p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Klantfeedback</h2><div id="feedbackAdminList"></div></div></div>
+
+                <!-- Admin panel -->
+                <div id="page-admin" class="page-section hidden"><div class="bg-white p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Admin Panel</h2><button onclick="exportData()" class="btn-outline w-full my-2">Exporteer data</button><button onclick="clearAllData()" class="btn-outline border-red-300 text-red-700 w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-field my-2" placeholder="Plak JSON"></textarea><button onclick="importData()" class="btn-primary w-full">Importeer</button></div></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="updateModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-xl mb-3">Update toevoegen</h3>
+            <input id="updateText" class="input-field mb-3" placeholder="Status">
+            <input id="updateLocation" class="input-field mb-3" placeholder="Locatie">
+            <input id="updateTimestamp" class="input-field mb-3" type="datetime-local">
+            <input id="photoUrlInput" class="input-field mb-3" placeholder="Foto URL">
+            <select id="updateStep" class="input-field mb-3">
+                <option value="">Geen stapwijziging</option>
+                <option value="bestelling_ontvangen">Bestelling ontvangen</option>
+                <option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option>
+                <option value="geland">Geland</option><option value="in_douane">In douane</option>
+                <option value="in_sorteercentrum">Sorteercentrum</option><option value="onderweg">Onderweg</option>
+                <option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option>
+            </select>
+            <div class="flex gap-3"><button onclick="addUpdateToTracking()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div>
+        </div>
+    </div>
+
+    <div id="editTrackingModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
+            <h3 class="font-bold text-xl mb-3">Bewerk tracking</h3>
+            <input type="date" id="editEstimatedDelivery" class="input-field mb-3">
+            <input type="text" id="editCarrierTrackingNumber" class="input-field mb-3" placeholder="Carrier tracking nummer">
+            <input type="text" id="editCarrierName" class="input-field mb-3" placeholder="Vervoerder">
+            <select id="editCurrentStep" class="input-field mb-3">
+                <option value="bestelling_ontvangen">Bestelling ontvangen</option>
+                <option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option>
+                <option value="geland">Geland</option><option value="in_douane">In douane</option>
+                <option value="in_sorteercentrum">Sorteercentrum</option><option value="onderweg">Onderweg</option>
+                <option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option>
+            </select>
+            <div class="flex gap-3"><button onclick="saveTrackingEdits()" class="btn-primary flex-1">Opslaan</button><button onclick="closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button></div>
+        </div>
+    </div>
+
+    <!-- RECEIPT MODAL (hidden by default) -->
+    <div id="receiptModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div id="receiptContent" class="p-6 receipt-print"></div>
+            <div class="flex gap-3 p-4 border-t no-print">
+                <button onclick="printReceipt()" class="btn-primary flex-1">Print / PDF</button>
+                <button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GLOBALE STATE
+        let currentUser = null;
+        let sales = [], orders = [], trackingRecords = [], feedbackList = [];
+        let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
+        let currentTrackingIdForUpdate = null, currentEditingTrackingId = null;
+
+        // UI Helpers
+        function showAdminLogin() { document.getElementById('startScreen').style.display = 'none'; document.getElementById('adminLoginScreen').style.display = 'flex'; }
+        function showPublicTracking() { document.getElementById('startScreen').style.display = 'none'; document.getElementById('publicTrackingScreen').style.display = 'block'; }
+        function showTerms() { document.getElementById('startScreen').style.display = 'none'; document.getElementById('termsScreen').style.display = 'block'; }
+        function showFeedbackPublic() { document.getElementById('startScreen').style.display = 'none'; document.getElementById('publicFeedbackScreen').style.display = 'block'; }
+        function showFeedbackForTracking() { const code = document.getElementById('publicTrackingCode').value; showFeedbackPublic(); if(code) document.getElementById('feedbackTrackingCode').value = code; }
+        function backToStart() { ['adminLoginScreen','publicTrackingScreen','publicFeedbackScreen','termsScreen'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById('startScreen').style.display = 'flex'; }
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+
+        // Pinpad
+        function generatePinpad(field, containerId) {
+            const div = document.getElementById(containerId);
+            if(!div) return;
+            const btns = ['1','2','3','4','5','6','7','8','9','0','.'].map(v=>`<div class="pin-btn" onclick="pinInput('${field}','${v}')">${v}</div>`).join('');
+            div.innerHTML = btns + `<div class="pin-btn bg-red-100" onclick="pinBackspace('${field}')">⌫</div>`;
+        }
+        window.pinInput = (field, val) => {
+            let cur = pinValues[field];
+            if(cur === '0' && val !== '.') cur = '';
+            if(val === '.' && cur.includes('.')) return;
+            pinValues[field] = cur + val;
+            const disp = document.getElementById(`display${field.charAt(0).toUpperCase()+field.slice(1)}`);
+            if(disp) disp.innerText = pinValues[field];
+            if(['cost','sell','shipcost','other'].includes(field)) updateSalePreview();
+        };
+        window.pinBackspace = (field) => {
+            let cur = pinValues[field];
+            pinValues[field] = cur.length <=1 ? '0' : cur.slice(0,-1);
+            const disp = document.getElementById(`display${field.charAt(0).toUpperCase()+field.slice(1)}`);
+            if(disp) disp.innerText = pinValues[field];
+            if(['cost','sell','shipcost','other'].includes(field)) updateSalePreview();
+        };
+        function updateSalePreview() {
+            const cost = parseFloat(pinValues.cost)||0, sell = parseFloat(pinValues.sell)||0;
+            if(cost>0 && sell>0) {
+                const net = sell - cost - (parseFloat(pinValues.shipcost)||0) - (parseFloat(pinValues.other)||0);
+                document.getElementById('salePreview').innerHTML = `Verwacht netto: €${net.toFixed(2)}`;
+                document.getElementById('salePreview').classList.remove('hidden');
+            } else document.getElementById('salePreview').classList.add('hidden');
+        }
+
+        // CRUD Sales & Orders
+        async function addSale() {
+            const name = document.getElementById('saleName').value;
+            const cust = document.getElementById('customerName').value;
+            const date = document.getElementById('saleDate').value || new Date().toISOString().split('T')[0];
+            const cost = parseFloat(pinValues.cost)||0, sell = parseFloat(pinValues.sell)||0, ship = parseFloat(pinValues.shipcost)||0, other = parseFloat(pinValues.other)||0;
+            const seller = document.getElementById('saleSeller').value;
+            if(!name || cost<=0 || sell<=0) return alert('Vul alle velden');
+            const profit = sell - cost - ship - other;
+            await window.addDoc(window.collection(window.db, "sales"), { name, customerName: cust || 'Onbekend', saleDate: date, cost, sell, ship, other, seller, profit, date: new Date().toISOString() });
+            alert('Verkoop toegevoegd');
+            document.getElementById('saleName').value = '';
+            pinValues.cost='0'; pinValues.sell='0'; pinValues.shipcost='0'; pinValues.other='0';
+            ['Cost','Sell','ShipCost','Other'].forEach(f=>{ const el = document.getElementById(`display${f}`); if(el) el.innerText='0'; });
+        }
+        async function deleteSale(id) { if(confirm('Verwijderen?')) await window.deleteDoc(window.doc(window.db, "sales", id)); }
+        async function addOrder() {
+            const customer = document.getElementById('orderCustomer').value;
+            if(!customer) return alert('Klantnaam verplicht');
+            await window.addDoc(window.collection(window.db, "orders"), { customer, product: document.getElementById('orderProduct').value, amount: parseFloat(document.getElementById('orderAmount').value)||0, orderDate: document.getElementById('orderDate').value||new Date().toISOString().split('T')[0], status: document.getElementById('orderStatus').value, createdAt: new Date().toISOString() });
+            alert('Order toegevoegd');
+            document.getElementById('orderCustomer').value = ''; document.getElementById('orderProduct').value = ''; document.getElementById('orderAmount').value = '';
+        }
+        async function deleteOrder(id) { if(confirm('Verwijder order?')) await window.deleteDoc(window.doc(window.db, "orders", id)); }
+        async function updateOrderStatus(id, newStatus) { await window.updateDoc(window.doc(window.db, "orders", id), { status: newStatus }); }
+
+        // Tracking admin (met carrier velden)
+        async function addTracking() {
+            const code = document.getElementById('trackingCode').value.trim();
+            if(!code) return alert('AOM code verplicht');
+            await window.addDoc(window.collection(window.db, "tracking"), {
+                trackingCode: code,
+                carrierTrackingNumber: document.getElementById('carrierTrackingNumber').value.trim(),
+                carrierName: document.getElementById('carrierName').value.trim(),
+                customer: document.getElementById('trackingCustomer').value,
+                destination: document.getElementById('trackingDestination').value,
+                estimatedDelivery: document.getElementById('trackingEstimatedDelivery').value || null,
+                currentStep: 'bestelling_ontvangen',
+                updates: [],
+                createdAt: new Date().toISOString()
+            });
+            alert('Tracking aangemaakt');
+            document.getElementById('trackingCode').value = ''; document.getElementById('carrierTrackingNumber').value = '';
+            document.getElementById('carrierName').value = ''; document.getElementById('trackingCustomer').value = '';
+            document.getElementById('trackingDestination').value = ''; document.getElementById('trackingEstimatedDelivery').value = '';
+        }
+        async function deleteTracking(id) { if(confirm('Verwijder tracking?')) await window.deleteDoc(window.doc(window.db, "tracking", id)); }
+        function openUpdateModal(id) { currentTrackingIdForUpdate = id; document.getElementById('updateText').value = ''; document.getElementById('updateLocation').value = ''; document.getElementById('updateTimestamp').value = new Date().toISOString().slice(0,16); document.getElementById('photoUrlInput').value = ''; document.getElementById('updateStep').value = ''; document.getElementById('updateModal').classList.remove('hidden'); }
+        async function addUpdateToTracking() {
+            if(!currentTrackingIdForUpdate) return;
+            const text = document.getElementById('updateText').value;
+            if(!text) return alert('Voer een update in');
+            const location = document.getElementById('updateLocation').value;
+            const timestamp = document.getElementById('updateTimestamp').value;
+            const photoUrl = document.getElementById('photoUrlInput').value;
+            const stepChange = document.getElementById('updateStep').value;
+            const trackRef = window.doc(window.db, "tracking", currentTrackingIdForUpdate);
+            const trackSnap = await window.getDoc(trackRef);
+            if(trackSnap.exists()) {
+                const updates = trackSnap.data().updates || [];
+                updates.push({ text, location, timestamp: timestamp || new Date().toISOString(), photoUrl });
+                let updateData = { updates };
+                if(stepChange) updateData.currentStep = stepChange;
+                await window.updateDoc(trackRef, updateData);
+                closeModal('updateModal');
+                alert('Update toegevoegd');
+            }
+        }
+        async function deleteTrackingUpdate(id, updateIndex) {
+            if(!confirm('Verwijder update?')) return;
+            const trackRef = window.doc(window.db, "tracking", id);
+            const trackSnap = await window.getDoc(trackRef);
+            if(trackSnap.exists()) {
+                let updates = trackSnap.data().updates || [];
+                updates.splice(updateIndex, 1);
+                await window.updateDoc(trackRef, { updates });
+            }
+        }
+        async function searchTracking() {
+            const code = document.getElementById('searchTrackingInput').value;
+            const found = trackingRecords.find(t=>t.trackingCode === code);
+            const resultDiv = document.getElementById('trackingSearchResult');
+            if(!found) { resultDiv.innerHTML = '<div class="bg-red-50 p-2 rounded">Niet gevonden</div>'; return; }
+            const link = `${window.location.origin}${window.location.pathname}#track=${code}`;
+            resultDiv.innerHTML = `<div class="bg-blue-50 p-2 rounded"><b>${found.trackingCode}</b><br>Carrier: ${found.carrierName || '-'} nr: ${found.carrierTrackingNumber || '-'}<br>Verwachte levering: ${found.estimatedDelivery || '-'}<br>Stap: ${found.currentStep}<br><button onclick="copyToClipboard('${link}')" class="share-link text-blue-600 text-sm">Link kopiëren</button></div>`;
+        }
+        function copyToClipboard(text) { navigator.clipboard.writeText(text); alert('Link gekopieerd'); }
+        function openEditTrackingModal() {
+            const code = document.getElementById('searchTrackingInput').value;
+            const found = trackingRecords.find(t=>t.trackingCode === code);
+            if(!found) { alert('Zoek eerst een trackingcode'); return; }
+            currentEditingTrackingId = found.id;
+            document.getElementById('editEstimatedDelivery').value = found.estimatedDelivery || '';
+            document.getElementById('editCarrierTrackingNumber').value = found.carrierTrackingNumber || '';
+            document.getElementById('editCarrierName').value = found.carrierName || '';
+            document.getElementById('editCurrentStep').value = found.currentStep || 'bestelling_ontvangen';
+            document.getElementById('editTrackingModal').classList.remove('hidden');
+        }
+        async function saveTrackingEdits() {
+            if(!currentEditingTrackingId) return;
+            await window.updateDoc(window.doc(window.db, "tracking", currentEditingTrackingId), {
+                estimatedDelivery: document.getElementById('editEstimatedDelivery').value || null,
+                carrierTrackingNumber: document.getElementById('editCarrierTrackingNumber').value,
+                carrierName: document.getElementById('editCarrierName').value,
+                currentStep: document.getElementById('editCurrentStep').value
+            });
+            alert('Opgeslagen');
+            closeModal('editTrackingModal');
+        }
+
+        // Publieke tracking (met carrier link)
+        function getStepOrder(step) { const order = { 'bestelling_ontvangen':1, 'onderweg_naar_vliegveld':2, 'in_vliegtuig':3, 'geland':4, 'in_douane':5, 'in_sorteercentrum':6, 'onderweg':7, 'bezig_met_bezorgen':8, 'geleverd':9 }; return order[step] || 1; }
+        function getStepDisplay(step) { const steps = { 'bestelling_ontvangen':{ label:'Bestelling ontvangen', icon:'📦' }, 'onderweg_naar_vliegveld':{ label:'Naar vliegveld', icon:'🚗' }, 'in_vliegtuig':{ label:'In vliegtuig', icon:'✈️' }, 'geland':{ label:'Geland', icon:'🛬' }, 'in_douane':{ label:'In douane', icon:'🛃' }, 'in_sorteercentrum':{ label:'Sorteercentrum', icon:'🏭' }, 'onderweg':{ label:'Onderweg', icon:'🚚' }, 'bezig_met_bezorgen':{ label:'Bezig met bezorgen', icon:'🚪' }, 'geleverd':{ label:'Geleverd', icon:'✅' } }; return steps[step] || steps['bestelling_ontvangen']; }
+        function getCarrierTrackUrl(carrierName, trackingNumber) {
+            if(!carrierName || !trackingNumber) return null;
+            const c = carrierName.toLowerCase();
+            if(c.includes('dhl')) return `https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(trackingNumber)}`;
+            if(c.includes('postnl')) return `https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(trackingNumber)}`;
+            if(c.includes('ups')) return `https://www.ups.com/track?tracknum=${encodeURIComponent(trackingNumber)}`;
+            if(c.includes('fedex')) return `https://www.fedex.com/fedextrack/?tracknumbers=${encodeURIComponent(trackingNumber)}`;
+            return null;
+        }
+        window.publicSearchTracking = async () => {
+            const code = document.getElementById('publicTrackingCode').value.trim();
+            const resultDiv = document.getElementById('publicTrackingResult');
+            if(!code) { resultDiv.innerHTML = '<div class="bg-yellow-50 p-3 rounded-xl">Voer een code in</div>'; return; }
+            resultDiv.innerHTML = '<div class="text-slate-500">Zoeken...</div>';
+            try {
+                const q = window.query(window.collection(window.db, "tracking"), window.where("trackingCode", "==", code));
+                const snapshot = await window.getDocs(q);
+                if(snapshot.empty) { resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Geen tracking gevonden</div>'; return; }
+                const tr = snapshot.docs[0].data();
+                const updates = tr.updates || [];
+                const currentStep = tr.currentStep || 'bestelling_ontvangen';
+                const stepsOrder = ['bestelling_ontvangen','onderweg_naar_vliegveld','in_vliegtuig','geland','in_douane','in_sorteercentrum','onderweg','bezig_met_bezorgen','geleverd'];
+                const currentOrder = getStepOrder(currentStep);
+                const progress = (currentOrder / stepsOrder.length) * 100;
+                const carrierLink = getCarrierTrackUrl(tr.carrierName, tr.carrierTrackingNumber);
+                resultDiv.innerHTML = `
+                    <div class="space-y-6 fade-slide">
+                        <div class="flex flex-wrap justify-between items-start gap-3"><div><h3 class="font-bold text-2xl">${tr.trackingCode}</h3><p class="text-slate-500">Vervoerder: ${tr.carrierName || 'AOM'}</p>${tr.carrierTrackingNumber ? `<p class="text-sm">Tracking nr: ${tr.carrierTrackingNumber}</p>` : ''}</div><div class="status-badge ${tr.estimatedDelivery && new Date(tr.estimatedDelivery) < new Date() ? 'bg-red-500' : 'bg-blue-500'} text-white">Verwacht: ${tr.estimatedDelivery ? new Date(tr.estimatedDelivery).toLocaleDateString('nl-NL') : 'onbekend'}</div></div>
+                        ${carrierLink ? `<div class="bg-blue-50 p-3 rounded-xl text-center"><a href="${carrierLink}" target="_blank" class="text-blue-700 font-semibold">🔗 Track op ${tr.carrierName} website</a></div>` : ''}
+                        <div><div class="flex justify-between text-xs"><span>Voortgang</span><span>${Math.round(progress)}%</span></div><div class="progress-bar"><div class="progress-fill" style="width: ${progress}%;"></div></div></div>
+                        <div class="relative"><div class="step-connector"></div><div class="step-indicator">${stepsOrder.map(step => { const info = getStepDisplay(step); const isCompleted = getStepOrder(step) <= currentOrder; const isActive = step === currentStep; return `<div class="step ${isActive ? 'active' : ''} ${isCompleted && !isActive ? 'completed' : ''}"><div class="step-icon">${info.icon}</div><div class="step-label">${info.label}</div></div>`; }).join('')}</div></div>
+                        <div class="bg-slate-50 p-4 rounded-xl"><span class="font-semibold">Huidige status:</span> <span class="status-badge ${currentStep === 'geleverd'?'status-delivered':currentStep === 'onderweg'||currentStep==='in_vliegtuig'?'status-transit':'status-pending'}">${getStepDisplay(currentStep).label}</span> <span class="text-sm ml-2">📍 ${tr.destination || 'Onbekend'}</span></div>
+                        <div><div class="font-semibold mb-2">Reisgeschiedenis</div><div class="max-h-80 overflow-y-auto">${updates.slice().reverse().map(u => `<div class="timeline-item"><div class="text-xs text-slate-500">${new Date(u.timestamp).toLocaleString()}</div><div>${u.text}</div>${u.location ? `<div class="text-sm text-slate-600">📍 ${u.location}</div>` : ''}${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-600 text-sm block mt-1">Bekijk foto</a>` : ''}</div>`).join('') || '<div class="text-slate-400">Geen updates</div>'}</div></div>
+                    </div>
+                `;
+            } catch(e) { resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Fout bij ophalen</div>'; }
+        };
+
+        // Feedback publiek
+        window.submitPublicFeedback = async () => {
+            const name = document.getElementById('feedbackName').value;
+            const trackingCode = document.getElementById('feedbackTrackingCode').value;
+            const message = document.getElementById('feedbackMessage').value;
+            if(!message) { document.getElementById('feedbackResult').innerHTML = '<div class="text-red-500">Bericht verplicht</div>'; return; }
+            await window.addDoc(window.collection(window.db, "feedback"), { name: name || 'Anoniem', trackingCode: trackingCode || null, message, createdAt: new Date().toISOString() });
+            document.getElementById('feedbackResult').innerHTML = '<div class="text-green-600">Bedankt!</div>';
+            setTimeout(() => backToStart(), 1500);
+        };
+
+        // Receipt creator
+        function showReceipt(type, id) {
+            let data;
+            if(type === 'sale') data = sales.find(s => s.id === id);
+            else data = orders.find(o => o.id === id);
+            if(!data) return;
+            const date = type === 'sale' ? data.saleDate : data.orderDate;
+            const amount = type === 'sale' ? data.sell : data.amount;
+            const profit = type === 'sale' ? data.profit : null;
+            const html = `
+                <div class="text-center mb-6"><h2 class="text-2xl font-bold">AOM Supplies</h2><p>${date || new Date().toLocaleDateString()}</p></div>
+                <div class="border-t border-b py-4 my-4"><p><strong>Bon / Receipt</strong><br>${type === 'sale' ? 'Verkoop' : 'Order'} nummer: ${data.id.slice(-8)}</p></div>
+                <table class="w-full text-sm"><tr><td class="py-1">Product:</td><td class="py-1 font-semibold">${data.name || data.product}</td></tr>
+                <tr><td class="py-1">Klant:</td><td class="py-1">${data.customerName || data.customer || 'Onbekend'}</td></tr>
+                <tr><td class="py-1">Bedrag:</td><td class="py-1">€${amount.toFixed(2)}</td></tr>
+                ${profit !== null ? `<tr><td class="py-1">Winst:</td><td class="py-1">€${profit.toFixed(2)}</td></tr>` : ''}
+                <tr><td class="py-1">Datum:</td><td class="py-1">${date || new Date().toLocaleDateString()}</td></tr></table>
+                <div class="mt-6 text-center text-xs text-slate-400">Betaald - geen restitutie mogelijk</div>
+            `;
+            document.getElementById('receiptContent').innerHTML = html;
+            document.getElementById('receiptModal').classList.remove('hidden');
+        }
+        function printReceipt() { window.print(); }
+
+        // Listeners & UI
+        function subscribeToSales() { const q = window.query(window.collection(window.db, "sales"), window.orderBy("date", "desc")); window.onSnapshot(q, (snap) => { sales = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateSalesUI(); updateDashboardStats(); renderCharts(); updateLastUpdated(); }); }
+        function subscribeToOrders() { const q = window.query(window.collection(window.db, "orders"), window.orderBy("createdAt", "desc")); window.onSnapshot(q, (snap) => { orders = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateOrdersUI(); updateDashboardStats(); updateLastUpdated(); }); }
+        function subscribeToTracking() { const q = window.query(window.collection(window.db, "tracking"), window.orderBy("createdAt", "desc")); window.onSnapshot(q, (snap) => { trackingRecords = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateTrackingUI(); updateDashboardStats(); updateLastUpdated(); }); }
+        function subscribeToFeedback() { const q = window.query(window.collection(window.db, "feedback"), window.orderBy("createdAt", "desc")); window.onSnapshot(q, (snap) => { feedbackList = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateFeedbackUI(); }); }
+        function updateLastUpdated() { const el = document.getElementById('lastUpdatedTime'); if(el) el.innerText = `Laatste update: ${new Date().toLocaleTimeString('nl-NL')}`; }
+        let refreshInterval = null;
+        function startAutoRefresh() { if(refreshInterval) clearInterval(refreshInterval); refreshInterval = setInterval(() => { updateSalesUI(); updateOrdersUI(); updateTrackingUI(); updateDashboardStats(); renderCharts(); updateLastUpdated(); }, 60000); }
+
+        function updateSalesUI() { const c = document.getElementById('salesList'); if(!c) return; c.innerHTML = sales.length ? sales.map(s => `<div class="border-b py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Winst: €${s.profit.toFixed(2)} <button onclick="showReceipt('sale','${s.id}')" class="text-blue-600 text-xs ml-2">Bon</button> <button onclick="deleteSale('${s.id}')" class="text-red-500 text-xs">Verwijder</button></div>`).join('') : '<div class="text-slate-400">Geen verkopen</div>'; const rev = sales.reduce((a,s)=>a+s.sell,0), net = sales.reduce((a,s)=>a+s.profit,0); document.getElementById('salesTotalCount') && (document.getElementById('salesTotalCount').innerText = sales.length); document.getElementById('salesTotalRevenue') && (document.getElementById('salesTotalRevenue').innerText = `€${rev.toFixed(0)}`); document.getElementById('salesTotalNet') && (document.getElementById('salesTotalNet').innerText = `€${net.toFixed(0)}`); }
+        function updateOrdersUI() { const c = document.getElementById('ordersList'); if(!c) return; c.innerHTML = orders.map(o => `<div class="border-b py-2"><b>${o.customer}</b> - ${o.product} (€${o.amount})<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs"><option ${o.status==='pending'?'selected':''}>In afwachting</option><option ${o.status==='shipped'?'selected':''}>Verzonden</option><option ${o.status==='delivered'?'selected':''}>Geleverd</option></select> <button onclick="showReceipt('order','${o.id}')" class="text-blue-600 text-xs ml-2">Bon</button> <button onclick="deleteOrder('${o.id}')" class="text-red-500 text-xs">Verwijder</button></div>`).join(''); }
+        function updateTrackingUI() { const c = document.getElementById('trackingList'); if(!c) return; c.innerHTML = trackingRecords.map(tr => `<div class="border rounded-xl p-3"><div class="flex flex-wrap justify-between"><div><b>${tr.trackingCode}</b><br>Carrier: ${tr.carrierName || '-'} nr: ${tr.carrierTrackingNumber || '-'}<br>Verwacht: ${tr.estimatedDelivery || '-'}<br>Stap: ${tr.currentStep}</div><button onclick="copyToClipboard('${location.origin}${location.pathname}#track=${tr.trackingCode}')" class="share-link">Link</button></div><div class="mt-2 text-xs">${(tr.updates || []).slice().reverse().map((u,i)=>`<div>${new Date(u.timestamp).toLocaleString()} - ${u.text} ${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank">foto</a>` : ''} <button onclick="deleteTrackingUpdate('${tr.id}', ${tr.updates.length-1-i})" class="text-red-500">✖</button></div>`).join('') || 'Geen updates'}</div><div class="mt-2 flex gap-2"><button onclick="openUpdateModal('${tr.id}')" class="text-blue-600">Update</button><button onclick="deleteTracking('${tr.id}')" class="text-red-500">Verwijder</button></div></div>`).join(''); document.getElementById('dashTrackingCount') && (document.getElementById('dashTrackingCount').innerText = trackingRecords.length); }
+        function updateFeedbackUI() { const c = document.getElementById('feedbackAdminList'); if(!c) return; c.innerHTML = feedbackList.map(f => `<div class="border-b py-2"><b>${f.name}</b> <span class="text-xs">${new Date(f.createdAt).toLocaleString()}</span><br>${f.message} ${f.trackingCode ? `(Tracking: ${f.trackingCode})` : ''}</div>`).join('') || 'Geen feedback'; const rc = document.getElementById('recentFeedbackList'); if(rc) rc.innerHTML = feedbackList.slice(0,5).map(f => `<div class="text-sm border-b py-1"><b>${f.name}</b>: ${f.message.substring(0,80)}...</div>`).join(''); }
+        function updateDashboardStats() { document.getElementById('dashTotalSales') && (document.getElementById('dashTotalSales').innerText = sales.length); const p = sales.reduce((a,s)=>a+s.profit,0); document.getElementById('dashTotalProfit') && (document.getElementById('dashTotalProfit').innerText = `€${p.toFixed(0)}`); document.getElementById('dashOrderCount') && (document.getElementById('dashOrderCount').innerText = orders.length); document.getElementById('dashTrackingCount') && (document.getElementById('dashTrackingCount').innerText = trackingRecords.length); }
+        let chartRevenue = null, chartProfit = null;
+        function renderCharts() { const ctxR = document.getElementById('chartRevenue')?.getContext('2d'), ctxP = document.getElementById('chartProfit')?.getContext('2d'); if(!ctxR || !ctxP) return; const rev = { MiroT:0, AppieT:0, ObaiT:0 }; sales.forEach(s=>rev[s.seller]+=s.sell); const prof = { MiroT:0, AppieT:0, ObaiT:0 }; sales.forEach(s=>prof[s.seller]+=s.profit); if(chartRevenue) chartRevenue.destroy(); chartRevenue = new Chart(ctxR, { type:'bar', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ label:'Omzet', data:[rev.MiroT, rev.AppieT, rev.ObaiT], backgroundColor:'#3b82f6' }] } }); if(chartProfit) chartProfit.destroy(); chartProfit = new Chart(ctxP, { type:'doughnut', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ data:[prof.MiroT, prof.AppieT, prof.ObaiT], backgroundColor:['#0f172a','#334155','#64748b'] }] } }); }
+
+        async function exportData() { const data = { sales, orders, trackingRecords, feedbackList }; const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`backup.json`; a.click(); }
+        async function clearAllData() { if(!confirm('Alles wissen?')) return; const cols = ['sales','orders','tracking','feedback']; for(const col of cols) { const snap = await window.getDocs(window.collection(window.db, col)); for(const ds of snap.docs) await window.deleteDoc(window.doc(window.db, col, ds.id)); } alert('Gewist'); }
+        async function importData() { try { const d = JSON.parse(document.getElementById('importDataArea').value); if(d.sales) for(const s of d.sales) await window.addDoc(window.collection(window.db, "sales"), s); if(d.orders) for(const o of d.orders) await window.addDoc(window.collection(window.db, "orders"), o); if(d.trackingRecords) for(const t of d.trackingRecords) await window.addDoc(window.collection(window.db, "tracking"), t); if(d.feedbackList) for(const f of d.feedbackList) await window.addDoc(window.collection(window.db, "feedback"), f); alert('Geïmporteerd'); } catch(e) { alert('Ongeldig bestand'); } }
+
+        function navigate(page) { document.querySelectorAll('.page-section').forEach(p=>p.classList.add('hidden')); document.getElementById(`page-${page}`).classList.remove('hidden'); if(page === 'analytics') renderCharts(); }
+        function doLogin() { const user = document.getElementById('loginUser').value, pass = document.getElementById('loginPass').value; if(pass !== 'ResellTrivium') { document.getElementById('loginError').innerText = 'Wachtwoord onjuist'; document.getElementById('loginError').classList.remove('hidden'); return; } currentUser = user; document.getElementById('adminLoginScreen').style.display = 'none'; document.getElementById('mainApp').classList.remove('hidden'); document.getElementById('userBadge').innerHTML = `${user} <span class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">ADMIN</span>`; document.getElementById('welcomeText').innerHTML = `Hallo ${user.replace('T','')}!`; subscribeToSales(); subscribeToOrders(); subscribeToTracking(); subscribeToFeedback(); startAutoRefresh(); renderCharts(); }
+        function doLogout() { if(refreshInterval) clearInterval(refreshInterval); document.getElementById('mainApp').classList.add('hidden'); document.getElementById('startScreen').style.display = 'flex'; currentUser = null; }
+        function calculatePrice() { const base = parseFloat(pinValues.pricecheck)||0; const cat = document.getElementById('priceCategory').value; let markup = cat==='schoenen'?75:cat==='shirt'?40:cat==='airpods'?90:60; const advice = base+markup; document.getElementById('priceFinal').innerHTML = `€${advice.toFixed(2)}`; document.getElementById('priceBreakdown').innerHTML = `Inkoop €${base.toFixed(2)} + ${markup}`; document.getElementById('priceResult').classList.remove('hidden'); }
+
+        window.onload = () => {
+            generatePinpad('cost','costPinpad'); generatePinpad('sell','sellPinpad'); generatePinpad('shipcost','shipPinpad'); generatePinpad('other','otherPinpad'); generatePinpad('pricecheck','pricePinpad');
+            document.getElementById('saleDate').valueAsDate = new Date();
+            if(window.location.hash.startsWith('#track=')) { const code = window.location.hash.split('=')[1]; showPublicTracking(); setTimeout(() => { document.getElementById('publicTrackingCode').value = code; publicSearchTracking(); }, 100); }
+        };
+        window.showAdminLogin = showAdminLogin; window.showPublicTracking = showPublicTracking; window.showTerms = showTerms; window.showFeedbackPublic = showFeedbackPublic; window.showFeedbackForTracking = showFeedbackForTracking;
+        window.backToStart = backToStart; window.doLogin = doLogin; window.doLogout = doLogout; window.navigate = navigate;
+        window.addSale = addSale; window.deleteSale = deleteSale; window.addOrder = addOrder; window.deleteOrder = deleteOrder; window.updateOrderStatus = updateOrderStatus;
+        window.addTracking = addTracking; window.deleteTracking = deleteTracking; window.openUpdateModal = openUpdateModal; window.addUpdateToTracking = addUpdateToTracking;
+        window.deleteTrackingUpdate = deleteTrackingUpdate; window.searchTracking = searchTracking; window.copyToClipboard = copyToClipboard;
+        window.publicSearchTracking = publicSearchTracking; window.submitPublicFeedback = submitPublicFeedback;
+        window.exportData = exportData; window.clearAllData = clearAllData; window.importData = importData;
+        window.calculatePrice = calculatePrice; window.openEditTrackingModal = openEditTrackingModal; window.saveTrackingEdits = saveTrackingEdits;
+        window.closeModal = closeModal; window.showReceipt = showReceipt; window.printReceipt = printReceipt;
+    </script>
+</body>
+</html>        .timeline-item:before { content: ""; position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; transition: background 0.2s; }
         .timeline-item:hover:before { background: #3b82f6; }
         .status-badge { display: inline-block; padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.7rem; font-weight: 700; background: #e2e8f0; }
         .status-delivered { background: #22c55e; color: white; }
