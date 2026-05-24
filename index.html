@@ -131,9 +131,9 @@
             <button onclick="backToStart()" class="text-slate-400 mb-4">← Terug</button>
             <div class="bg-white rounded-3xl shadow-xl p-6 md:p-8">
                 <h2 class="text-3xl font-bold mb-2">Track & Trace</h2>
-                <p class="text-slate-500 mb-6">Voer uw AOM trackingcode in</p>
+                <p class="text-slate-500 mb-6">Voer uw AOM trackingcode of carrier trackingnummer in</p>
                 <div class="flex flex-col sm:flex-row gap-3 mb-8">
-                    <input type="text" id="publicTrackingCode" class="input-field" placeholder="Bijv. AOM483920175NL">
+                    <input type="text" id="publicTrackingCode" class="input-field" placeholder="Bijv. AOM483920175NL of DHL1234567890">
                     <button onclick="publicSearchTracking()" class="btn-primary sm:w-auto">Zoeken</button>
                 </div>
                 <div id="publicTrackingResult" class="text-sm"></div>
@@ -212,22 +212,22 @@
                     <div class="grid lg:grid-cols-2 gap-6"><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold">Recente feedback</h3><div id="recentFeedbackList"></div></div><div class="bg-white p-5 rounded-2xl"><h3 class="font-bold">Snelle acties</h3><button onclick="navigate('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigate('tracking')" class="btn-outline w-full">Tracking beheren</button></div></div>
                 </div>
 
-                <!-- Orders (aangepast met betaalmethode en aantal) -->
+                <!-- Orders (met betaalmethode en aantal) -->
                 <div id="page-orders" class="page-section hidden"><div class="bg-white p-4 md:p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Orders</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-field mb-2" placeholder="Klantnaam"><input id="orderProduct" class="input-field mb-2" placeholder="Product"><input id="orderQuantity" class="input-field mb-2" type="number" placeholder="Aantal" value="1"><input id="orderAmount" class="input-field mb-2" type="number" placeholder="Totaalbedrag"><input id="orderDate" class="input-field mb-2" type="date"><select id="orderPaymentMethod" class="input-field mb-2"><option value="Contant">Contant</option><option value="Bankoverschrijving">Bankoverschrijving</option><option value="PayPal">PayPal</option><option value="Tikkie">Tikkie</option><option value="Cryptocurrency">Cryptocurrency</option><option value="Overig">Overig</option></select><select id="orderStatus" class="input-field mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
 
-                <!-- TRACKING ADMIN (ongewijzigd) -->
+                <!-- TRACKING ADMIN (met carrier velden) -->
                 <div id="page-tracking" class="page-section hidden"><div class="bg-white p-4 md:p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Tracking beheer</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-field mb-2" placeholder="AOM code (intern)"><input id="carrierTrackingNumber" class="input-field mb-2" placeholder="Carrier tracking nummer (DHL/PostNL)"><input id="carrierName" class="input-field mb-2" placeholder="Vervoerder (bv. DHL)"><input id="trackingCustomer" class="input-field mb-2" placeholder="Klantnaam"><input id="trackingDestination" class="input-field mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-field mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-field mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button><div id="trackingSearchResult" class="mt-3 text-sm"></div></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-[500px] overflow-y-auto space-y-3"></div></div></div></div></div>
 
-                <!-- Sales (aangepast met betaalmethode, aantal, eenheidsprijs) -->
+                <!-- Sales (met betaalmethode, aantal, eenheidsprijs) -->
                 <div id="page-sales" class="page-section hidden"><div class="bg-white p-4 md:p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Sales</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="saleName" class="input-field mb-2" placeholder="Productnaam"><input id="saleQuantity" class="input-field mb-2" type="number" placeholder="Aantal" value="1"><input id="saleUnitPrice" class="input-field mb-2" type="number" placeholder="Prijs per stuk (€)"><input id="customerName" class="input-field mb-2" placeholder="Klantnaam"><input id="saleDate" class="input-field mb-2" type="date"><select id="salePaymentMethod" class="input-field mb-2"><option value="Contant">Contant</option><option value="Bankoverschrijving">Bankoverschrijving</option><option value="PayPal">PayPal</option><option value="Tikkie">Tikkie</option><option value="Cryptocurrency">Cryptocurrency</option><option value="Overig">Overig</option></select><div>Inkoop (totaal) <span id="displayCost" class="inline-block bg-gray-100 px-3 py-1 rounded-full">0</span></div><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div><div>Verzendkosten <span id="displayShipCost" class="inline-block bg-gray-100 px-3 py-1 rounded-full">0</span></div><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div><div>Overige kosten <span id="displayOther" class="inline-block bg-gray-100 px-3 py-1 rounded-full">0</span></div><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div><select id="saleSeller" class="input-field mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
 
-                <!-- Prijs Checker (ongewijzigd) -->
+                <!-- Prijs Checker -->
                 <div id="page-pricecheck" class="page-section hidden"><div class="bg-white p-6 rounded-2xl max-w-xl mx-auto"><h2 class="text-2xl font-bold mb-4">Prijs Checker</h2><select id="priceCategory" class="input-field mb-3"><option value="schoenen">Schoenen (+€75)</option><option value="shirt">Shirt (+€40)</option><option value="airpods">AirPods (+€90)</option><option value="other">Overig (+€60)</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-slate-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-black"></div><div id="priceBreakdown" class="text-sm"></div></div></div></div>
 
-                <!-- Analytics (ongewijzigd) -->
+                <!-- Analytics -->
                 <div id="page-analytics" class="page-section hidden"><h2 class="text-2xl font-bold mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl"><canvas id="chartRevenue" width="400" height="300"></canvas></div><div class="bg-white p-4 rounded-2xl"><canvas id="chartProfit" width="400" height="300"></canvas></div></div></div>
 
-                <!-- Feedback admin (ongewijzigd) -->
+                <!-- Feedback admin -->
                 <div id="page-feedback" class="page-section hidden"><div class="bg-white p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Klantfeedback</h2><div id="feedbackAdminList"></div></div></div>
 
                 <!-- Admin panel (met bedrijfsnaam instelling) -->
@@ -236,7 +236,7 @@
         </div>
     </div>
 
-    <!-- MODALS (update en edit tracking) -->
+    <!-- MODALS (update, edit tracking) -->
     <div id="updateModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-xl mb-3">Update toevoegen</h3>
@@ -260,7 +260,7 @@
         </div>
     </div>
 
-    <!-- RECEIPT MODAL (aangepast met alle nieuwe velden) -->
+    <!-- RECEIPT MODAL -->
     <div id="receiptModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div id="receiptContent" class="p-6 receipt-print"></div>
@@ -277,7 +277,7 @@
         let sales = [], orders = [], trackingRecords = [], feedbackList = [];
         let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
         let currentTrackingIdForUpdate = null, currentEditingTrackingId = null;
-        let companyName = "AOM Supplies"; // default
+        let companyName = "AOM Supplies";
 
         // UI helpers
         function showAdminLogin() { document.getElementById('startScreen').style.display = 'none'; document.getElementById('adminLoginScreen').style.display = 'flex'; }
@@ -288,7 +288,7 @@
         function backToStart() { ['adminLoginScreen','publicTrackingScreen','publicFeedbackScreen','termsScreen'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById('startScreen').style.display = 'flex'; }
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
 
-        // Pinpad
+        // Pinpad (alleen voor kosten)
         function generatePinpad(field, containerId) {
             const div = document.getElementById(containerId);
             if(!div) return;
@@ -321,11 +321,9 @@
         }
 
         // Helper: generate invoice number
-        function generateInvoiceNumber() {
-            return `INV-${Date.now().toString().slice(-8)}`;
-        }
+        function generateInvoiceNumber() { return `INV-${Date.now().toString().slice(-8)}`; }
 
-        // CRUD Sales (aangepast met quantity, unitPrice, paymentMethod)
+        // CRUD Sales (met betaalmethode, aantal, eenheidsprijs)
         async function addSale() {
             const name = document.getElementById('saleName').value;
             const quantity = parseInt(document.getElementById('saleQuantity').value) || 1;
@@ -354,8 +352,8 @@
             ['Cost','Sell','ShipCost','Other'].forEach(f=>{ const el = document.getElementById(`display${f}`); if(el) el.innerText='0'; });
         }
         async function deleteSale(id) { if(confirm('Verwijderen?')) await window.deleteDoc(window.doc(window.db, "sales", id)); }
-        
-        // CRUD Orders (aangepast)
+
+        // CRUD Orders (met betaalmethode)
         async function addOrder() {
             const customer = document.getElementById('orderCustomer').value;
             const product = document.getElementById('orderProduct').value;
@@ -376,7 +374,7 @@
         async function deleteOrder(id) { if(confirm('Verwijder order?')) await window.deleteDoc(window.doc(window.db, "orders", id)); }
         async function updateOrderStatus(id, newStatus) { await window.updateDoc(window.doc(window.db, "orders", id), { status: newStatus }); }
 
-        // Tracking Admin (ongewijzigd, behalve dat we dezelfde tracking functies houden)
+        // Tracking Admin (met carrier velden)
         async function addTracking() {
             const code = document.getElementById('trackingCode').value.trim();
             if(!code) return alert('AOM code verplicht');
@@ -453,9 +451,7 @@
             closeModal('editTrackingModal');
         }
 
-        // Publieke tracking (ongewijzigd)
-        function getStepOrder(step) { const order = { 'bestelling_ontvangen':1, 'onderweg_naar_vliegveld':2, 'in_vliegtuig':3, 'geland':4, 'in_douane':5, 'in_sorteercentrum':6, 'onderweg':7, 'bezig_met_bezorgen':8, 'geleverd':9 }; return order[step] || 1; }
-        function getStepDisplay(step) { const steps = { 'bestelling_ontvangen':{ label:'Bestelling ontvangen', icon:'📦' }, 'onderweg_naar_vliegveld':{ label:'Naar vliegveld', icon:'🚗' }, 'in_vliegtuig':{ label:'In vliegtuig', icon:'✈️' }, 'geland':{ label:'Geland', icon:'🛬' }, 'in_douane':{ label:'In douane', icon:'🛃' }, 'in_sorteercentrum':{ label:'Sorteercentrum', icon:'🏭' }, 'onderweg':{ label:'Onderweg', icon:'🚚' }, 'bezig_met_bezorgen':{ label:'Bezig met bezorgen', icon:'🚪' }, 'geleverd':{ label:'Geleverd', icon:'✅' } }; return steps[step] || steps['bestelling_ontvangen']; }
+        // Publieke tracking (intern + carrier link)
         function getCarrierTrackUrl(carrierName, trackingNumber) {
             if(!carrierName || !trackingNumber) return null;
             const c = carrierName.toLowerCase();
@@ -471,30 +467,46 @@
             if(!code) { resultDiv.innerHTML = '<div class="bg-yellow-50 p-3 rounded-xl">Voer een code in</div>'; return; }
             resultDiv.innerHTML = '<div class="text-slate-500">Zoeken...</div>';
             try {
+                // Eerst zoeken in interne tracking (AOM codes)
                 const q = window.query(window.collection(window.db, "tracking"), window.where("trackingCode", "==", code));
                 const snapshot = await window.getDocs(q);
-                if(snapshot.empty) { resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Geen tracking gevonden</div>'; return; }
-                const tr = snapshot.docs[0].data();
-                const updates = tr.updates || [];
-                const currentStep = tr.currentStep || 'bestelling_ontvangen';
-                const stepsOrder = ['bestelling_ontvangen','onderweg_naar_vliegveld','in_vliegtuig','geland','in_douane','in_sorteercentrum','onderweg','bezig_met_bezorgen','geleverd'];
-                const currentOrder = getStepOrder(currentStep);
-                const progress = (currentOrder / stepsOrder.length) * 100;
-                const carrierLink = getCarrierTrackUrl(tr.carrierName, tr.carrierTrackingNumber);
-                resultDiv.innerHTML = `
-                    <div class="space-y-6 fade-slide">
-                        <div class="flex flex-wrap justify-between items-start gap-3"><div><h3 class="font-bold text-2xl">${tr.trackingCode}</h3><p class="text-slate-500">Vervoerder: ${tr.carrierName || 'AOM'}</p>${tr.carrierTrackingNumber ? `<p class="text-sm">Tracking nr: ${tr.carrierTrackingNumber}</p>` : ''}</div><div class="status-badge ${tr.estimatedDelivery && new Date(tr.estimatedDelivery) < new Date() ? 'bg-red-500' : 'bg-blue-500'} text-white">Verwacht: ${tr.estimatedDelivery ? new Date(tr.estimatedDelivery).toLocaleDateString('nl-NL') : 'onbekend'}</div></div>
-                        ${carrierLink ? `<div class="bg-blue-50 p-3 rounded-xl text-center"><a href="${carrierLink}" target="_blank" class="text-blue-700 font-semibold">🔗 Track op ${tr.carrierName} website</a></div>` : ''}
-                        <div><div class="flex justify-between text-xs"><span>Voortgang</span><span>${Math.round(progress)}%</span></div><div class="progress-bar"><div class="progress-fill" style="width: ${progress}%;"></div></div></div>
-                        <div class="relative"><div class="step-connector"></div><div class="step-indicator">${stepsOrder.map(step => { const info = getStepDisplay(step); const isCompleted = getStepOrder(step) <= currentOrder; const isActive = step === currentStep; return `<div class="step ${isActive ? 'active' : ''} ${isCompleted && !isActive ? 'completed' : ''}"><div class="step-icon">${info.icon}</div><div class="step-label">${info.label}</div></div>`; }).join('')}</div></div>
-                        <div class="bg-slate-50 p-4 rounded-xl"><span class="font-semibold">Huidige status:</span> <span class="status-badge ${currentStep === 'geleverd'?'status-delivered':currentStep === 'onderweg'||currentStep==='in_vliegtuig'?'status-transit':'status-pending'}">${getStepDisplay(currentStep).label}</span> <span class="text-sm ml-2">📍 ${tr.destination || 'Onbekend'}</span></div>
-                        <div><div class="font-semibold mb-2">Reisgeschiedenis</div><div class="max-h-80 overflow-y-auto">${updates.slice().reverse().map(u => `<div class="timeline-item"><div class="text-xs text-slate-500">${new Date(u.timestamp).toLocaleString()}</div><div>${u.text}</div>${u.location ? `<div class="text-sm text-slate-600">📍 ${u.location}</div>` : ''}${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-600 text-sm block mt-1">Bekijk foto</a>` : ''}</div>`).join('') || '<div class="text-slate-400">Geen updates</div>'}</div></div>
-                    </div>
-                `;
+                if(!snapshot.empty) {
+                    const tr = snapshot.docs[0].data();
+                    const updates = tr.updates || [];
+                    const currentStep = tr.currentStep || 'bestelling_ontvangen';
+                    const carrierLink = getCarrierTrackUrl(tr.carrierName, tr.carrierTrackingNumber);
+                    resultDiv.innerHTML = `
+                        <div class="space-y-4 fade-slide">
+                            <div class="flex flex-wrap justify-between items-start gap-3"><div><h3 class="font-bold text-2xl">${tr.trackingCode}</h3><p class="text-slate-500">Vervoerder: ${tr.carrierName || 'AOM'}</p>${tr.carrierTrackingNumber ? `<p class="text-sm">Carrier nr: ${tr.carrierTrackingNumber}</p>` : ''}</div><div class="status-badge ${tr.estimatedDelivery && new Date(tr.estimatedDelivery) < new Date() ? 'bg-red-500' : 'bg-blue-500'} text-white">Verwacht: ${tr.estimatedDelivery ? new Date(tr.estimatedDelivery).toLocaleDateString('nl-NL') : 'onbekend'}</div></div>
+                            ${carrierLink ? `<div class="bg-blue-50 p-3 rounded-xl text-center"><a href="${carrierLink}" target="_blank" class="text-blue-700 font-semibold">🔗 Track op ${tr.carrierName} website</a></div>` : ''}
+                            <div><div class="font-semibold">Laatste updates</div><div class="max-h-80 overflow-y-auto">${updates.slice().reverse().map(u => `<div class="timeline-item"><div class="text-xs text-slate-500">${new Date(u.timestamp).toLocaleString()}</div><div>${u.text}</div>${u.location ? `<div class="text-sm text-slate-600">📍 ${u.location}</div>` : ''}${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-600 text-sm block mt-1">Bekijk foto</a>` : ''}</div>`).join('') || '<div class="text-slate-400">Geen updates</div>'}</div></div>
+                        </div>
+                    `;
+                    return;
+                }
+                // Geen interne tracking gevonden -> bied optie om te tracken op carrier website
+                // Probeer te raden of het een carrier nummer is (niet AOM...)
+                if(!code.toUpperCase().startsWith('AOM')) {
+                    resultDiv.innerHTML = `
+                        <div class="bg-white border rounded-xl p-5 space-y-4 fade-slide">
+                            <p>Geen interne tracking gevonden voor <strong>${code}</strong>.</p>
+                            <p>Dit lijkt op een carrier trackingnummer. Probeer hieronder te tracken op de officiële website van de vervoerder:</p>
+                            <div class="grid grid-cols-2 gap-3 mt-4">
+                                <a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-center py-2">DHL</a>
+                                <a href="https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(code)}" target="_blank" class="btn-outline text-center py-2">PostNL</a>
+                                <a href="https://www.ups.com/track?tracknum=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-center py-2">UPS</a>
+                                <a href="https://www.fedex.com/fedextrack/?tracknumbers=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-center py-2">FedEx</a>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-4">Tip: controleer of u het juiste nummer heeft ingevoerd.</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Geen tracking gevonden. Controleer de code.</div>';
+                }
             } catch(e) { resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Fout bij ophalen</div>'; console.error(e); }
         };
 
-        // Feedback publiek (ongewijzigd)
+        // Feedback publiek
         window.submitPublicFeedback = async () => {
             const name = document.getElementById('feedbackName').value;
             const trackingCode = document.getElementById('feedbackTrackingCode').value;
@@ -505,7 +517,7 @@
             setTimeout(() => backToStart(), 1500);
         };
 
-        // Receipt (aangepast met alle velden)
+        // Receipt
         function showReceipt(type, id) {
             let data = type === 'sale' ? sales.find(s => s.id === id) : orders.find(o => o.id === id);
             if(!data) return;
@@ -559,7 +571,7 @@
             if(input) input.value = companyName;
         }
 
-        // Listeners en UI updates (aangepast voor nieuwe velden)
+        // Listeners en UI updates
         function subscribeToSales() { const q = window.query(window.collection(window.db, "sales"), window.orderBy("date", "desc")); window.onSnapshot(q, (snap) => { sales = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateSalesUI(); updateDashboardStats(); renderCharts(); updateLastUpdated(); }); }
         function subscribeToOrders() { const q = window.query(window.collection(window.db, "orders"), window.orderBy("createdAt", "desc")); window.onSnapshot(q, (snap) => { orders = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateOrdersUI(); updateDashboardStats(); updateLastUpdated(); }); }
         function subscribeToTracking() { const q = window.query(window.collection(window.db, "tracking"), window.orderBy("createdAt", "desc")); window.onSnapshot(q, (snap) => { trackingRecords = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateTrackingUI(); updateDashboardStats(); updateLastUpdated(); }); }
