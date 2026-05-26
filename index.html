@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>AOM Supplies - Geavanceerde Track & Trace + AI Assistent</title>
+    <title>AOM Supplies - Track & Trace + AI Assistent</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -12,7 +12,7 @@
         * { font-family: 'Inter', sans-serif; }
         body { background: linear-gradient(135deg, #f0f4ff 0%, #e6eeff 100%); min-height: 100vh; }
         .gradient-text { background: linear-gradient(135deg, #1e293b, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .card-glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(2px); border-radius: 2rem; border: 1px solid rgba(59,130,246,0.2); transition: all 0.2s; }
+        .card-glass { background: rgba(255,255,255,0.9); backdrop-filter: blur(2px); border-radius: 2rem; border: 1px solid rgba(59,130,246,0.2); transition: all 0.2s; }
         .card-glass:hover { transform: translateY(-4px); border-color: #3b82f6; box-shadow: 0 20px 30px -12px rgba(59,130,246,0.2); }
         .btn-gradient { background: linear-gradient(95deg, #1e293b, #0f172a); color: white; font-weight: 600; border-radius: 40px; padding: 0.6rem 1.5rem; transition: 0.2s; border: none; cursor: pointer; }
         .btn-gradient:hover { background: linear-gradient(95deg, #3b82f6, #2563eb); transform: scale(0.98); box-shadow: 0 8px 20px -6px #3b82f6; }
@@ -20,24 +20,12 @@
         .btn-outline:hover { background: #1e293b; color: white; transform: translateY(-2px); }
         .input-modern { border-radius: 28px; border: 1.5px solid #e2e8f0; background: white; padding: 0.75rem 1rem; width: 100%; transition: all 0.2s; }
         .input-modern:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
-        .step-indicator { display: flex; justify-content: space-between; margin: 1.5rem 0; position: relative; flex-wrap: wrap; gap: 0.5rem; }
-        .step { flex: 1; text-align: center; position: relative; z-index: 1; min-width: 60px; }
-        .step .step-icon { width: 44px; height: 44px; background: #f1f5f9; border: 2px solid #e2e8f0; border-radius: 50%; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.2s; }
-        .step.active .step-icon { background: #3b82f6; border-color: #3b82f6; color: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); transform: scale(1.05); }
-        .step.completed .step-icon { background: #22c55e; border-color: #22c55e; color: white; }
-        .step-label { font-size: 0.65rem; font-weight: 600; color: #64748b; }
-        .step.active .step-label { color: #1e293b; font-weight: 800; }
-        .step-connector { position: absolute; top: 22px; left: 0; right: 0; height: 3px; background: #e2e8f0; z-index: 0; }
-        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 10px; transition: width 0.4s ease; }
-        .timeline-item { border-left: 2px solid #cbd5e1; padding-left: 1rem; margin-bottom: 1rem; position: relative; }
-        .timeline-item:before { content: ""; position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; background: #cbd5e1; border-radius: 50%; }
-        .status-badge { display: inline-block; padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.7rem; font-weight: 700; background: #e2e8f0; }
-        .status-delivered { background: #22c55e; color: white; }
-        .status-transit { background: #3b82f6; color: white; }
-        .status-pending { background: #f59e0b; color: white; }
+        .nav-link { transition: 0.2s; cursor: pointer; font-weight: 500; }
+        .nav-link:hover { color: #3b82f6; transform: translateY(-1px); }
+        .stat-card { background: white; border-radius: 2rem; padding: 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; transition: 0.2s; }
+        .stat-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
         .chatbot-button { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 30px; background: linear-gradient(135deg, #1e293b, #3b82f6); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; transition: 0.2s; }
-        .chatbot-button:hover { transform: scale(1.05); background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .chatbot-button:hover { transform: scale(1.05); }
         .chatbot-window { position: fixed; bottom: 90px; right: 24px; width: 380px; height: 550px; background: white; border-radius: 28px; box-shadow: 0 25px 40px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; z-index: 999; border: 1px solid rgba(59,130,246,0.3); }
         .chatbot-header { background: linear-gradient(95deg, #1e293b, #0f172a); color: white; padding: 14px 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         .chatbot-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f8fafc; }
@@ -51,19 +39,13 @@
         .chatbot-input input { flex: 1; border: 1px solid #e2e8f0; border-radius: 40px; padding: 10px 14px; outline: none; }
         .chatbot-input button { background: #1e293b; color: white; border: none; border-radius: 40px; padding: 8px 18px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .chatbot-input button:hover { background: #3b82f6; }
-        .nav-link { transition: 0.2s; cursor: pointer; font-weight: 500; }
-        .nav-link:hover { color: #3b82f6; transform: translateY(-1px); }
-        .stat-card { background: white; border-radius: 2rem; padding: 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; transition: 0.2s; }
-        .stat-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+        .pin-btn { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; font-weight: 800; padding: 12px; text-align: center; cursor: pointer; transition: 0.1s; }
+        .pin-btn:active { transform: scale(0.94); }
         .hidden { display: none !important; }
-        @media (max-width: 768px) {
-            .chatbot-window { width: calc(100% - 32px); right: 16px; bottom: 90px; height: 65vh; }
-            .step .step-icon { width: 36px; height: 36px; font-size: 1rem; }
-            .step-label { font-size: 0.55rem; }
-        }
+        @media (max-width: 768px) { .chatbot-window { width: calc(100% - 32px); right: 16px; bottom: 90px; height: 65vh; } }
         @keyframes fadeSlide { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .fade-slide { animation: fadeSlide 0.4s ease forwards; }
-        @media print { body * { visibility: hidden; } .receipt-print, .receipt-print * { visibility: visible; } .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; } .no-print { display: none; } }
+        @media print { body * { visibility: hidden; } .receipt-print, .receipt-print * { visibility: visible; } .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; } }
     </style>
 </head>
 <body>
@@ -249,7 +231,7 @@
     let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
     let currentTrackingIdForUpdate = null, currentEditingTrackingId = null;
     let companyName = "AOM Supplies";
-    let conversationHistory = []; // voor chatbot geheugen
+    let conversationHistory = [];
 
     // ---------- CHATBOT MET GESPREKSGEHEUGEN ----------
     window.sendChatMessage = async () => {
@@ -260,11 +242,10 @@
         messagesDiv.innerHTML += `<div class="message user"><div class="bubble">${escapeHtml(msg)}</div></div>`;
         input.value = '';
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        // Voeg toe aan geschiedenis
         conversationHistory.push({ role: "user", content: msg });
         try {
             const systemPrompt = "Je bent een vriendelijke, behulpzame AI-assistent van AOM Supplies. Je weet alles over track & trace, resell administratie, verzendingen met DHL/PostNL/UPS/FedEx, de no-refund policy, en de functionaliteiten van het admin dashboard. Geef duidelijke, korte antwoorden. Houd rekening met de volledige gespreksgeschiedenis.";
-            const fullPrompt = conversationHistory.map(m => `${m.role === 'user' ? 'Gebruiker: ' : 'Assistent: '}${m.content}`).join('\n') + "\nAssistent:";
+            const fullPrompt = systemPrompt + "\n" + conversationHistory.map(m => `${m.role === 'user' ? 'Gebruiker: ' : 'Assistent: '}${m.content}`).join('\n') + "\nAssistent:";
             const response = await puter.ai.chat(fullPrompt, { model: "openai/gpt-5.4-nano" });
             const botReply = response;
             messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">${escapeHtml(botReply)}</div></div>`;
@@ -288,11 +269,11 @@
     window.toggleChatbot = () => document.getElementById('chatbotWindow').classList.toggle('hidden');
 
     // ---------- PINPAD ----------
-    function generatePinpad(field, containerId) {
-        const div = document.getElementById(containerId);
-        if(!div) return;
-        const btns = ['1','2','3','4','5','6','7','8','9','0','.'].map(v=>`<div class="pin-btn bg-gray-100 rounded-xl p-2 text-center cursor-pointer" onclick="pinInput('${field}','${v}')">${v}</div>`).join('');
-        div.innerHTML = btns + `<div class="pin-btn bg-red-100 rounded-xl p-2 text-center cursor-pointer" onclick="pinBackspace('${field}')">⌫</div>`;
+    function generatePinpad(field, containerId, displayId) {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        const btns = ['1','2','3','4','5','6','7','8','9','0','.'].map(v => `<div class="pin-btn" onclick="pinInput('${field}','${v}')">${v}</div>`).join('');
+        container.innerHTML = btns + `<div class="pin-btn bg-red-100" onclick="pinBackspace('${field}')">⌫</div>`;
     }
     window.pinInput = (field, val) => {
         let cur = pinValues[field];
@@ -319,13 +300,7 @@
         } else { const preview = document.getElementById('salePreview'); if(preview) preview.classList.add('hidden'); }
     }
 
-    // ---------- FIREBASE (wordt later geïmporteerd via module) ----------
-    // De rest van de CRUD-functies, listeners en UI-updates zijn identiek aan de vorige werkende versie.
-    // Vanwege de lengte wordt hier een compacte maar volledige set functies geplaatst.
-    // In de praktijk werkt alles; we geven een samenvatting.
-    console.log("Website volledig geladen – alle functionaliteiten beschikbaar.");
-</script>
-<script type="module">
+    // ---------- FIREBASE IMPORTEREN (MODULE) ----------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getFirestore, collection, doc, getDocs, getDoc, updateDoc, deleteDoc, addDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
     const firebaseConfig = {
@@ -353,8 +328,7 @@
     window.orderBy = orderBy;
     window.where = where;
 
-    // Hier volgen alle CRUD-functies (addSale, addOrder, etc.) – uit eerdere werkende code.
-    // We geven een verkorte maar volledige implementatie.
+    // ---------- CRUD FUNCTIES ----------
     window.addSale = async () => {
         const name = document.getElementById('saleName').value;
         const quantity = parseInt(document.getElementById('saleQuantity').value) || 1;
@@ -369,21 +343,314 @@
         if(!name || unitPrice<=0) return alert('Vul product en prijs');
         const totalAmount = unitPrice * quantity;
         const profit = totalAmount - cost - ship - other;
-        await window.addDoc(window.collection(window.db, "sales"), { name, quantity, unitPrice, totalAmount, customerName: cust || 'Onbekend', saleDate: date, cost, ship, other, seller, profit, paymentMethod, invoiceNumber: `INV-${Date.now().slice(-8)}`, date: new Date().toISOString() });
+        await addDoc(collection(db, "sales"), { name, quantity, unitPrice, totalAmount, customerName: cust || 'Onbekend', saleDate: date, cost, ship, other, seller, profit, paymentMethod, invoiceNumber: `INV-${Date.now().toString().slice(-8)}`, date: new Date().toISOString() });
         alert('Verkoop toegevoegd');
-        document.getElementById('saleName').value = ''; document.getElementById('saleQuantity').value = '1'; document.getElementById('saleUnitPrice').value = '';
+        document.getElementById('saleName').value = '';
+        document.getElementById('saleQuantity').value = '1';
+        document.getElementById('saleUnitPrice').value = '';
         pinValues.cost='0'; pinValues.sell='0'; pinValues.shipcost='0'; pinValues.other='0';
         ['Cost','Sell','ShipCost','Other'].forEach(f=>{ const el = document.getElementById(`display${f}`); if(el) el.innerText='0'; });
     };
     window.addOrder = async () => {
         const customer = document.getElementById('orderCustomer').value;
         if(!customer) return alert('Klantnaam verplicht');
-        await window.addDoc(window.collection(window.db, "orders"), { customer, product: document.getElementById('orderProduct').value, quantity: parseInt(document.getElementById('orderQuantity').value)||1, totalAmount: parseFloat(document.getElementById('orderAmount').value)||0, orderDate: document.getElementById('orderDate').value||new Date().toISOString().split('T')[0], status: document.getElementById('orderStatus').value, paymentMethod: document.getElementById('orderPaymentMethod').value, createdAt: new Date().toISOString() });
+        await addDoc(collection(db, "orders"), { customer, product: document.getElementById('orderProduct').value, quantity: parseInt(document.getElementById('orderQuantity').value)||1, totalAmount: parseFloat(document.getElementById('orderAmount').value)||0, orderDate: document.getElementById('orderDate').value||new Date().toISOString().split('T')[0], status: document.getElementById('orderStatus').value, paymentMethod: document.getElementById('orderPaymentMethod').value, createdAt: new Date().toISOString() });
         alert('Order toegevoegd');
+        document.getElementById('orderCustomer').value = '';
+        document.getElementById('orderProduct').value = '';
+        document.getElementById('orderQuantity').value = '1';
+        document.getElementById('orderAmount').value = '';
     };
-    // Andere functies (delete, update, tracking, etc.) zijn analoog. Voor de ruimte beperken we tot deze demo.
-    // In de volledige versie zijn alle functies aanwezig.
-    console.log("Firebase geïnitialiseerd en admin functies gereed.");
+    window.addTracking = async () => {
+        const code = document.getElementById('trackingCode').value.trim();
+        if(!code) return alert('AOM code verplicht');
+        await addDoc(collection(db, "tracking"), { trackingCode: code, carrierTrackingNumber: document.getElementById('carrierTrackingNumber').value.trim(), carrierName: document.getElementById('carrierName').value.trim(), customer: document.getElementById('trackingCustomer').value, destination: document.getElementById('trackingDestination').value, estimatedDelivery: document.getElementById('trackingEstimatedDelivery').value || null, currentStep: 'bestelling_ontvangen', updates: [], createdAt: new Date().toISOString() });
+        alert('Tracking aangemaakt');
+        ['trackingCode','carrierTrackingNumber','carrierName','trackingCustomer','trackingDestination','trackingEstimatedDelivery'].forEach(id => document.getElementById(id).value = '');
+    };
+    window.searchTracking = () => {
+        const code = document.getElementById('searchTrackingInput').value;
+        const found = trackingRecords.find(t=>t.trackingCode === code);
+        const resultDiv = document.getElementById('trackingSearchResult');
+        if(!found) { resultDiv.innerHTML = '<div class="bg-red-50 p-2 rounded">Niet gevonden</div>'; return; }
+        resultDiv.innerHTML = `<div class="bg-blue-50 p-2 rounded"><b>${found.trackingCode}</b><br>Carrier: ${found.carrierName || '-'} nr: ${found.carrierTrackingNumber || '-'}<br>Verwacht: ${found.estimatedDelivery || '-'}<br>Stap: ${found.currentStep}</div>`;
+        currentEditingTrackingId = found.id;
+        document.getElementById('editEstimatedDelivery').value = found.estimatedDelivery || '';
+        document.getElementById('editCarrierTrackingNumber').value = found.carrierTrackingNumber || '';
+        document.getElementById('editCarrierName').value = found.carrierName || '';
+        document.getElementById('editCurrentStep').value = found.currentStep || 'bestelling_ontvangen';
+    };
+    window.saveTrackingEdits = async () => {
+        if(!currentEditingTrackingId) return;
+        await updateDoc(doc(db, "tracking", currentEditingTrackingId), {
+            estimatedDelivery: document.getElementById('editEstimatedDelivery').value || null,
+            carrierTrackingNumber: document.getElementById('editCarrierTrackingNumber').value,
+            carrierName: document.getElementById('editCarrierName').value,
+            currentStep: document.getElementById('editCurrentStep').value
+        });
+        alert('Opgeslagen');
+        closeModal('editTrackingModal');
+    };
+    window.openEditTrackingModal = () => {
+        if(!currentEditingTrackingId) { alert('Zoek eerst een trackingcode'); return; }
+        document.getElementById('editTrackingModal').classList.remove('hidden');
+    };
+    window.addUpdateToTracking = async () => {
+        if(!currentTrackingIdForUpdate) return;
+        const text = document.getElementById('updateText').value;
+        if(!text) return alert('Voer een update in');
+        const location = document.getElementById('updateLocation').value;
+        const timestamp = document.getElementById('updateTimestamp').value;
+        const photoUrl = document.getElementById('photoUrlInput').value;
+        const stepChange = document.getElementById('updateStep').value;
+        const trackRef = doc(db, "tracking", currentTrackingIdForUpdate);
+        const trackSnap = await getDoc(trackRef);
+        if(trackSnap.exists()) {
+            const updates = trackSnap.data().updates || [];
+            updates.push({ text, location, timestamp: timestamp || new Date().toISOString(), photoUrl });
+            let updateData = { updates };
+            if(stepChange) updateData.currentStep = stepChange;
+            await updateDoc(trackRef, updateData);
+            closeModal('updateModal');
+            alert('Update toegevoegd');
+        }
+    };
+    window.openUpdateModal = (id) => {
+        currentTrackingIdForUpdate = id;
+        document.getElementById('updateModal').classList.remove('hidden');
+    };
+    window.deleteTrackingUpdate = async (id, index) => {
+        if(!confirm('Verwijder update?')) return;
+        const trackRef = doc(db, "tracking", id);
+        const trackSnap = await getDoc(trackRef);
+        if(trackSnap.exists()) {
+            let updates = trackSnap.data().updates || [];
+            updates.splice(index, 1);
+            await updateDoc(trackRef, { updates });
+        }
+    };
+    window.deleteTracking = async (id) => {
+        if(confirm('Verwijder tracking?')) await deleteDoc(doc(db, "tracking", id));
+    };
+    window.deleteSale = async (id) => {
+        if(confirm('Verwijder sale?')) await deleteDoc(doc(db, "sales", id));
+    };
+    window.deleteOrder = async (id) => {
+        if(confirm('Verwijder order?')) await deleteDoc(doc(db, "orders", id));
+    };
+    window.updateOrderStatus = async (id, newStatus) => {
+        await updateDoc(doc(db, "orders", id), { status: newStatus });
+    };
+    window.showReceipt = (type, id) => {
+        let data = type === 'sale' ? sales.find(s => s.id === id) : orders.find(o => o.id === id);
+        if(!data) return;
+        let html = `<div class="text-center mb-6"><h2 class="text-2xl font-bold">${companyName}</h2><p>${new Date().toLocaleDateString()}</p></div><div class="border-t border-b py-4 my-4"><p><strong>Bon / Receipt</strong><br>Nummer: ${data.invoiceNumber || data.id.slice(-8)}</p></div><table class="w-full text-sm">`;
+        if(type === 'sale') {
+            html += `<tr><td>Product:</td><td>${data.name}</td></tr><tr><td>Aantal:</td><td>${data.quantity}</td></tr><tr><td>Prijs per stuk:</td><td>€${data.unitPrice.toFixed(2)}</td></tr><tr><td>Totaal:</td><td>€${data.totalAmount.toFixed(2)}</td></tr><tr><td>Klant:</td><td>${data.customerName}</td></tr><tr><td>Datum:</td><td>${data.saleDate}</td></tr><tr><td>Betaalmethode:</td><td>${data.paymentMethod}</td></tr><tr><td>Verkoper:</td><td>${data.seller}</td></tr><tr><td>Inkoop:</td><td>€${data.cost.toFixed(2)}</td></tr><tr><td>Verzendkosten:</td><td>€${(data.ship||0).toFixed(2)}</td></tr><tr><td>Overig:</td><td>€${(data.other||0).toFixed(2)}</td></tr><tr><td class="font-bold">Winst:</td><td class="font-bold">€${data.profit.toFixed(2)}</td></tr>`;
+        } else {
+            html += `<tr><td>Product:</td><td>${data.product}</td></tr><tr><td>Aantal:</td><td>${data.quantity}</td></tr><tr><td>Totaal:</td><td>€${data.totalAmount.toFixed(2)}</td></tr><tr><td>Klant:</td><td>${data.customer}</td></tr><tr><td>Datum:</td><td>${data.orderDate}</td></tr><tr><td>Betaalmethode:</td><td>${data.paymentMethod}</td></tr><tr><td>Status:</td><td>${data.status}</td></tr>`;
+        }
+        html += `</table><div class="mt-6 text-center text-xs">Betaald - geen restitutie</div>`;
+        document.getElementById('receiptContent').innerHTML = html;
+        document.getElementById('receiptModal').classList.remove('hidden');
+    };
+    window.printReceipt = () => window.print();
+    window.saveCompanyName = () => {
+        const newName = document.getElementById('companyNameSetting').value.trim();
+        if(newName) companyName = newName;
+        localStorage.setItem('aom_company_name', companyName);
+        alert('Opgeslagen');
+    };
+    window.exportData = async () => {
+        const salesSnap = await getDocs(collection(db, "sales"));
+        const ordersSnap = await getDocs(collection(db, "orders"));
+        const trackingSnap = await getDocs(collection(db, "tracking"));
+        const feedbackSnap = await getDocs(collection(db, "feedback"));
+        const data = { sales: salesSnap.docs.map(d=>d.data()), orders: ordersSnap.docs.map(d=>d.data()), tracking: trackingSnap.docs.map(d=>d.data()), feedback: feedbackSnap.docs.map(d=>d.data()) };
+        const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+        const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`aom_backup.json`; a.click();
+    };
+    window.clearAllData = async () => {
+        if(!confirm('ALLES WISSEN?')) return;
+        const cols = ['sales','orders','tracking','feedback'];
+        for(const col of cols) {
+            const snap = await getDocs(collection(db, col));
+            for(const ds of snap.docs) await deleteDoc(doc(db, col, ds.id));
+        }
+        alert('Alle data gewist');
+    };
+    window.importData = async () => {
+        try {
+            const imported = JSON.parse(document.getElementById('importDataArea').value);
+            if(imported.sales) for(const s of imported.sales) await addDoc(collection(db, "sales"), s);
+            if(imported.orders) for(const o of imported.orders) await addDoc(collection(db, "orders"), o);
+            if(imported.tracking) for(const t of imported.tracking) await addDoc(collection(db, "tracking"), t);
+            if(imported.feedback) for(const f of imported.feedback) await addDoc(collection(db, "feedback"), f);
+            alert('Import voltooid');
+        } catch(e) { alert('Ongeldig JSON'); }
+    };
+    window.calculatePrice = () => {
+        const base = parseFloat(pinValues.pricecheck)||0;
+        const cat = document.getElementById('priceCategory').value;
+        let markup = cat==='schoenen'?75:cat==='shirt'?40:cat==='airpods'?90:60;
+        const advice = base+markup;
+        document.getElementById('priceFinal').innerHTML = `€${advice.toFixed(2)}`;
+        document.getElementById('priceBreakdown').innerHTML = `Inkoop €${base.toFixed(2)} + ${markup}`;
+        document.getElementById('priceResult').classList.remove('hidden');
+    };
+    window.publicSearchTracking = async () => {
+        const code = document.getElementById('publicTrackingCode').value.trim();
+        const resultDiv = document.getElementById('publicTrackingResult');
+        if(!code) { resultDiv.innerHTML = '<div class="bg-yellow-50 p-3 rounded-xl">Voer een code in</div>'; return; }
+        resultDiv.innerHTML = '<div class="text-slate-500">Zoeken...</div>';
+        try {
+            const q = query(collection(db, "tracking"), where("trackingCode", "==", code));
+            const snapshot = await getDocs(q);
+            if(!snapshot.empty) {
+                const tr = snapshot.docs[0].data();
+                const updates = tr.updates || [];
+                let carrierLink = '';
+                const c = (tr.carrierName || '').toLowerCase();
+                if(c.includes('dhl') && tr.carrierTrackingNumber) carrierLink = `<a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(tr.carrierTrackingNumber)}" target="_blank" class="text-blue-600 underline">Track op DHL</a>`;
+                else if(c.includes('postnl') && tr.carrierTrackingNumber) carrierLink = `<a href="https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(tr.carrierTrackingNumber)}" target="_blank" class="text-blue-600 underline">Track op PostNL</a>`;
+                else if(c.includes('ups') && tr.carrierTrackingNumber) carrierLink = `<a href="https://www.ups.com/track?tracknum=${encodeURIComponent(tr.carrierTrackingNumber)}" target="_blank" class="text-blue-600 underline">Track op UPS</a>`;
+                resultDiv.innerHTML = `<div class="bg-white p-5 rounded-2xl shadow"><h3 class="font-bold text-xl">${tr.trackingCode}</h3><p>Vervoerder: ${tr.carrierName || 'AOM'}</p>${tr.carrierTrackingNumber ? `<p>Carrier nr: ${tr.carrierTrackingNumber} ${carrierLink}</p>` : ''}<p>Bestemming: ${tr.destination || '-'}</p><p>Verwachte levering: ${tr.estimatedDelivery || 'onbekend'}</p><p>Huidige stap: ${tr.currentStep}</p><div class="mt-3"><b>Updates:</b><div class="max-h-60 overflow-y-auto">${updates.slice().reverse().map(u=>`<div class="border-b py-2"><small>${new Date(u.timestamp).toLocaleString()}</small><div>${u.text}</div>${u.location ? `<div>📍 ${u.location}</div>` : ''}${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-500">Bekijk foto</a>` : ''}</div>`).join('') || 'Geen updates'}</div></div></div>`;
+            } else {
+                // probeer carrier direct
+                const carrierLinks = {
+                    'DHL': `https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}`,
+                    'PostNL': `https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(code)}`,
+                    'UPS': `https://www.ups.com/track?tracknum=${encodeURIComponent(code)}`,
+                    'FedEx': `https://www.fedex.com/fedextrack/?tracknumbers=${encodeURIComponent(code)}`
+                };
+                resultDiv.innerHTML = `<div class="bg-white p-5 rounded-2xl shadow"><p>Geen interne tracking gevonden voor <strong>${code}</strong>.</p><p>Probeer direct te tracken bij de vervoerder:</p><div class="flex flex-wrap gap-3 mt-3">${Object.entries(carrierLinks).map(([name,url])=>`<a href="${url}" target="_blank" class="btn-outline py-1 px-3 text-sm">${name}</a>`).join('')}</div></div>`;
+            }
+        } catch(e) { resultDiv.innerHTML = '<div class="bg-red-100 p-3 rounded-xl">Fout bij ophalen</div>'; }
+    };
+    window.submitPublicFeedback = async () => {
+        const name = document.getElementById('feedbackName').value;
+        const trackingCode = document.getElementById('feedbackTrackingCode').value;
+        const message = document.getElementById('feedbackMessage').value;
+        if(!message) { document.getElementById('feedbackResult').innerHTML = '<div class="text-red-500">Bericht verplicht</div>'; return; }
+        await addDoc(collection(db, "feedback"), { name: name || 'Anoniem', trackingCode: trackingCode || null, message, createdAt: new Date().toISOString() });
+        document.getElementById('feedbackResult').innerHTML = '<div class="text-green-600">Bedankt!</div>';
+        setTimeout(() => closeModal('publicFeedbackModal'), 1500);
+    };
+    window.showFeedbackPublic = () => document.getElementById('publicFeedbackModal').classList.remove('hidden');
+    window.showFeedbackForTracking = () => {
+        const code = document.getElementById('publicTrackingCode').value;
+        showFeedbackPublic();
+        if(code) document.getElementById('feedbackTrackingCode').value = code;
+    };
+    window.showTerms = () => document.getElementById('termsModal').classList.remove('hidden');
+
+    // ---------- LISTENERS & UI UPDATES ----------
+    function subscribeToSales() {
+        const q = query(collection(db, "sales"), orderBy("date", "desc"));
+        onSnapshot(q, (snap) => { sales = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateSalesUI(); updateDashboardStats(); renderCharts(); });
+    }
+    function subscribeToOrders() {
+        const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snap) => { orders = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateOrdersUI(); updateDashboardStats(); });
+    }
+    function subscribeToTracking() {
+        const q = query(collection(db, "tracking"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snap) => { trackingRecords = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateTrackingUI(); updateDashboardStats(); });
+    }
+    function subscribeToFeedback() {
+        const q = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snap) => { feedbackList = snap.docs.map(d => ({ id: d.id, ...d.data() })); updateFeedbackUI(); });
+    }
+    function updateSalesUI() {
+        const container = document.getElementById('salesList');
+        if(!container) return;
+        container.innerHTML = sales.map(s => `<div class="border-b py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Aantal: ${s.quantity} | Totaal: €${s.totalAmount.toFixed(2)} | Winst: €${s.profit.toFixed(2)}<br>Betaald: ${s.paymentMethod}<button onclick="showReceipt('sale','${s.id}')" class="text-blue-600 text-xs ml-2">Bon</button> <button onclick="deleteSale('${s.id}')" class="text-red-500 text-xs">Verwijder</button></div>`).join('');
+        const totalRev = sales.reduce((a,s)=>a+s.totalAmount,0), totalNet = sales.reduce((a,s)=>a+s.profit,0);
+        document.getElementById('salesTotalCount') && (document.getElementById('salesTotalCount').innerText = sales.length);
+        document.getElementById('salesTotalRevenue') && (document.getElementById('salesTotalRevenue').innerText = `€${totalRev.toFixed(0)}`);
+        document.getElementById('salesTotalNet') && (document.getElementById('salesTotalNet').innerText = `€${totalNet.toFixed(0)}`);
+    }
+    function updateOrdersUI() {
+        const container = document.getElementById('ordersList');
+        if(!container) return;
+        container.innerHTML = orders.map(o => `<div class="border-b py-2"><b>${o.customer}</b> - ${o.product} (${o.orderDate})<br>Aantal: ${o.quantity} | Totaal: €${o.totalAmount.toFixed(2)} | Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs"><option ${o.status==='pending'?'selected':''}>In afwachting</option><option ${o.status==='shipped'?'selected':''}>Verzonden</option><option ${o.status==='delivered'?'selected':''}>Geleverd</option></select> <button onclick="showReceipt('order','${o.id}')" class="text-blue-600 text-xs ml-2">Bon</button> <button onclick="deleteOrder('${o.id}')" class="text-red-500 text-xs">Verwijder</button></div>`).join('');
+    }
+    function updateTrackingUI() {
+        const container = document.getElementById('trackingList');
+        if(!container) return;
+        container.innerHTML = trackingRecords.map(tr => `<div class="border rounded-xl p-3"><div><b>${tr.trackingCode}</b><br>Carrier: ${tr.carrierName || '-'} nr: ${tr.carrierTrackingNumber || '-'}<br>Verwacht: ${tr.estimatedDelivery || '-'}<br>Stap: ${tr.currentStep}</div><div class="mt-2 text-xs">${(tr.updates || []).slice().reverse().map((u,i)=>`<div>${new Date(u.timestamp).toLocaleString()} - ${u.text} ${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank">foto</a>` : ''} <button onclick="deleteTrackingUpdate('${tr.id}', ${tr.updates.length-1-i})" class="text-red-500">✖</button></div>`).join('') || 'Geen updates'}</div><div class="mt-2 flex gap-2"><button onclick="openUpdateModal('${tr.id}')" class="text-blue-600">Update</button><button onclick="deleteTracking('${tr.id}')" class="text-red-500">Verwijder</button></div></div>`).join('');
+        document.getElementById('dashTrackingCount') && (document.getElementById('dashTrackingCount').innerText = trackingRecords.length);
+    }
+    function updateFeedbackUI() {
+        const container = document.getElementById('feedbackAdminList');
+        if(!container) return;
+        container.innerHTML = feedbackList.map(f => `<div class="border-b py-2"><b>${f.name}</b> <span class="text-xs">${new Date(f.createdAt).toLocaleString()}</span><br>${f.message} ${f.trackingCode ? `(Tracking: ${f.trackingCode})` : ''}</div>`).join('') || 'Geen feedback';
+        const recent = document.getElementById('recentFeedbackList');
+        if(recent) recent.innerHTML = feedbackList.slice(0,5).map(f => `<div class="text-sm border-b py-1"><b>${f.name}</b>: ${f.message.substring(0,80)}...</div>`).join('');
+    }
+    function updateDashboardStats() {
+        document.getElementById('dashTotalSales') && (document.getElementById('dashTotalSales').innerText = sales.length);
+        const totalProfit = sales.reduce((a,s)=>a+s.profit,0);
+        document.getElementById('dashTotalProfit') && (document.getElementById('dashTotalProfit').innerText = `€${totalProfit.toFixed(0)}`);
+        document.getElementById('dashOrderCount') && (document.getElementById('dashOrderCount').innerText = orders.length);
+        document.getElementById('dashTrackingCount') && (document.getElementById('dashTrackingCount').innerText = trackingRecords.length);
+    }
+    let chartRevenue, chartProfit;
+    function renderCharts() {
+        const revCtx = document.getElementById('chartRevenue')?.getContext('2d');
+        const profCtx = document.getElementById('chartProfit')?.getContext('2d');
+        if(!revCtx || !profCtx) return;
+        const revMap = { MiroT:0, AppieT:0, ObaiT:0 };
+        sales.forEach(s => revMap[s.seller] += s.totalAmount);
+        const profMap = { MiroT:0, AppieT:0, ObaiT:0 };
+        sales.forEach(s => profMap[s.seller] += s.profit);
+        if(chartRevenue) chartRevenue.destroy();
+        if(chartProfit) chartProfit.destroy();
+        chartRevenue = new Chart(revCtx, { type:'bar', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ label:'Omzet (EUR)', data:[revMap.MiroT, revMap.AppieT, revMap.ObaiT], backgroundColor:'#3b82f6' }] } });
+        chartProfit = new Chart(profCtx, { type:'doughnut', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ data:[profMap.MiroT, profMap.AppieT, profMap.ObaiT], backgroundColor:['#1e293b','#334155','#64748b'] }] } });
+    }
+
+    // ---------- LOGIN / LOGOUT ----------
+    window.doLogin = () => {
+        const user = document.getElementById('loginUser').value;
+        const pass = document.getElementById('loginPass').value;
+        if(pass !== 'ResellTrivium') {
+            document.getElementById('loginError').innerText = 'Wachtwoord onjuist';
+            document.getElementById('loginError').classList.remove('hidden');
+            return;
+        }
+        currentUser = user;
+        document.getElementById('adminLoginModal').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('userBadge').innerHTML = `${user} <span class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">ADMIN</span>`;
+        document.getElementById('welcomeText').innerHTML = `Hallo ${user.replace('T','')}!`;
+        subscribeToSales(); subscribeToOrders(); subscribeToTracking(); subscribeToFeedback();
+        setInterval(() => { updateLastUpdatedTime(); }, 60000);
+        updateLastUpdatedTime();
+        renderCharts();
+    };
+    window.doLogout = () => {
+        document.getElementById('mainApp').classList.add('hidden');
+        document.getElementById('startScreen').style.display = 'flex';
+        currentUser = null;
+    };
+    function updateLastUpdatedTime() {
+        const el = document.getElementById('lastUpdatedTime');
+        if(el) el.innerText = `Laatste update: ${new Date().toLocaleTimeString('nl-NL')}`;
+    }
+    window.navigatePage('home');
+    window.generatePinpad = generatePinpad;
+    setTimeout(() => {
+        generatePinpad('cost','costPinpad','displayCost');
+        generatePinpad('shipcost','shipPinpad','displayShipCost');
+        generatePinpad('other','otherPinpad','displayOther');
+        generatePinpad('pricecheck','pricePinpad','displayPriceCheck');
+        document.getElementById('saleDate').valueAsDate = new Date();
+    }, 100);
+    window.addEventListener('hashchange', () => {});
 </script>
+<!-- extra modals -->
+<div id="publicFeedbackModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold mb-4">Feedback</h2><input id="feedbackName" class="input-modern mb-3" placeholder="Naam"><input id="feedbackTrackingCode" class="input-modern mb-3" placeholder="Trackingcode"><textarea id="feedbackMessage" rows="4" class="input-modern mb-3" placeholder="Uw bericht..."></textarea><button onclick="submitPublicFeedback()" class="btn-gradient w-full">Versturen</button><div id="feedbackResult" class="mt-3 text-sm"></div><button onclick="closeModal('publicFeedbackModal')" class="btn-outline w-full mt-3">Sluiten</button></div></div>
+<div id="termsModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 overflow-y-auto"><div class="bg-white rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"><h1 class="text-2xl font-bold mb-4">Algemene voorwaarden</h1><div class="space-y-3 text-sm"><p><strong>No-Refund Policy</strong><br>Alle verkopen zijn definitief. Geen restitutie.</p><p><strong>Privacy</strong><br>Gegevens worden vertrouwelijk behandeld.</p><p><strong>Aansprakelijkheid</strong><br>AOM Supplies is niet aansprakelijk voor vertragingen of fouten.</p></div><button onclick="closeModal('termsModal')" class="btn-outline w-full mt-4">Sluiten</button></div></div>
 </body>
 </html>
