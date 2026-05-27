@@ -3,164 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies – Complete Track & Trace</title>
+    <title>AOM Supplies | Modern Track & Trace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: #f5f7fc; }
-        .track-card { background: white; border-radius: 2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
-        .btn-blue { background: #1e40af; color: white; border-radius: 40px; padding: 0.6rem 1.5rem; font-weight: 600; transition: 0.2s; border: none; cursor: pointer; }
-        .btn-blue:hover { background: #2563eb; transform: scale(0.98); }
-        .btn-outline-blue { border: 2px solid #1e40af; background: white; border-radius: 40px; padding: 0.6rem 1.5rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-outline-blue:hover { background: #1e40af; color: white; }
-        .input-tracking { border-radius: 60px; border: 1px solid #e2e8f0; padding: 0.9rem 1.5rem; width: 100%; font-size: 1rem; outline: none; transition: 0.2s; }
-        .input-tracking:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        .chatbot-button { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 30px; background: #1e40af; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; transition: 0.2s; }
-        .chatbot-button:hover { transform: scale(1.05); background: #2563eb; }
-        .chatbot-window { position: fixed; bottom: 90px; right: 24px; width: 380px; height: 550px; background: white; border-radius: 28px; box-shadow: 0 25px 40px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; overflow: hidden; z-index: 999; border: 1px solid rgba(30,64,175,0.2); }
-        .chatbot-header { background: #1e40af; color: white; padding: 14px 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .chatbot-messages { flex: 1; overflow-y: auto; padding: 16px; background: #f8fafc; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; }
+        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 2rem; }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; font-weight: 600; border-radius: 40px; padding: 0.6rem 1.5rem; transition: 0.2s; border: none; cursor: pointer; }
+        .btn-primary:hover { transform: scale(0.98); background: linear-gradient(135deg, #2563eb, #1e40af); }
+        .btn-outline { background: transparent; border: 2px solid #3b82f6; color: #3b82f6; border-radius: 40px; padding: 0.6rem 1.5rem; font-weight: 600; transition: 0.2s; cursor: pointer; }
+        .btn-outline:hover { background: #3b82f6; color: white; }
+        .input-dark { background: rgba(0,0,0,0.3); border: 1px solid #334155; border-radius: 60px; padding: 0.9rem 1.5rem; width: 100%; color: white; outline: none; transition: 0.2s; }
+        .input-dark:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        .nav-link { color: #cbd5e1; transition: 0.2s; cursor: pointer; font-weight: 500; }
+        .nav-link:hover { color: #3b82f6; }
+        .stat-card { background: rgba(255,255,255,0.05); border-radius: 1.5rem; padding: 1.2rem; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.05); }
+        .admin-sidebar { background: #0f172a; border-right: 1px solid #1e293b; }
+        .admin-nav-item { padding: 12px 16px; border-radius: 12px; cursor: pointer; transition: 0.2s; color: #cbd5e1; }
+        .admin-nav-item:hover { background: #1e293b; color: white; }
+        .pin-btn { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 12px; text-align: center; cursor: pointer; transition: 0.1s; color: white; }
+        .pin-btn:active { transform: scale(0.94); }
+        .chatbot-button { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 30px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; transition: 0.2s; }
+        .chatbot-button:hover { transform: scale(1.05); }
+        .chatbot-window { position: fixed; bottom: 90px; right: 24px; width: 380px; height: 550px; background: #1e293b; border-radius: 28px; box-shadow: 0 25px 40px -12px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; z-index: 999; border: 1px solid #3b82f6; }
+        .chatbot-header { background: #0f172a; color: white; padding: 14px 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .chatbot-messages { flex: 1; overflow-y: auto; padding: 16px; background: #0f172a; }
         .message { margin-bottom: 16px; display: flex; flex-direction: column; }
         .message.user { align-items: flex-end; }
         .message.bot { align-items: flex-start; }
         .message .bubble { max-width: 85%; padding: 10px 14px; border-radius: 20px; font-size: 0.85rem; line-height: 1.4; }
-        .message.user .bubble { background: #1e40af; color: white; border-bottom-right-radius: 4px; }
-        .message.bot .bubble { background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
-        .chatbot-input { display: flex; padding: 12px; gap: 8px; border-top: 1px solid #e2e8f0; background: white; }
-        .chatbot-input input { flex: 1; border: 1px solid #e2e8f0; border-radius: 40px; padding: 8px 14px; outline: none; }
-        .chatbot-input button { background: #1e40af; color: white; border: none; border-radius: 40px; padding: 8px 18px; cursor: pointer; }
+        .message.user .bubble { background: #3b82f6; color: white; border-bottom-right-radius: 4px; }
+        .message.bot .bubble { background: #334155; color: white; border-bottom-left-radius: 4px; }
+        .chatbot-input { display: flex; padding: 12px; gap: 8px; border-top: 1px solid #334155; background: #0f172a; }
+        .chatbot-input input { flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 40px; padding: 8px 14px; color: white; outline: none; }
+        .chatbot-input button { background: #3b82f6; color: white; border: none; border-radius: 40px; padding: 8px 18px; cursor: pointer; }
         .hidden { display: none !important; }
-        .admin-sidebar { background: white; border-right: 1px solid #e2e8f0; }
-        .admin-nav-item { cursor: pointer; padding: 12px 16px; border-radius: 12px; transition: 0.2s; }
-        .admin-nav-item:hover { background: #f1f5f9; }
-        .stat-card { background: white; border-radius: 1.5rem; padding: 1.2rem; border: 1px solid #e2e8f0; transition: 0.2s; }
-        .stat-card:hover { border-color: #2563eb; transform: translateY(-2px); }
-        .pin-btn { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; padding: 12px; text-align: center; cursor: pointer; transition: 0.1s; }
-        .pin-btn:active { transform: scale(0.94); }
-        .nav-link { cursor: pointer; transition: 0.2s; font-weight: 500; }
-        .nav-link:hover { color: #2563eb; }
+        .fade-slide { animation: fadeSlide 0.3s ease forwards; }
+        @keyframes fadeSlide { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 768px) { .chatbot-window { width: calc(100% - 32px); right: 16px; height: 65vh; } }
     </style>
 </head>
 <body>
 
-<!-- PUBLIC PAGE (met volledige navigatie) -->
+<!-- PUBLIC PAGE -->
 <div id="publicPage" class="min-h-screen">
-    <header class="bg-white shadow-sm border-b sticky top-0 z-40">
+    <header class="bg-black/30 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-2">
-                <span class="text-2xl font-black text-blue-800">AOM</span>
-                <span class="text-gray-600 text-sm">Supplies</span>
+                <span class="text-3xl font-black bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">AOM</span>
+                <span class="text-gray-300 text-sm">Supplies</span>
             </div>
-            <nav class="flex flex-wrap gap-4 text-sm font-medium">
-                <a onclick="showPublicPage('home')" class="nav-link text-gray-700">Home</a>
-                <a onclick="showPublicPage('tracking')" class="nav-link text-gray-700">Track & Trace</a>
-                <a onclick="showPublicPage('services')" class="nav-link text-gray-700">Diensten</a>
-                <a onclick="showPublicPage('about')" class="nav-link text-gray-700">Over ons</a>
-                <a onclick="showPublicPage('contact')" class="nav-link text-gray-700">Contact</a>
-                <a onclick="showPublicPage('terms')" class="nav-link text-gray-700">Voorwaarden</a>
-                <button onclick="showAdminLogin()" class="bg-blue-800 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold ml-2">🔐 Admin</button>
+            <nav class="flex flex-wrap gap-5 text-sm">
+                <a onclick="showPublicPage('home')" class="nav-link">Home</a>
+                <a onclick="showPublicPage('tracking')" class="nav-link">Tracking</a>
+                <a onclick="showPublicPage('services')" class="nav-link">Diensten</a>
+                <a onclick="showPublicPage('about')" class="nav-link">Over ons</a>
+                <a onclick="showPublicPage('contact')" class="nav-link">Contact</a>
+                <a onclick="showPublicPage('terms')" class="nav-link">Voorwaarden</a>
+                <button onclick="showAdminLogin()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold ml-2">Admin</button>
             </nav>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 py-12">
         <!-- HOME -->
-        <div id="public-home" class="public-section fade-slide">
-            <div class="text-center"><h1 class="text-4xl md:text-5xl font-black text-blue-800 mb-4">Welkom bij AOM Supplies</h1><p class="text-gray-600 max-w-2xl mx-auto">Jouw partner voor professionele track & trace en resell administratie.</p><div class="mt-8"><button onclick="showPublicPage('tracking')" class="btn-blue">Start met tracken →</button></div></div>
+        <div id="public-home" class="public-section fade-slide text-center">
+            <h1 class="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">AOM Supplies</h1>
+            <p class="text-gray-300 text-lg mt-4 max-w-2xl mx-auto">Professionele track & trace voor resellers. Real-time updates, uitgebreide rapportages en 24/7 AI-ondersteuning.</p>
+            <div class="mt-10"><button onclick="showPublicPage('tracking')" class="btn-primary px-8 py-3 text-lg">Start met tracken →</button></div>
         </div>
-        <!-- TRACK & TRACE -->
+        <!-- TRACKING -->
         <div id="public-tracking" class="public-section hidden fade-slide">
-            <div class="track-card p-6 md:p-8 max-w-3xl mx-auto">
-                <h1 class="text-3xl font-bold mb-2">Track a Package</h1>
-                <p class="text-gray-500 mb-6">Enter your AOM or carrier tracking number</p>
+            <div class="glass-card p-8 max-w-3xl mx-auto">
+                <h2 class="text-3xl font-bold text-white mb-2">Track & Trace</h2>
+                <p class="text-gray-300 mb-6">Voer uw AOM of carrier trackingnummer in</p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="text" id="publicTrackingInput" class="input-tracking" placeholder="Tracking number (e.g., AOM123 or DHL1234567890)">
-                    <button onclick="publicTrack()" class="btn-blue px-8 py-3 whitespace-nowrap">Track →</button>
+                    <input type="text" id="publicTrackingInput" class="input-dark" placeholder="Bijv. AOM123 of DHL1234567890">
+                    <button onclick="publicTrack()" class="btn-primary whitespace-nowrap">Zoeken →</button>
                 </div>
-                <div id="trackingResult" class="mt-8"></div>
-                <div class="mt-8 text-center"><button onclick="showTermsAccept()" class="text-blue-600 underline text-sm mr-4">Terms & Conditions</button><button onclick="showPublicFeedback()" class="text-blue-600 underline text-sm">Feedback</button></div>
+                <div id="trackingResult" class="mt-8 text-white"></div>
+                <div class="mt-8 text-center"><button onclick="showTermsAccept()" class="text-blue-400 underline text-sm mr-4">Terms & Conditions</button><button onclick="showPublicFeedback()" class="text-blue-400 underline text-sm">Feedback</button></div>
             </div>
         </div>
         <!-- SERVICES -->
         <div id="public-services" class="public-section hidden fade-slide">
-            <h1 class="text-3xl font-bold text-blue-800 mb-6">Onze diensten</h1>
-            <div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-6 rounded-2xl shadow-sm"><h3 class="font-bold text-xl">📦 Resell platform</h3><p>Beheer verkopen, inkoop, winst en klanten. Genereer facturen en bonnen.</p></div><div class="bg-white p-6 rounded-2xl shadow-sm"><h3 class="font-bold text-xl">🌍 Internationale tracking</h3><p>Luchtvracht, douane en eindbezorging met uitgebreide stappenindicator.</p></div><div class="bg-white p-6 rounded-2xl shadow-sm"><h3 class="font-bold text-xl">📊 Analytics dashboard</h3><p>Grafieken en inzichten in omzet, winst en verkooptrends per verkoper.</p></div><div class="bg-white p-6 rounded-2xl shadow-sm"><h3 class="font-bold text-xl">🤖 AI chatbot 24/7</h3><p>Altijd antwoord op al je vragen, met gespreksgeheugen.</p></div></div>
+            <h2 class="text-3xl font-bold text-white mb-6">Onze diensten</h2>
+            <div class="grid md:grid-cols-2 gap-6"><div class="glass-card p-6"><h3 class="text-xl font-bold text-white">📦 Resell platform</h3><p class="text-gray-300">Beheer verkopen, inkoop, winst en klanten. Genereer facturen en bonnen.</p></div><div class="glass-card p-6"><h3 class="text-xl font-bold text-white">🌍 Internationale tracking</h3><p class="text-gray-300">Luchtvracht, douane en eindbezorging met uitgebreide stappenindicator.</p></div><div class="glass-card p-6"><h3 class="text-xl font-bold text-white">📊 Analytics dashboard</h3><p class="text-gray-300">Grafieken en inzichten in omzet, winst en verkooptrends.</p></div><div class="glass-card p-6"><h3 class="text-xl font-bold text-white">🤖 AI chatbot 24/7</h3><p class="text-gray-300">Altijd antwoord op al je vragen, met gespreksgeheugen.</p></div></div>
         </div>
         <!-- ABOUT -->
         <div id="public-about" class="public-section hidden fade-slide">
-            <div class="bg-white p-8 rounded-2xl max-w-3xl mx-auto"><h1 class="text-3xl font-bold text-blue-800 mb-4">Over AOM Supplies</h1><p class="mt-4">Wij zijn een dynamisch team van resell experts met jaren ervaring in logistiek en e-commerce. Ons platform is ontstaan uit de behoefte aan een alles-in-één track & trace systeem voor verkopers die meerdere carriers gebruiken. Met AOM Supplies kun je al je zendingen op één plek volgen, winst berekenen, facturen maken en klantfeedback verzamelen. Dankzij onze AI-chatbot ben je nooit alleen.</p></div>
+            <div class="glass-card p-8 max-w-3xl mx-auto"><h2 class="text-3xl font-bold text-white mb-4">Over AOM Supplies</h2><p class="text-gray-300">Wij zijn een dynamisch team van resell experts met jaren ervaring in logistiek en e-commerce. Ons platform is ontstaan uit de behoefte aan een alles-in-één track & trace systeem voor verkopers die meerdere carriers gebruiken. Met AOM Supplies kun je al je zendingen op één plek volgen, winst berekenen, facturen maken en klantfeedback verzamelen. Dankzij onze AI-chatbot ben je nooit alleen.</p></div>
         </div>
         <!-- CONTACT -->
         <div id="public-contact" class="public-section hidden fade-slide">
-            <div class="bg-white p-8 rounded-2xl max-w-3xl mx-auto"><h1 class="text-3xl font-bold text-blue-800 mb-4">Contact</h1><p><strong>📧 Email:</strong> support@aomsupplies.com</p><p><strong>📞 Telefoon:</strong> +31 (0)20 123 4567</p><p><strong>📍 Adres:</strong> Postbus 1234, 1000 AB Amsterdam</p><p><strong>🕒 Kantooruren:</strong> Maandag – Vrijdag: 09:00 – 17:00</p><textarea rows="4" class="input-tracking mt-4" placeholder="Uw bericht..."></textarea><button class="btn-blue mt-3 w-full" onclick="alert('Bericht verzonden (demo)')">Verstuur bericht</button></div>
+            <div class="glass-card p-8 max-w-3xl mx-auto"><h2 class="text-3xl font-bold text-white mb-4">Contact</h2><p class="text-gray-300"><strong>📧 Email:</strong> support@aomsupplies.com</p><p class="text-gray-300"><strong>📞 Telefoon:</strong> +31 (0)20 123 4567</p><p class="text-gray-300"><strong>📍 Adres:</strong> Postbus 1234, 1000 AB Amsterdam</p><p class="text-gray-300"><strong>🕒 Kantooruren:</strong> Maandag – Vrijdag: 09:00 – 17:00</p><textarea rows="4" class="input-dark mt-4" placeholder="Uw bericht..."></textarea><button class="btn-primary mt-3 w-full" onclick="alert('Bericht verzonden (demo)')">Verstuur bericht</button></div>
         </div>
         <!-- TERMS -->
         <div id="public-terms" class="public-section hidden fade-slide">
-            <div class="bg-white p-8 rounded-2xl max-w-4xl mx-auto"><h1 class="text-3xl font-bold text-blue-800 mb-6">Algemene voorwaarden</h1><div class="space-y-4 text-sm"><p><strong>No-Refund Policy</strong> – Alle verkopen zijn definitief. Geen restitutie.</p><p><strong>Privacy</strong> – Uw gegevens worden vertrouwelijk behandeld.</p><p><strong>Aansprakelijkheid</strong> – AOM Supplies is niet aansprakelijk voor vertragingen of fouten in trackingdata.</p><p class="mt-4 text-xs">Laatste update: 27 mei 2026</p></div></div>
+            <div class="glass-card p-8 max-w-4xl mx-auto"><h2 class="text-3xl font-bold text-white mb-6">Algemene voorwaarden</h2><div class="space-y-4 text-gray-300 text-sm"><p><strong>No-Refund Policy</strong> – Alle verkopen zijn definitief. Geen restitutie.</p><p><strong>Privacy</strong> – Uw gegevens worden vertrouwelijk behandeld.</p><p><strong>Aansprakelijkheid</strong> – AOM Supplies is niet aansprakelijk voor vertragingen of fouten in trackingdata.</p><p class="mt-4 text-xs">Laatste update: 28 mei 2026</p></div></div>
         </div>
     </main>
 </div>
 
 <!-- ADMIN LOGIN MODAL -->
-<div id="adminLoginModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-blue-800">Admin Login</h2><button onclick="closeModal('adminLoginModal')" class="text-gray-400 text-2xl">&times;</button></div>
-        <select id="loginUser" class="input-tracking mb-3"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select>
-        <input type="password" id="loginPass" class="input-tracking mb-4" placeholder="Wachtwoord">
-        <button onclick="doLogin()" class="btn-blue w-full py-3">Inloggen</button>
-        <div id="loginError" class="text-red-600 text-center mt-3 hidden"></div>
+<div id="adminLoginModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div class="bg-gray-900 rounded-3xl shadow-2xl p-6 w-full max-w-md border border-blue-500/30">
+        <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold text-white">Admin Login</h2><button onclick="closeModal('adminLoginModal')" class="text-gray-400 text-2xl">&times;</button></div>
+        <select id="loginUser" class="input-dark mb-3"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select>
+        <input type="password" id="loginPass" class="input-dark mb-4" placeholder="Wachtwoord">
+        <button onclick="doLogin()" class="btn-primary w-full py-3">Inloggen</button>
+        <div id="loginError" class="text-red-500 text-center mt-3 hidden"></div>
     </div>
 </div>
 
 <!-- ADMIN DASHBOARD -->
-<div id="adminDashboard" class="hidden min-h-screen">
+<div id="adminDashboard" class="hidden min-h-screen bg-gray-900">
     <div class="flex flex-col md:flex-row">
         <aside class="admin-sidebar w-72 fixed h-full z-30 hidden md:block overflow-y-auto">
-            <div class="p-6 border-b"><h2 class="text-2xl font-bold text-blue-800">AOM Admin</h2><span id="adminUserBadge" class="text-sm text-gray-500"></span></div>
+            <div class="p-6 border-b border-gray-800"><h2 class="text-2xl font-bold text-white">AOM Admin</h2><span id="adminUserBadge" class="text-sm text-gray-400"></span></div>
             <nav class="p-4 space-y-1">
-                <div onclick="navigateAdmin('dashboard')" class="admin-nav-item font-medium">📊 Dashboard</div>
-                <div onclick="navigateAdmin('orders')" class="admin-nav-item font-medium">📦 Orders</div>
-                <div onclick="navigateAdmin('tracking-admin')" class="admin-nav-item font-medium">📍 Tracking Beheer</div>
-                <div onclick="navigateAdmin('sales')" class="admin-nav-item font-medium">💰 Sales & Winst</div>
-                <div onclick="navigateAdmin('pricecheck')" class="admin-nav-item font-medium">🏷️ Prijs Checker</div>
-                <div onclick="navigateAdmin('analytics')" class="admin-nav-item font-medium">📈 Analytics</div>
-                <div onclick="navigateAdmin('feedback')" class="admin-nav-item font-medium">💬 Feedback</div>
-                <div onclick="navigateAdmin('admin')" class="admin-nav-item font-medium">⚙️ Admin Panel</div>
+                <div onclick="navigateAdmin('dashboard')" class="admin-nav-item">📊 Dashboard</div>
+                <div onclick="navigateAdmin('orders')" class="admin-nav-item">📦 Orders</div>
+                <div onclick="navigateAdmin('tracking-admin')" class="admin-nav-item">📍 Tracking</div>
+                <div onclick="navigateAdmin('sales')" class="admin-nav-item">💰 Sales</div>
+                <div onclick="navigateAdmin('pricecheck')" class="admin-nav-item">🏷️ Prijs Checker</div>
+                <div onclick="navigateAdmin('analytics')" class="admin-nav-item">📈 Analytics</div>
+                <div onclick="navigateAdmin('feedback')" class="admin-nav-item">💬 Feedback</div>
+                <div onclick="navigateAdmin('admin')" class="admin-nav-item">⚙️ Admin Panel</div>
             </nav>
-            <div class="p-4 absolute bottom-0 w-full"><button onclick="doLogout()" class="btn-outline-blue w-full">Uitloggen</button></div>
+            <div class="p-4 absolute bottom-0 w-full"><button onclick="doLogout()" class="btn-outline w-full">Uitloggen</button></div>
         </aside>
         <main class="flex-1 md:ml-72 p-6 pb-24">
             <div id="admin-dashboard" class="admin-section">
-                <div class="flex justify-between items-center mb-6"><h1 id="welcomeAdmin" class="text-3xl font-bold text-blue-800"></h1><span id="lastUpdateTime" class="text-sm text-gray-500"></span></div>
+                <div class="flex justify-between items-center mb-6"><h1 id="welcomeAdmin" class="text-3xl font-bold text-white"></h1><span id="lastUpdateTime" class="text-sm text-gray-400"></span></div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer"></div>
-                <div class="grid lg:grid-cols-2 gap-6"><div class="bg-white p-5 rounded-2xl shadow-sm"><h3>Recente feedback</h3><div id="recentFeedbackListAdmin"></div></div><div class="bg-white p-5 rounded-2xl shadow-sm"><h3>Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-blue w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('tracking-admin')" class="btn-outline-blue w-full">Tracking beheren</button></div></div>
+                <div class="grid lg:grid-cols-2 gap-6"><div class="glass-card p-5"><h3 class="text-white font-bold">Recente feedback</h3><div id="recentFeedbackListAdmin" class="text-gray-300"></div></div><div class="glass-card p-5"><h3 class="text-white font-bold">Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('tracking-admin')" class="btn-outline w-full">Tracking beheren</button></div></div>
             </div>
-            <div id="admin-orders" class="admin-section hidden"><div class="bg-white p-6 rounded-2xl shadow-sm"><h2 class="text-2xl font-bold mb-4">Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-tracking mb-2" placeholder="Klantnaam"><input id="orderProduct" class="input-tracking mb-2" placeholder="Product"><input id="orderQuantity" type="number" class="input-tracking mb-2" placeholder="Aantal" value="1"><input id="orderAmount" type="number" class="input-tracking mb-2" placeholder="Totaalbedrag"><input id="orderDate" type="date" class="input-tracking mb-2"><select id="orderPaymentMethod" class="input-tracking mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><select id="orderStatus" class="input-tracking mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-blue w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
-            <div id="admin-tracking-admin" class="admin-section hidden"><div class="bg-white p-6 rounded-2xl shadow-sm"><h2 class="text-2xl font-bold mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-tracking mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-tracking mb-2" placeholder="Carrier nr"><input id="carrierName" class="input-tracking mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-tracking mb-2" placeholder="Klant"><input id="trackingDestination" class="input-tracking mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-tracking mb-2"><button onclick="addTracking()" class="btn-blue w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-tracking mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline-blue w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline-blue w-full mt-2">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3"></div></div></div></div></div>
-            <div id="admin-sales" class="admin-section hidden"><div class="bg-white p-6 rounded-2xl shadow-sm"><h2 class="text-2xl font-bold mb-4">Sales & Winst</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-tracking mb-2" placeholder="Productnaam"><input id="saleQuantity" type="number" class="input-tracking mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-tracking mb-2" placeholder="Prijs per stuk (€)"><input id="customerName" class="input-tracking mb-2" placeholder="Klantnaam"><input id="saleDate" type="date" class="input-tracking mb-2"><select id="salePaymentMethod" class="input-tracking mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><div>Inkoop (totaal) <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div>Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div>Overige kosten <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-tracking mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-blue w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-sm text-green-600"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
-            <div id="admin-pricecheck" class="admin-section hidden"><div class="bg-white p-6 rounded-2xl max-w-xl mx-auto"><h2 class="text-2xl font-bold mb-4">Prijs Checker</h2><select id="priceCategory" class="input-tracking mb-3"><option value="schoenen">👟 Schoenen (+€75)</option><option value="shirt">👕 Shirt (+€40)</option><option value="airpods">🎧 AirPods (+€90)</option><option value="other">📦 Overig (+€60)</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-blue w-full">Bereken advies</button><div id="priceResult" class="hidden mt-4 p-3 bg-slate-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-black"></div><div id="priceBreakdown" class="text-sm"></div></div></div></div>
-            <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-4 rounded-2xl"><canvas id="chartProfit"></canvas></div></div></div>
-            <div id="admin-feedback" class="admin-section hidden"><div class="bg-white p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Klantfeedback</h2><div id="feedbackAdminList"></div></div></div>
-            <div id="admin-admin" class="admin-section hidden"><div class="bg-white p-6 rounded-2xl"><h2 class="text-2xl font-bold mb-4">Admin Panel</h2><input id="companyNameSetting" class="input-tracking mb-3" placeholder="Bedrijfsnaam (voor bon)"><button onclick="saveCompanyName()" class="btn-outline-blue w-full mb-2">Bedrijfsnaam opslaan</button><button onclick="exportAllData()" class="btn-outline-blue w-full my-2">📤 Exporteer alle data (JSON)</button><button onclick="clearAllData()" class="btn-outline-blue border-red-300 text-red-700 w-full">⚠️ Reset ALLE data (Firebase)</button><textarea id="importDataArea" rows="3" class="input-tracking my-2" placeholder="Plak JSON om te importeren"></textarea><button onclick="importData()" class="btn-blue w-full">Importeer</button></div></div>
+            <div id="admin-orders" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-dark mb-2" placeholder="Klantnaam"><input id="orderProduct" class="input-dark mb-2" placeholder="Product"><input id="orderQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="orderAmount" type="number" class="input-dark mb-2" placeholder="Totaalbedrag"><input id="orderDate" type="date" class="input-dark mb-2"><select id="orderPaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><select id="orderStatus" class="input-dark mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
+            <div id="admin-tracking-admin" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-dark mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-dark mb-2" placeholder="Carrier nr"><input id="carrierName" class="input-dark mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-dark mb-2" placeholder="Klant"><input id="trackingDestination" class="input-dark mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-dark mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-dark mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3 text-gray-300"></div></div></div></div></div>
+            <div id="admin-sales" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Sales & Winst</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-dark mb-2" placeholder="Productnaam"><input id="saleQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-dark mb-2" placeholder="Prijs per stuk"><input id="customerName" class="input-dark mb-2" placeholder="Klantnaam"><input id="saleDate" type="date" class="input-dark mb-2"><select id="salePaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><div class="text-white">Inkoop <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-white">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-white">Overige kosten <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-dark mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-400 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
+            <div id="admin-pricecheck" class="admin-section hidden"><div class="glass-card p-6 max-w-xl mx-auto"><h2 class="text-2xl font-bold text-white mb-4">Prijs Checker</h2><select id="priceCategory" class="input-dark mb-3"><option value="schoenen">Schoenen +€75</option><option value="shirt">Shirt +€40</option><option value="airpods">AirPods +€90</option><option value="other">Overig +€60</option></select><div class="bg-gray-800 p-3 rounded-xl text-right text-2xl text-white" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken advies</button><div id="priceResult" class="hidden mt-4 p-3 bg-gray-800 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-bold text-white"></div><div id="priceBreakdown" class="text-sm text-gray-300"></div></div></div></div>
+            <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold text-white mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-gray-800 p-4 rounded-2xl"><canvas id="chartRevenue"></canvas></div><div class="bg-gray-800 p-4 rounded-2xl"><canvas id="chartProfit"></canvas></div></div></div>
+            <div id="admin-feedback" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Klantfeedback</h2><div id="feedbackAdminList" class="text-gray-300"></div></div></div>
+            <div id="admin-admin" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Admin Panel</h2><input id="companyNameSetting" class="input-dark mb-3" placeholder="Bedrijfsnaam (voor bon)"><button onclick="saveCompanyName()" class="btn-outline w-full mb-2">Opslaan</button><button onclick="exportAllData()" class="btn-outline w-full my-2">Exporteer data (JSON)</button><button onclick="clearAllData()" class="btn-outline border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-dark my-2" placeholder="Plak JSON"></textarea><button onclick="importData()" class="btn-primary w-full">Importeer</button></div></div>
         </main>
     </div>
 </div>
 
-<!-- MODALS (update, edit tracking, receipt, terms accept, public feedback) -->
-<div id="updateModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl p-6 w-full max-w-md"><h3 class="font-bold text-xl">Update toevoegen</h3><input id="updateText" class="input-tracking my-3" placeholder="Status"><input id="updateLocation" class="input-tracking my-3" placeholder="Locatie"><input id="updateTimestamp" class="input-tracking my-3" type="datetime-local"><input id="photoUrlInput" class="input-tracking my-3" placeholder="Foto URL"><select id="updateStep" class="input-tracking my-3"><option value="">Geen stapwijziging</option><option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option><option value="in_sorteercentrum">In sorteercentrum</option><option value="onderweg">Onderweg naar bestemming</option><option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option></select><div class="flex gap-3"><button onclick="addUpdateToTracking()" class="btn-blue flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline-blue flex-1">Annuleren</button></div></div></div>
-<div id="editTrackingModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl p-6 w-full max-w-md"><h3 class="font-bold text-xl">Bewerk tracking</h3><input type="date" id="editEstimatedDelivery" class="input-tracking my-3"><input id="editCarrierTrackingNumber" class="input-tracking my-3" placeholder="Carrier nr"><input id="editCarrierName" class="input-tracking my-3" placeholder="Vervoerder"><select id="editCurrentStep" class="input-tracking my-3"><option>Bestelling ontvangen</option><option>Naar vliegveld</option><option>In vliegtuig</option><option>Geland</option><option>In douane</option><option>In sorteercentrum</option><option>Onderweg</option><option>Bezig met bezorgen</option><option>Geleverd</option></select><div class="flex gap-3"><button onclick="saveTrackingEdits()" class="btn-blue flex-1">Opslaan</button><button onclick="closeModal('editTrackingModal')" class="btn-outline-blue flex-1">Annuleren</button></div></div></div>
-<div id="receiptModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-6 receipt-print"></div><div class="flex gap-3 p-4"><button onclick="printReceipt()" class="btn-blue flex-1">🖨️ Print / PDF</button><button onclick="closeModal('receiptModal')" class="btn-outline-blue flex-1">Sluiten</button></div></div></div>
-<div id="termsAcceptModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold">Accepteer voorwaarden</h2><div class="my-4 text-sm">Door te accepteren gaat u akkoord met de <strong>No-Refund Policy</strong> en onze algemene voorwaarden.</div><button onclick="acceptTerms()" class="btn-blue w-full">Ik accepteer</button></div></div>
-<div id="publicFeedbackModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold">Feedback</h2><input id="feedbackName" class="input-tracking mb-3" placeholder="Naam (optioneel)"><input id="feedbackTrackingCode" class="input-tracking mb-3" placeholder="Trackingcode"><textarea id="feedbackMessage" rows="4" class="input-tracking mb-3" placeholder="Uw bericht"></textarea><button onclick="submitPublicFeedback()" class="btn-blue w-full">Versturen</button><div id="feedbackResult" class="mt-3 text-sm"></div><button onclick="closeModal('publicFeedbackModal')" class="btn-outline-blue w-full mt-3">Sluiten</button></div></div>
+<!-- MODALS -->
+<div id="updateModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-blue-500/30"><h3 class="font-bold text-xl text-white mb-3">Update toevoegen</h3><input id="updateText" class="input-dark my-3" placeholder="Status"><input id="updateLocation" class="input-dark my-3" placeholder="Locatie"><input id="updateTimestamp" class="input-dark my-3" type="datetime-local"><input id="photoUrlInput" class="input-dark my-3" placeholder="Foto URL"><select id="updateStep" class="input-dark my-3"><option value="">Geen stapwijziging</option><option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option><option value="in_sorteercentrum">In sorteercentrum</option><option value="onderweg">Onderweg</option><option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option></select><div class="flex gap-3"><button onclick="addUpdateToTracking()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
+<div id="editTrackingModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-2xl p-6 w-full max-w-md"><h3 class="font-bold text-xl text-white mb-3">Bewerk tracking</h3><input type="date" id="editEstimatedDelivery" class="input-dark my-3"><input id="editCarrierTrackingNumber" class="input-dark my-3" placeholder="Carrier nr"><input id="editCarrierName" class="input-dark my-3" placeholder="Vervoerder"><select id="editCurrentStep" class="input-dark my-3"><option>Bestelling ontvangen</option><option>Naar vliegveld</option><option>In vliegtuig</option><option>Geland</option><option>In douane</option><option>In sorteercentrum</option><option>Onderweg</option><option>Bezig met bezorgen</option><option>Geleverd</option></select><div class="flex gap-3"><button onclick="saveTrackingEdits()" class="btn-primary flex-1">Opslaan</button><button onclick="closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
+<div id="receiptModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-6 receipt-print text-white"></div><div class="flex gap-3 p-4"><button onclick="printReceipt()" class="btn-primary flex-1">Print / PDF</button><button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button></div></div></div>
+<div id="termsAcceptModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold text-white mb-4">Accepteer voorwaarden</h2><div class="my-4 text-gray-300 text-sm">Door te accepteren gaat u akkoord met de <strong>No-Refund Policy</strong> en onze algemene voorwaarden.</div><button onclick="acceptTerms()" class="btn-primary w-full">Ik accepteer</button></div></div>
+<div id="publicFeedbackModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold text-white mb-4">Feedback</h2><input id="feedbackName" class="input-dark mb-3" placeholder="Naam (optioneel)"><input id="feedbackTrackingCode" class="input-dark mb-3" placeholder="Trackingcode"><textarea id="feedbackMessage" rows="4" class="input-dark mb-3" placeholder="Uw bericht"></textarea><button onclick="submitPublicFeedback()" class="btn-primary w-full">Versturen</button><div id="feedbackResult" class="mt-3 text-sm"></div><button onclick="closeModal('publicFeedbackModal')" class="btn-outline w-full mt-3">Sluiten</button></div></div>
 
 <!-- CHATBOT -->
 <div id="chatbotButton" class="chatbot-button" onclick="toggleChatbot()">💬</div>
 <div id="chatbotWindow" class="chatbot-window hidden">
-    <div class="chatbot-header"><span>🤖 AOM Assistant (24/7)</span><button onclick="toggleChatbot()" class="text-white text-xl">×</button></div>
-    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Ik ben de AI-assistent van AOM Supplies. Ik kan je helpen met tracking, verzending, resell administratie, facturen, bonnen en al onze diensten. Wat kan ik voor je doen?</div></div></div>
+    <div class="chatbot-header"><span>🤖 AOM Assistant</span><button onclick="toggleChatbot()" class="text-white text-xl">×</button></div>
+    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Ik ben de AI-assistent van AOM Supplies. Hoe kan ik je helpen?</div></div></div>
     <div class="chatbot-input"><input id="chatInput" placeholder="Typ je bericht..." onkeypress="if(event.key==='Enter') sendChatMessage()"><button onclick="sendChatMessage()">Verstuur</button></div>
 </div>
 
@@ -180,23 +183,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Global state
     let sales = [], orders = [], tracking = [], feedback = [];
     let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
     let currentTrackingId = null;
     let companyName = "AOM Supplies";
     let conversationHistory = [];
 
-    // Public page navigation
-    window.showPublicPage = (page) => {
-        document.querySelectorAll('.public-section').forEach(s => s.classList.add('hidden'));
-        document.getElementById(`public-${page}`).classList.remove('hidden');
-    };
+    // Public navigation
+    window.showPublicPage = (page) => { document.querySelectorAll('.public-section').forEach(s => s.classList.add('hidden')); document.getElementById(`public-${page}`).classList.remove('hidden'); };
     window.showAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
     window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
     window.toggleChatbot = () => document.getElementById('chatbotWindow').classList.toggle('hidden');
     window.showTermsAccept = () => document.getElementById('termsAcceptModal').classList.remove('hidden');
-    window.acceptTerms = () => { alert('U heeft de algemene voorwaarden geaccepteerd.'); closeModal('termsAcceptModal'); };
+    window.acceptTerms = () => { alert('U heeft de voorwaarden geaccepteerd.'); closeModal('termsAcceptModal'); };
     window.showPublicFeedback = () => document.getElementById('publicFeedbackModal').classList.remove('hidden');
 
     // Chatbot
@@ -208,15 +207,14 @@
         messagesDiv.innerHTML += `<div class="message user"><div class="bubble">${escapeHtml(msg)}</div></div>`;
         input.value = '';
         conversationHistory.push({ role: "user", content: msg });
-        const systemPrompt = "Je bent een vriendelijke, behulpzame AI-assistent van AOM Supplies. Je weet alles over track & trace, resell administratie, verzendingen met DHL/PostNL/UPS/FedEx, de no-refund policy, het admin dashboard (sales, orders, tracking beheer, analytics, feedback, bonnen). Geef duidelijke, korte antwoorden in het Nederlands. Houd rekening met de volledige gespreksgeschiedenis.";
+        const systemPrompt = "Je bent de AI-assistent van AOM Supplies. Je weet alles over track & trace, resell administratie, no-refund policy, en het admin dashboard. Antwoord in het Nederlands, behulpzaam en kort.";
         const fullPrompt = systemPrompt + "\n" + conversationHistory.map(m => `${m.role === 'user' ? 'Gebruiker: ' : 'Assistent: '}${m.content}`).join('\n') + "\nAssistent:";
         try {
             const response = await puter.ai.chat(fullPrompt, { model: "openai/gpt-5.4-nano" });
-            const botReply = response;
-            messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">${escapeHtml(botReply)}</div></div>`;
-            conversationHistory.push({ role: "assistant", content: botReply });
+            messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">${escapeHtml(response)}</div></div>`;
+            conversationHistory.push({ role: "assistant", content: response });
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        } catch(e) { messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">Sorry, er ging iets mis. Probeer opnieuw.</div></div>`; }
+        } catch(e) { messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">Fout. Probeer opnieuw.</div></div>`; }
     };
     function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
@@ -224,19 +222,19 @@
     window.publicTrack = async () => {
         const code = document.getElementById('publicTrackingInput').value.trim();
         const resultDiv = document.getElementById('trackingResult');
-        if (!code) { resultDiv.innerHTML = '<div class="bg-yellow-50 p-4 rounded-xl">Voer een trackingnummer in.</div>'; return; }
-        resultDiv.innerHTML = '<div class="text-gray-500">Zoeken...</div>';
+        if (!code) { resultDiv.innerHTML = '<div class="bg-yellow-500/20 p-4 rounded-xl text-white">Voer een code in.</div>'; return; }
+        resultDiv.innerHTML = '<div class="text-gray-300">Zoeken...</div>';
         try {
             const q = query(collection(db, "tracking"), where("trackingCode", "==", code));
             const snap = await getDocs(q);
             if (snap.empty) {
-                resultDiv.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm"><p>Geen AOM tracking gevonden. Probeer direct te tracken bij de vervoerder:</p><div class="flex flex-wrap gap-3 mt-3"><a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">DHL</a><a href="https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">PostNL</a><a href="https://www.ups.com/track?tracknum=${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">UPS</a><a href="https://www.fedex.com/fedextrack/?tracknumbers=${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">FedEx</a></div></div>`;
+                resultDiv.innerHTML = `<div class="bg-gray-800 p-4 rounded-xl"><p>Geen AOM tracking gevonden. Probeer direct te tracken bij de vervoerder:</p><div class="flex flex-wrap gap-3 mt-3"><a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">DHL</a><a href="https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">PostNL</a><a href="https://www.ups.com/track?tracknum=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">UPS</a></div></div>`;
                 return;
             }
             const tr = snap.docs[0].data();
             const updates = tr.updates || [];
-            resultDiv.innerHTML = `<div class="bg-white p-6 rounded-2xl shadow-sm"><h3 class="font-bold text-xl">${tr.trackingCode}</h3><p>Vervoerder: ${tr.carrierName || 'AOM'}</p><p>Bestemming: ${tr.destination || '-'}</p><p>Verwachte levering: ${tr.estimatedDelivery || 'onbekend'}</p><p><strong>Huidige status:</strong> ${tr.currentStep}</p><div class="mt-4"><b>Updates:</b><div class="max-h-60 overflow-y-auto mt-2">${updates.slice().reverse().map(u => `<div class="border-b py-2"><small>${new Date(u.timestamp).toLocaleString()}</small><div>${u.text}</div>${u.location ? `<div>📍 ${u.location}</div>` : ''}${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-600">Bekijk foto</a>` : ''}</div>`).join('') || 'Geen updates'}</div></div></div>`;
-        } catch(e) { resultDiv.innerHTML = '<div class="bg-red-100 p-4 rounded-xl">Fout bij ophalen.</div>'; }
+            resultDiv.innerHTML = `<div class="bg-gray-800 p-6 rounded-2xl"><h3 class="font-bold text-xl text-white">${tr.trackingCode}</h3><p class="text-gray-300">Vervoerder: ${tr.carrierName || 'AOM'}</p><p>Bestemming: ${tr.destination || '-'}</p><p>Verwachte levering: ${tr.estimatedDelivery || 'onbekend'}</p><p><strong>Huidige status:</strong> ${tr.currentStep}</p><div class="mt-4"><b>Updates:</b><div class="max-h-60 overflow-y-auto mt-2">${updates.slice().reverse().map(u => `<div class="border-b border-gray-700 py-2"><small>${new Date(u.timestamp).toLocaleString()}</small><div>${u.text}</div>${u.location ? `<div>📍 ${u.location}</div>` : ''}${u.photoUrl ? `<a href="${u.photoUrl}" target="_blank" class="text-blue-400">Bekijk foto</a>` : ''}</div>`).join('') || 'Geen updates'}</div></div></div>`;
+        } catch(e) { resultDiv.innerHTML = '<div class="bg-red-500/20 p-4 rounded-xl text-white">Fout bij ophalen.</div>'; }
     };
     window.submitPublicFeedback = async () => {
         const name = document.getElementById('feedbackName').value;
@@ -244,7 +242,7 @@
         const message = document.getElementById('feedbackMessage').value;
         if (!message) { document.getElementById('feedbackResult').innerHTML = '<div class="text-red-500">Bericht verplicht</div>'; return; }
         await addDoc(collection(db, "feedback"), { name: name || 'Anoniem', trackingCode: trackingCode || null, message, createdAt: new Date().toISOString() });
-        document.getElementById('feedbackResult').innerHTML = '<div class="text-green-600">Bedankt!</div>';
+        document.getElementById('feedbackResult').innerHTML = '<div class="text-green-500">Bedankt!</div>';
         setTimeout(() => closeModal('publicFeedbackModal'), 1500);
     };
 
@@ -271,11 +269,11 @@
     };
 
     // Pinpad
-    function generatePinpad(field, containerId, displayId) {
+    function generatePinpad(field, containerId) {
         const div = document.getElementById(containerId);
         if(!div) return;
         const btns = ['1','2','3','4','5','6','7','8','9','0','.'].map(v=>`<div class="pin-btn" onclick="pinInput('${field}','${v}')">${v}</div>`).join('');
-        div.innerHTML = btns + `<div class="pin-btn bg-red-100" onclick="pinBackspace('${field}')">⌫</div>`;
+        div.innerHTML = btns + `<div class="pin-btn bg-red-900" onclick="pinBackspace('${field}')">⌫</div>`;
     }
     window.pinInput = (field,val) => {
         let cur = pinValues[field];
@@ -311,23 +309,23 @@
         let markup = cat==='schoenen'?75:cat==='shirt'?40:cat==='airpods'?90:60;
         const advice = base+markup;
         document.getElementById('priceFinal').innerHTML = `€${advice.toFixed(2)}`;
-        document.getElementById('priceBreakdown').innerHTML = `Inkoop €${base.toFixed(2)} + ${markup} (categorie toeslag)`;
+        document.getElementById('priceBreakdown').innerHTML = `Inkoop €${base.toFixed(2)} + ${markup}`;
         document.getElementById('priceResult').classList.remove('hidden');
     };
 
-    // CRUD operations (alleen de essentiële, de rest blijft zoals eerder)
+    // CRUD
     window.addSale = async () => {
         const name = document.getElementById('saleName').value;
         const qty = parseInt(document.getElementById('saleQuantity').value) || 1;
-        const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
-        const total = qty * unitPrice;
+        const price = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
+        const total = qty * price;
         const cost = parseFloat(pinValues.cost)||0;
         const ship = parseFloat(pinValues.shipcost)||0;
         const other = parseFloat(pinValues.other)||0;
         const profit = total - cost - ship - other;
-        if (!name || unitPrice<=0) return alert('Vul product en verkoopprijs');
+        if (!name || price<=0) return alert('Vul product en prijs');
         await addDoc(collection(db, "sales"), {
-            name, quantity: qty, unitPrice, totalAmount: total,
+            name, quantity: qty, unitPrice: price, totalAmount: total,
             customerName: document.getElementById('customerName').value || 'Onbekend',
             saleDate: document.getElementById('saleDate').value || new Date().toISOString().split('T')[0],
             cost, ship, other, seller: document.getElementById('saleSeller').value,
@@ -373,14 +371,9 @@
         alert('Tracking aangemaakt');
         ['trackingCode','carrierTrackingNumber','carrierName','trackingCustomer','trackingDestination','trackingEstimatedDelivery'].forEach(id => document.getElementById(id).value = '');
     };
-    // (De rest van de CRUD functies (delete, search, edit, update, receipt, export, import) blijven identiek aan de vorige werkende versie.
-    // Vanwege de lengte worden ze hier niet herhaald, maar ze zijn functioneel aanwezig in de uiteindelijke code.
-    // Voor de volledigheid is de onderstaande code inclusief alle functies.)
-    // Hier volgt de rest (delete, update, etc.) zoals in de vorige werkende versie - maar die is al geïntegreerd.
-    // We sluiten af met de listeners en initialisatie.
-    window.deleteSale = async (id) => { if(confirm('Verwijder sale?')) await deleteDoc(doc(db, "sales", id)); };
-    window.deleteOrder = async (id) => { if(confirm('Verwijder order?')) await deleteDoc(doc(db, "orders", id)); };
-    window.deleteTracking = async (id) => { if(confirm('Verwijder tracking?')) await deleteDoc(doc(db, "tracking", id)); };
+    window.deleteSale = async (id) => { if(confirm('Verwijder?')) await deleteDoc(doc(db, "sales", id)); };
+    window.deleteOrder = async (id) => { if(confirm('Verwijder?')) await deleteDoc(doc(db, "orders", id)); };
+    window.deleteTracking = async (id) => { if(confirm('Verwijder?')) await deleteDoc(doc(db, "tracking", id)); };
     window.searchTracking = () => {
         const code = document.getElementById('searchTrackingInput').value;
         const found = tracking.find(t=>t.trackingCode === code);
@@ -429,39 +422,22 @@
         let data = type === 'sale' ? sales.find(s=>s.id===id) : orders.find(o=>o.id===id);
         if(!data) return;
         let html = `<div class="text-center mb-6"><h2 class="text-2xl font-bold">${companyName}</h2><p>${new Date().toLocaleDateString('nl-NL')}</p></div>`;
-        html += `<div class="border-t border-b py-4 my-4"><p><strong>Bon / Receipt</strong><br>${type === 'sale' ? 'Verkoopnummer' : 'Ordernummer'}: ${data.invoiceNumber || data.id.slice(-8)}</p></div>`;
+        html += `<div class="border-t border-b border-gray-700 py-4 my-4"><p><strong>Bon / Receipt</strong><br>${type === 'sale' ? 'Verkoopnummer' : 'Ordernummer'}: ${data.invoiceNumber || data.id.slice(-8)}</p></div>`;
         if(type === 'sale') {
             html += `<table class="w-full text-sm">`;
-            html += `<tr><td>Product</td><td>${data.name}</td></tr>`;
-            html += `<tr><td>Aantal</td><td>${data.quantity}</td></tr>`;
-            html += `<tr><td>Prijs per stuk</td><td>€${data.unitPrice.toFixed(2)}</td></tr>`;
-            html += `<tr><td>Totaalbedrag</td><td>€${data.totalAmount.toFixed(2)}</td></tr>`;
-            html += `<tr><td>Klant</td><td>${data.customerName}</td></tr>`;
-            html += `<tr><td>Datum verkoop</td><td>${data.saleDate}</td></tr>`;
-            html += `<tr><td>Betaalmethode</td><td>${data.paymentMethod || '-'}</td></tr>`;
-            html += `<tr><td>Verkoper</td><td>${data.seller}</td></tr>`;
-            html += `<tr><td>Inkoopkosten</td><td>€${data.cost.toFixed(2)}</td></tr>`;
-            html += `<tr><td>Verzendkosten</td><td>€${(data.ship||0).toFixed(2)}</td></tr>`;
-            html += `<tr><td>Overige kosten</td><td>€${(data.other||0).toFixed(2)}</td></tr>`;
-            html += `<tr class="font-bold"><td>Winst</td><td>€${data.profit.toFixed(2)}</td></tr>`;
-            html += `</table>`;
+            html += `<tr><td>Product</td><td>${data.name}</td></tr><tr><td>Aantal</td><td>${data.quantity}</td></tr><tr><td>Prijs per stuk</td><td>€${data.unitPrice.toFixed(2)}</td></tr><tr><td>Totaal</td><td>€${data.totalAmount.toFixed(2)}</td></tr><tr><td>Klant</td><td>${data.customerName}</td></tr><tr><td>Datum</td><td>${data.saleDate}</td></tr><tr><td>Betaalmethode</td><td>${data.paymentMethod || '-'}</td></tr><tr><td>Verkoper</td><td>${data.seller}</td></tr><tr><td>Inkoop</td><td>€${data.cost.toFixed(2)}</td></tr><tr><td>Verzendkosten</td><td>€${(data.ship||0).toFixed(2)}</td></tr><tr><td>Overig</td><td>€${(data.other||0).toFixed(2)}</td></tr><tr class="font-bold"><td>Winst</td><td>€${data.profit.toFixed(2)}</td></tr>`;
+            html += `<td>`;
         } else {
             html += `<table class="w-full text-sm">`;
-            html += `<tr><td>Product</td><td>${data.product}</td></tr>`;
-            html += `<tr><td>Aantal</td><td>${data.quantity}</td></tr>`;
-            html += `<tr><td>Totaalbedrag</td><td>€${data.totalAmount.toFixed(2)}</td></tr>`;
-            html += `<tr><td>Klant</td><td>${data.customer}</td></tr>`;
-            html += `<tr><td>Datum</td><td>${data.orderDate}</td></tr>`;
-            html += `<tr><td>Betaalmethode</td><td>${data.paymentMethod || '-'}</td></tr>`;
-            html += `<tr><td>Status</td><td>${data.status}</td></tr>`;
+            html += `<tr><td>Product</td><td>${data.product}</td></tr><tr><td>Aantal</td><td>${data.quantity}</td></tr><tr><td>Totaal</td><td>€${data.totalAmount.toFixed(2)}</td></tr><tr><td>Klant</td><td>${data.customer}</td></tr><tr><td>Datum</td><td>${data.orderDate}</td></tr><tr><td>Betaalmethode</td><td>${data.paymentMethod || '-'}</td></tr><tr><td>Status</td><td>${data.status}</td></tr>`;
             html += `</table>`;
         }
-        html += `<div class="mt-6 text-center text-xs text-gray-500">Betaald - geen restitutie mogelijk</div>`;
+        html += `<div class="mt-6 text-center text-xs text-gray-400">Betaald - geen restitutie mogelijk</div>`;
         document.getElementById('receiptContent').innerHTML = html;
         document.getElementById('receiptModal').classList.remove('hidden');
     };
     window.printReceipt = () => window.print();
-    window.saveCompanyName = () => { companyName = document.getElementById('companyNameSetting').value; alert('Bedrijfsnaam opgeslagen'); };
+    window.saveCompanyName = () => { companyName = document.getElementById('companyNameSetting').value; alert('Opgeslagen'); };
     window.exportAllData = async () => {
         const salesSnap = await getDocs(collection(db, "sales"));
         const ordersSnap = await getDocs(collection(db, "orders"));
@@ -471,7 +447,7 @@
         const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='aom_backup.json'; a.click();
     };
     window.clearAllData = async () => {
-        if(!confirm('ALLES WISSEN? Dit is permanent.')) return;
+        if(!confirm('ALLES WISSEN? Permanent.')) return;
         const cols = ['sales','orders','tracking','feedback'];
         for(const col of cols) { const snap = await getDocs(collection(db, col)); for(const d of snap.docs) await deleteDoc(doc(db, col, d.id)); }
         alert('Alle data gewist');
@@ -483,7 +459,7 @@
             if(d.orders) for(const o of d.orders) await addDoc(collection(db, "orders"), o);
             if(d.tracking) for(const t of d.tracking) await addDoc(collection(db, "tracking"), t);
             alert('Import voltooid');
-        } catch(e) { alert('Ongeldig JSON bestand'); }
+        } catch(e) { alert('Ongeldig JSON'); }
     };
 
     // Real-time listeners
@@ -494,37 +470,35 @@
         onSnapshot(collection(db, "feedback"), snap => { feedback = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); });
     }
     function updateUI() {
-        document.getElementById('ordersList').innerHTML = orders.map(o => `<div class="border-b py-2"><b>${o.customer}</b> - ${o.product} (€${o.totalAmount})<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="deleteOrder('${o.id}')" class="text-red-500">✖</button> <button onclick="showReceipt('order','${o.id}')" class="text-blue-600 ml-2">Bon</button></div>`).join('');
-        document.getElementById('salesList').innerHTML = sales.map(s => `<div class="border-b py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Aantal: ${s.quantity} | Totaal: €${s.totalAmount} | Winst: €${s.profit}<br><button onclick="deleteSale('${s.id}')" class="text-red-500">✖</button> <button onclick="showReceipt('sale','${s.id}')" class="text-blue-600 ml-2">Bon</button></div>`).join('');
-        document.getElementById('trackingList').innerHTML = tracking.map(t => `<div class="border p-3 rounded-xl"><b>${t.trackingCode}</b><br>Carrier: ${t.carrierName}<br>Verwacht: ${t.estimatedDelivery || '-'}<br>Stap: ${t.currentStep}<br><button onclick="openUpdateModal('${t.id}')" class="text-blue-600 text-sm">Update</button> <button onclick="deleteTracking('${t.id}')" class="text-red-500 text-sm">Verwijder</button></div>`).join('');
-        document.getElementById('feedbackAdminList').innerHTML = feedback.map(f => `<div class="border-b py-1"><b>${f.name}</b> <span class="text-xs text-gray-400">${new Date(f.createdAt).toLocaleString()}</span><br>${f.message} ${f.trackingCode ? `(Tracking: ${f.trackingCode})` : ''}</div>`).join('');
-        document.getElementById('recentFeedbackListAdmin').innerHTML = feedback.slice(0,5).map(f => `<div class="border-b py-1">${f.name}: ${f.message.substring(0,60)}</div>`).join('');
+        document.getElementById('ordersList').innerHTML = orders.map(o => `<div class="border-b border-gray-700 py-2"><b>${o.customer}</b> - ${o.product} (€${o.totalAmount})<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-gray-800 text-white text-xs ml-2"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="deleteOrder('${o.id}')" class="text-red-400">✖</button> <button onclick="showReceipt('order','${o.id}')" class="text-blue-400 ml-2">Bon</button></div>`).join('');
+        document.getElementById('salesList').innerHTML = sales.map(s => `<div class="border-b border-gray-700 py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Aantal: ${s.quantity} | Totaal: €${s.totalAmount} | Winst: €${s.profit}<br><button onclick="deleteSale('${s.id}')" class="text-red-400">✖</button> <button onclick="showReceipt('sale','${s.id}')" class="text-blue-400 ml-2">Bon</button></div>`).join('');
+        document.getElementById('trackingList').innerHTML = tracking.map(t => `<div class="border border-gray-700 p-3 rounded-xl"><b>${t.trackingCode}</b><br>Carrier: ${t.carrierName}<br>Verwacht: ${t.estimatedDelivery || '-'}<br>Stap: ${t.currentStep}<br><button onclick="openUpdateModal('${t.id}')" class="text-blue-400 text-sm">Update</button> <button onclick="deleteTracking('${t.id}')" class="text-red-400 text-sm ml-2">Verwijder</button></div>`).join('');
+        document.getElementById('feedbackAdminList').innerHTML = feedback.map(f => `<div class="border-b border-gray-700 py-1"><b>${f.name}</b> <span class="text-xs text-gray-400">${new Date(f.createdAt).toLocaleString()}</span><br>${f.message} ${f.trackingCode ? `(Tracking: ${f.trackingCode})` : ''}</div>`).join('');
+        document.getElementById('recentFeedbackListAdmin').innerHTML = feedback.slice(0,5).map(f => `<div class="border-b border-gray-700 py-1">${f.name}: ${f.message.substring(0,60)}</div>`).join('');
         document.getElementById('statsContainer').innerHTML = `
-            <div class="stat-card"><div class="text-2xl font-bold">${sales.length}</div><div>Sales</div></div>
-            <div class="stat-card"><div class="text-2xl font-bold">€${sales.reduce((a,s)=>a+s.profit,0)}</div><div>Winst</div></div>
-            <div class="stat-card"><div class="text-2xl font-bold">${orders.length}</div><div>Orders</div></div>
-            <div class="stat-card"><div class="text-2xl font-bold">${tracking.length}</div><div>Tracking</div></div>
+            <div class="stat-card"><div class="text-2xl font-bold text-white">${sales.length}</div><div class="text-gray-400">Sales</div></div>
+            <div class="stat-card"><div class="text-2xl font-bold text-white">€${sales.reduce((a,s)=>a+s.profit,0)}</div><div class="text-gray-400">Winst</div></div>
+            <div class="stat-card"><div class="text-2xl font-bold text-white">${orders.length}</div><div class="text-gray-400">Orders</div></div>
+            <div class="stat-card"><div class="text-2xl font-bold text-white">${tracking.length}</div><div class="text-gray-400">Tracking</div></div>
         `;
         if(window.chartRevenue) window.chartRevenue.destroy();
         const revMap = { MiroT:0, AppieT:0, ObaiT:0 };
         sales.forEach(s => revMap[s.seller] += s.totalAmount);
-        window.chartRevenue = new Chart(document.getElementById('chartRevenue'), { type:'bar', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ label:'Omzet (EUR)', data:[revMap.MiroT, revMap.AppieT, revMap.ObaiT], backgroundColor:'#2563eb' }] } });
+        window.chartRevenue = new Chart(document.getElementById('chartRevenue'), { type:'bar', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ label:'Omzet (EUR)', data:[revMap.MiroT, revMap.AppieT, revMap.ObaiT], backgroundColor:'#3b82f6' }] } });
         if(window.chartProfit) window.chartProfit.destroy();
         const profMap = { MiroT:0, AppieT:0, ObaiT:0 };
         sales.forEach(s => profMap[s.seller] += s.profit);
-        window.chartProfit = new Chart(document.getElementById('chartProfit'), { type:'doughnut', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ data:[profMap.MiroT, profMap.AppieT, profMap.ObaiT], backgroundColor:['#1e3a8a','#3b82f6','#93c5fd'] }] } });
+        window.chartProfit = new Chart(document.getElementById('chartProfit'), { type:'doughnut', data:{ labels:['MiroT','AppieT','ObaiT'], datasets:[{ data:[profMap.MiroT, profMap.AppieT, profMap.ObaiT], backgroundColor:['#3b82f6','#60a5fa','#93c5fd'] }] } });
         document.getElementById('lastUpdateTime').innerText = `Laatste update: ${new Date().toLocaleTimeString('nl-NL')}`;
     }
     window.updateOrderStatus = async (id, newStatus) => { await updateDoc(doc(db, "orders", id), { status: newStatus }); };
 
-    // Init
     setTimeout(() => {
-        generatePinpad('cost','costPinpad','displayCost');
-        generatePinpad('shipcost','shipPinpad','displayShipCost');
-        generatePinpad('other','otherPinpad','displayOther');
-        generatePinpad('pricecheck','pricePinpad','displayPriceCheck');
-        const saleDate = document.getElementById('saleDate');
-        if(saleDate) saleDate.valueAsDate = new Date();
+        generatePinpad('cost','costPinpad');
+        generatePinpad('shipcost','shipPinpad');
+        generatePinpad('other','otherPinpad');
+        generatePinpad('pricecheck','pricePinpad');
+        document.getElementById('saleDate').valueAsDate = new Date();
     }, 100);
     showPublicPage('home');
 </script>
