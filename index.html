@@ -140,18 +140,18 @@
 <div id="termsAcceptModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold">Accepteer voorwaarden</h2><div class="my-4 text-sm">Door te accepteren gaat u akkoord met de No-Refund Policy en onze algemene voorwaarden.</div><button onclick="acceptTerms()" class="btn-blue w-full">Ik accepteer</button></div></div>
 <div id="publicFeedbackModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold">Feedback</h2><input id="feedbackName" class="input-tracking mb-3" placeholder="Naam"><input id="feedbackTrackingCode" class="input-tracking mb-3" placeholder="Trackingcode"><textarea id="feedbackMessage" rows="4" class="input-tracking mb-3" placeholder="Uw bericht"></textarea><button onclick="submitPublicFeedback()" class="btn-blue w-full">Versturen</button><div id="feedbackResult" class="mt-3 text-sm"></div><button onclick="closeModal('publicFeedbackModal')" class="btn-outline-blue w-full mt-3">Sluiten</button></div></div>
 
-<!-- CHATBOT -->
+<!-- CHATBOT (verbeterd met AOM context) -->
 <div id="chatbotButton" class="chatbot-button" onclick="toggleChatbot()">💬</div>
 <div id="chatbotWindow" class="chatbot-window hidden">
-    <div class="chatbot-header"><span>AOM Assistant</span><button onclick="toggleChatbot()" class="text-white text-xl">×</button></div>
-    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Stel gerust uw vraag over tracking of verzending.</div></div></div>
-    <div class="chatbot-input"><input id="chatInput" placeholder="Typ uw bericht..."><button onclick="sendChatMessage()">Verstuur</button></div>
+    <div class="chatbot-header"><span>AOM Assistant (24/7)</span><button onclick="toggleChatbot()" class="text-white text-xl">×</button></div>
+    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Ik ben de AI-assistent van AOM Supplies. Ik kan je helpen met tracking, verzending, resell administratie, facturen en al onze diensten. Wat kan ik voor je doen?</div></div></div>
+    <div class="chatbot-input"><input id="chatInput" placeholder="Typ uw bericht..." onkeypress="if(event.key==='Enter') sendChatMessage()"><button onclick="sendChatMessage()">Verstuur</button></div>
 </div>
 
 <script type="module">
-    // Firebase config (jouw configuratie)
+    // Firebase config
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, where, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
     const firebaseConfig = {
         apiKey: "AIzaSyDXoY8KxIihvi35RCAMKVFlYlntHOPdiZk",
         authDomain: "fatbike-reparatie.firebaseapp.com",
@@ -170,6 +170,7 @@
     let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
     let currentTrackingId = null;
     let companyName = "AOM Supplies";
+    let conversationHistory = [];
 
     // UI helpers
     window.showAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
@@ -178,6 +179,30 @@
     window.showTermsAccept = () => document.getElementById('termsAcceptModal').classList.remove('hidden');
     window.acceptTerms = () => { alert('U heeft de voorwaarden geaccepteerd'); closeModal('termsAcceptModal'); };
     window.showPublicFeedback = () => document.getElementById('publicFeedbackModal').classList.remove('hidden');
+
+    // Verbeterde chatbot met AOM context en gespreksgeheugen
+    window.sendChatMessage = async () => {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+        const messagesDiv = document.getElementById('chatMessages');
+        messagesDiv.innerHTML += `<div class="message user"><div class="bubble">${escapeHtml(msg)}</div></div>`;
+        input.value = '';
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        conversationHistory.push({ role: "user", content: msg });
+        const systemPrompt = "Je bent een vriendelijke, behulpzame AI-assistent van AOM Supplies. Je weet alles over track & trace, resell administratie, verzendingen met DHL/PostNL/UPS/FedEx, de no-refund policy, het admin dashboard (sales, orders, tracking beheer, analytics, feedback). Geef duidelijke, korte antwoorden. Houd rekening met de volledige gespreksgeschiedenis. Antwoord in het Nederlands.";
+        const fullPrompt = systemPrompt + "\n" + conversationHistory.map(m => `${m.role === 'user' ? 'Gebruiker: ' : 'Assistent: '}${m.content}`).join('\n') + "\nAssistent:";
+        try {
+            const response = await puter.ai.chat(fullPrompt, { model: "openai/gpt-5.4-nano" });
+            const botReply = response;
+            messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">${escapeHtml(botReply)}</div></div>`;
+            conversationHistory.push({ role: "assistant", content: botReply });
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        } catch(e) { 
+            messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">Sorry, er ging iets mis. Probeer opnieuw.</div></div>`;
+        }
+    };
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
     window.publicTrack = async () => {
         const code = document.getElementById('publicTrackingInput').value.trim();
@@ -188,7 +213,6 @@
             const q = query(collection(db, "tracking"), where("trackingCode", "==", code));
             const snap = await getDocs(q);
             if (snap.empty) {
-                // Suggest carrier tracking
                 const carrierLinks = `<div class="bg-white p-4 rounded-xl shadow-sm"><p>Geen AOM tracking gevonden. Probeer direct te tracken bij de vervoerder:</p><div class="flex flex-wrap gap-3 mt-3"><a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">DHL</a><a href="https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">PostNL</a><a href="https://www.ups.com/track?tracknum=${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">UPS</a><a href="https://www.fedex.com/fedextrack/?tracknumbers=${encodeURIComponent(code)}" target="_blank" class="btn-outline-blue text-sm py-2 px-4">FedEx</a></div></div>`;
                 resultDiv.innerHTML = carrierLinks;
                 return;
@@ -319,7 +343,7 @@
         let html = `<div class="text-center"><h2>${companyName}</h2><p>Bon ${data.id.slice(-8)}</p></div><table class="w-full">`;
         if(type==='sale') html += `<tr><td>Product</td><td>${data.name}</td></tr><tr><td>Aantal</td><td>${data.quantity}</td></tr><tr><td>Totaal</td><td>€${data.totalAmount}</td></tr><tr><td>Betaald</td><td>${data.paymentMethod}</td></tr>`;
         else html += `<tr><td>Product</td><td>${data.product}</td></tr><tr><td>Totaal</td><td>€${data.totalAmount}</td></tr>`;
-        html += `<tr><div class="mt-4 text-xs">Geen restitutie</div>`;
+        html += `</table><div class="mt-4 text-xs">Geen restitutie</div>`;
         document.getElementById('receiptContent').innerHTML = html;
         document.getElementById('receiptModal').classList.remove('hidden');
     };
@@ -368,7 +392,6 @@
             <div class="stat-card"><div class="text-2xl font-bold">${orders.length}</div><div>Orders</div></div>
             <div class="stat-card"><div class="text-2xl font-bold">${tracking.length}</div><div>Tracking</div></div>
         `;
-        // Charts
         if(window.chartRevenue) window.chartRevenue.destroy();
         const revMap = { MiroT:0, AppieT:0, ObaiT:0 };
         sales.forEach(s => revMap[s.seller] += s.totalAmount);
@@ -381,19 +404,6 @@
     }
     window.updateOrderStatus = async (id, newStatus) => { await updateDoc(doc(db, "orders", id), { status: newStatus }); };
 
-    // Chat
-    window.sendChatMessage = async () => {
-        const input = document.getElementById('chatInput');
-        const msg = input.value.trim();
-        if(!msg) return;
-        const messagesDiv = document.getElementById('chatMessages');
-        messagesDiv.innerHTML += `<div class="message user"><div class="bubble">${msg}</div></div>`;
-        input.value = '';
-        const reply = await puter.ai.chat(msg, { model: "openai/gpt-5.4-nano" });
-        messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">${reply}</div></div>`;
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    };
-
     // Initial pinpad generation
     setTimeout(() => {
         generatePinpad('cost','costPinpad','displayCost');
@@ -402,303 +412,6 @@
         generatePinpad('pricecheck','pricePinpad','displayPriceCheck');
         document.getElementById('saleDate').valueAsDate = new Date();
     }, 100);
-</script>
-</body>
-</html>            <button onclick="window.showAdminLogin()" class="bg-slate-800 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold transition shadow-md">🔐 Admin</button>
-        </nav>
-    </div>
-</header>
-
-<!-- MAIN PAGINA'S -->
-<main class="max-w-7xl mx-auto px-4 py-8">
-    <!-- HOME -->
-    <div id="page-home" class="page-section fade-slide">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl md:text-6xl font-black mb-4 gradient-text">Jouw zending, altijd inzichtelijk</h1>
-            <p class="text-lg text-slate-600 max-w-2xl mx-auto">Professionele track & trace voor resellers. Real-time updates, uitgebreide rapportages en 24/7 AI-ondersteuning.</p>
-        </div>
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="card-glass p-6 text-center"><div class="text-5xl mb-3">📦</div><h3 class="font-bold text-xl">Real-time tracking</h3><p class="text-slate-500">Volg je pakketten live via onze interface of direct bij DHL/PostNL.</p></div>
-            <div class="card-glass p-6 text-center"><div class="text-5xl mb-3">🔗</div><h3 class="font-bold text-xl">Carrier integratie</h3><p class="text-slate-500">Ondersteuning voor DHL, PostNL, UPS, FedEx en vele anderen.</p></div>
-            <div class="card-glass p-6 text-center"><div class="text-5xl mb-3">💬</div><h3 class="font-bold text-xl">AI chatbot 24/7</h3><p class="text-slate-500">Altijd antwoord op al je vragen, met gespreksgeheugen.</p></div>
-        </div>
-        <div class="mt-12 text-center">
-            <button onclick="window.showTermsAccept()" class="btn-gradient text-lg px-8 py-3 mr-3">✅ Accepteer Terms & Services</button>
-            <button onclick="window.navigatePage('tracking')" class="btn-outline text-lg px-8 py-3">Start met tracken →</button>
-        </div>
-    </div>
-
-    <!-- TRACK & TRACE -->
-    <div id="page-tracking" class="page-section hidden fade-slide">
-        <div class="card-glass p-6 md:p-8 max-w-3xl mx-auto">
-            <h1 class="text-3xl font-black mb-2">Track & Trace</h1>
-            <p class="text-slate-500 mb-6">Voer uw AOM trackingcode of carrier nummer in</p>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input type="text" id="publicTrackingCode" class="input-modern" placeholder="Bijv. AOM483920175NL of DHL1234567890">
-                <button onclick="window.publicSearchTracking()" class="btn-gradient whitespace-nowrap">Zoeken →</button>
-            </div>
-            <div id="publicTrackingResult" class="mt-8"></div>
-        </div>
-    </div>
-
-    <!-- SERVICES -->
-    <div id="page-services" class="page-section hidden fade-slide">
-        <h1 class="text-3xl font-black mb-6 gradient-text">Onze diensten</h1>
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="card-glass p-6"><h3 class="font-bold text-xl">📦 Resell platform</h3><p class="mt-2 text-slate-600">Beheer verkopen, inkoop, winst en klanten. Genereer facturen en bonnen.</p></div>
-            <div class="card-glass p-6"><h3 class="font-bold text-xl">🌍 Internationale tracking</h3><p class="mt-2 text-slate-600">Luchtvracht, douane en eindbezorging met uitgebreide stappenindicator.</p></div>
-            <div class="card-glass p-6"><h3 class="font-bold text-xl">📊 Analytics dashboard</h3><p class="mt-2 text-slate-600">Grafieken en inzichten in omzet, winst en verkooptrends per verkoper.</p></div>
-            <div class="card-glass p-6"><h3 class="font-bold text-xl">🤖 AI ondersteuning</h3><p class="mt-2 text-slate-600">Chatbot met kennis van AOM Supplies – altijd beschikbaar.</p></div>
-        </div>
-    </div>
-
-    <!-- ABOUT -->
-    <div id="page-about" class="page-section hidden fade-slide">
-        <div class="card-glass p-8 max-w-3xl mx-auto">
-            <h1 class="text-3xl font-black mb-4 gradient-text">Over AOM Supplies</h1>
-            <div class="space-y-4 text-slate-700">
-                <p>Wij zijn een dynamisch team van resell experts met jaren ervaring in logistiek en e-commerce. Ons platform is ontstaan uit de behoefte aan een alles-in-één track & trace systeem voor verkopers die meerdere carriers gebruiken.</p>
-                <p>Met AOM Supplies kun je al je zendingen op één plek volgen, winst berekenen, facturen maken en klantfeedback verzamelen. Dankzij onze AI-chatbot ben je nooit alleen.</p>
-                <p>Onze missie: transparantie en gemak voor elke reseller, van beginner tot professional.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONTACT -->
-    <div id="page-contact" class="page-section hidden fade-slide">
-        <div class="card-glass p-8 max-w-3xl mx-auto">
-            <h1 class="text-3xl font-black mb-4 gradient-text">Contact</h1>
-            <div class="space-y-4">
-                <p><strong>📧 Email:</strong> support@aomsupplies.com</p>
-                <p><strong>📞 Telefoon:</strong> +31 (0)20 123 4567</p>
-                <p><strong>📍 Adres:</strong> Postbus 1234, 1000 AB Amsterdam</p>
-                <p><strong>🕒 Kantooruren:</strong> Maandag – Vrijdag: 09:00 – 17:00</p>
-                <textarea id="contactMessage" rows="4" class="input-modern" placeholder="Uw bericht..."></textarea>
-                <button onclick="alert('Bericht verzonden (demo)')" class="btn-gradient w-full">Verstuur bericht</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TERMS PAGE (uitgebreid) -->
-    <div id="page-terms" class="page-section hidden fade-slide">
-        <div class="card-glass p-8 max-w-4xl mx-auto">
-            <h1 class="text-3xl font-black mb-6 gradient-text">Algemene voorwaarden</h1>
-            <div class="space-y-5 text-slate-700 text-sm">
-                <p><strong>Artikel 1 – Definities</strong><br>In deze voorwaarden wordt verstaan onder: AOM Supplies: de onderneming die deze website beheert; Klant: iedere natuurlijke of rechtspersoon die gebruikmaakt van onze diensten.</p>
-                <p><strong>Artikel 2 – Toepasselijkheid</strong><br>Deze voorwaarden zijn van toepassing op alle aanbiedingen, overeenkomsten en leveringen van AOM Supplies, tenzij schriftelijk anders is overeengekomen.</p>
-                <p><strong>Artikel 3 – Diensten</strong><br>Wij bieden een online track & trace platform, resell administratie en AI-ondersteuning. De beschikbaarheid van diensten kan te allen tijde worden aangepast.</p>
-                <p><strong>Artikel 4 – No-Refund Policy</strong><br>Alle verkopen van producten en diensten zijn definitief. Er wordt geen restitutie verleend, tenzij wettelijk verplicht. Klachten dienen schriftelijk te worden ingediend binnen 14 dagen.</p>
-                <p><strong>Artikel 5 – Aansprakelijkheid</strong><br>AOM Supplies is niet aansprakelijk voor indirecte schade, gevolgschade of gederfde winst. De maximale aansprakelijkheid is beperkt tot het factuurbedrag van de desbetreffende dienst.</p>
-                <p><strong>Artikel 6 – Privacy</strong><br>Persoonsgegevens worden verwerkt volgens onze privacyverklaring. Gegevens worden niet aan derden verkocht.</p>
-                <p><strong>Artikel 7 – Wijzigingen</strong><br>AOM Supplies behoudt zich het recht voor deze voorwaarden eenzijdig te wijzigen. De meest recente versie staat altijd op de website.</p>
-                <p><strong>Artikel 8 – Toepasselijk recht</strong><br>Op alle overeenkomsten is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Amsterdam.</p>
-                <p class="text-xs text-slate-500 mt-6">Laatste update: 26 mei 2026</p>
-            </div>
-        </div>
-    </div>
-</main>
-
-<!-- ADMIN LOGIN MODAL -->
-<div id="adminLoginModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold gradient-text">Admin Login</h2><button onclick="window.closeModal('adminLoginModal')" class="text-slate-400 text-2xl hover:text-red-500">&times;</button></div>
-        <select id="loginUser" class="input-modern mb-3"><option value="MiroT">MiroT</option><option value="AppieT">AppieT</option><option value="ObaiT">ObaiT</option></select>
-        <input type="password" id="loginPass" class="input-modern mb-4" placeholder="Wachtwoord">
-        <button onclick="window.doLogin()" class="btn-gradient w-full py-3">Inloggen</button>
-        <div id="loginError" class="text-red-600 text-center mt-3 hidden"></div>
-    </div>
-</div>
-
-<!-- ACCEPT TERMS MODAL -->
-<div id="termsAcceptModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-        <h2 class="text-2xl font-bold gradient-text mb-4">Algemene voorwaarden</h2>
-        <div class="space-y-4 text-sm text-slate-700">
-            <p><strong>1. No-Refund Policy</strong><br>Alle verkopen zijn definitief. Geen restitutie mogelijk.</p>
-            <p><strong>2. Track & Trace</strong><br>AOM Supplies is niet verantwoordelijk voor vertragingen of fouten in trackingdata.</p>
-            <p><strong>3. Privacy</strong><br>Uw gegevens worden vertrouwelijk behandeld en niet verkocht.</p>
-            <p><strong>4. Aansprakelijkheid</strong><br>Maximale aansprakelijkheid is beperkt tot het factuurbedrag.</p>
-            <p><strong>5. Wijzigingen</strong><br>Deze voorwaarden kunnen worden gewijzigd; de laatste versie staat op de website.</p>
-            <p class="text-xs text-slate-500 mt-4">Door op "Ik accepteer" te klikken, gaat u akkoord met deze voorwaarden.</p>
-        </div>
-        <div class="flex gap-3 mt-6">
-            <button onclick="window.acceptTerms()" class="btn-gradient flex-1">Ik accepteer</button>
-            <button onclick="window.closeModal('termsAcceptModal')" class="btn-outline flex-1">Annuleren</button>
-        </div>
-    </div>
-</div>
-
-<!-- ADMIN DASHBOARD (verborgen tot login) -->
-<div id="mainApp" class="hidden">
-    <div class="flex flex-col md:flex-row min-h-screen">
-        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-2 z-40 shadow-lg">
-            <button onclick="window.navigateAdmin('dashboard')" class="p-2 text-xl">📊</button>
-            <button onclick="window.navigateAdmin('orders')" class="p-2 text-xl">📦</button>
-            <button onclick="window.navigateAdmin('tracking-admin')" class="p-2 text-xl">📍</button>
-            <button onclick="window.navigateAdmin('sales')" class="p-2 text-xl">💰</button>
-            <button onclick="window.navigateAdmin('admin')" class="p-2 text-xl">⚙️</button>
-        </div>
-        <aside class="w-72 bg-white/90 backdrop-blur-sm border-r border-slate-200 h-full z-30 hidden md:block fixed overflow-y-auto">
-            <div class="p-6 border-b"><h2 class="text-2xl font-black gradient-text">AOM Admin</h2><span id="userBadge" class="text-sm text-slate-500"></span></div>
-            <nav class="p-4 space-y-2">
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('dashboard')">📊 Dashboard</div>
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('orders')">📦 Orders</div>
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('tracking-admin')">📍 Track & Trace beheer</div>
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('sales')">💰 Sales & Winst</div>
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('pricecheck')">🏷️ Prijs Checker</div>
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('analytics')">📈 Analytics</div>
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('feedback')">💬 Feedback</div>
-                <div class="nav-item-admin cursor-pointer p-2 rounded-xl hover:bg-slate-100 transition" onclick="window.navigateAdmin('admin')">⚙️ Admin Panel</div>
-            </nav>
-            <div class="absolute bottom-5 p-4 w-full"><button onclick="window.doLogout()" class="btn-outline w-full">Uitloggen</button></div>
-        </aside>
-        <main class="flex-1 md:ml-72 p-4 md:p-8 pb-20 md:pb-8">
-            <div id="admin-dashboard" class="admin-section">
-                <div class="flex justify-between items-center mb-6"><h1 id="welcomeText" class="text-3xl font-black gradient-text"></h1><span id="lastUpdatedTime" class="text-sm text-slate-500"></span></div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="stat-card"><div class="text-2xl font-black" id="dashTotalSales">0</div><div class="text-slate-500">Sales</div></div>
-                    <div class="stat-card"><div class="text-2xl font-black" id="dashTotalProfit">€0</div><div class="text-slate-500">Winst</div></div>
-                    <div class="stat-card"><div class="text-2xl font-black" id="dashOrderCount">0</div><div class="text-slate-500">Orders</div></div>
-                    <div class="stat-card"><div class="text-2xl font-black" id="dashTrackingCount">0</div><div class="text-slate-500">Tracking</div></div>
-                </div>
-                <div class="grid lg:grid-cols-2 gap-6"><div class="card-glass p-5"><h3 class="font-bold">Recente feedback</h3><div id="recentFeedbackList" class="mt-2"></div></div><div class="card-glass p-5"><h3 class="font-bold">Snelle acties</h3><button onclick="window.navigateAdmin('sales')" class="btn-gradient w-full mb-2">Nieuwe verkoop</button><button onclick="window.navigateAdmin('tracking-admin')" class="btn-outline w-full">Tracking beheren</button></div></div>
-            </div>
-            <div id="admin-orders" class="admin-section hidden"><div class="card-glass p-6"><h2 class="text-2xl font-bold mb-4">Orders</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-modern mb-2" placeholder="Klantnaam"><input id="orderProduct" class="input-modern mb-2" placeholder="Product"><input id="orderQuantity" class="input-modern mb-2" type="number" placeholder="Aantal" value="1"><input id="orderAmount" class="input-modern mb-2" type="number" placeholder="Totaalbedrag"><input id="orderDate" class="input-modern mb-2" type="date"><select id="orderPaymentMethod" class="input-modern mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><select id="orderStatus" class="input-modern mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="window.addOrder()" class="btn-gradient w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
-            <div id="admin-tracking-admin" class="admin-section hidden"><div class="card-glass p-6"><h2 class="text-2xl font-bold mb-4">Tracking beheer</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-modern mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-modern mb-2" placeholder="Carrier nr"><input id="carrierName" class="input-modern mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-modern mb-2" placeholder="Klant"><input id="trackingDestination" class="input-modern mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-modern mb-2"><button onclick="window.addTracking()" class="btn-gradient w-full">Aanmaken</button><input id="searchTrackingInput" class="input-modern my-2" placeholder="Zoek AOM code"><button onclick="window.searchTracking()" class="btn-outline w-full mb-2">Zoek</button><button onclick="window.openEditTrackingModal()" class="btn-outline w-full">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3"></div></div></div></div></div>
-            <div id="admin-sales" class="admin-section hidden"><div class="card-glass p-6"><h2 class="text-2xl font-bold mb-4">Sales</h2><div class="grid lg:grid-cols-2 gap-6"><div><input id="saleName" class="input-modern mb-2" placeholder="Product"><input id="saleQuantity" type="number" class="input-modern mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-modern mb-2" placeholder="Prijs per stuk"><input id="customerName" class="input-modern mb-2" placeholder="Klant"><input id="saleDate" type="date" class="input-modern mb-2"><select id="salePaymentMethod" class="input-modern mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><div>Inkoop <span id="displayCost">0</span></div><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div><div>Verzendkosten <span id="displayShipCost">0</span></div><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div><div>Overig <span id="displayOther">0</span></div><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div><select id="saleSeller" class="input-modern mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="window.addSale()" class="btn-gradient w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto"></div></div></div></div></div>
-            <div id="admin-pricecheck" class="admin-section hidden"><div class="card-glass p-6 max-w-xl mx-auto"><h2 class="text-2xl font-bold mb-4">Prijs Checker</h2><select id="priceCategory" class="input-modern mb-3"><option value="schoenen">Schoenen +€75</option><option value="shirt">Shirt +€40</option><option value="airpods">AirPods +€90</option><option value="other">Overig +€60</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="window.calculatePrice()" class="btn-gradient w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-slate-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-black"></div><div id="priceBreakdown" class="text-sm"></div></div></div></div>
-            <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-4 rounded-2xl"><canvas id="chartProfit"></canvas></div></div></div>
-            <div id="admin-feedback" class="admin-section hidden"><div class="card-glass p-6"><h2 class="text-2xl font-bold mb-4">Klantfeedback</h2><div id="feedbackAdminList"></div></div></div>
-            <div id="admin-admin" class="admin-section hidden"><div class="card-glass p-6"><h2 class="text-2xl font-bold mb-4">Admin Panel</h2><input type="text" id="companyNameSetting" class="input-modern mb-3" placeholder="Bedrijfsnaam"><button onclick="window.saveCompanyName()" class="btn-outline w-full mb-2">Bedrijfsnaam opslaan</button><button onclick="window.exportData()" class="btn-outline w-full my-2">Exporteer data</button><button onclick="window.clearAllData()" class="btn-outline border-red-300 text-red-700 w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-modern my-2" placeholder="Plak JSON"></textarea><button onclick="window.importData()" class="btn-gradient w-full">Importeer</button></div></div>
-        </main>
-    </div>
-</div>
-
-<!-- MODALS (update, edit tracking, receipt) -->
-<div id="updateModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl p-6 w-full max-w-md"><h3 class="font-bold text-xl mb-3">Update toevoegen</h3><input id="updateText" class="input-modern mb-3" placeholder="Status"><input id="updateLocation" class="input-modern mb-3" placeholder="Locatie"><input id="updateTimestamp" class="input-modern mb-3" type="datetime-local"><input id="photoUrlInput" class="input-modern mb-3" placeholder="Foto URL"><select id="updateStep" class="input-modern mb-3"><option value="">Geen stap</option><option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option><option value="in_sorteercentrum">Sorteercentrum</option><option value="onderweg">Onderweg</option><option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option></select><div class="flex gap-3"><button onclick="window.addUpdateToTracking()" class="btn-gradient flex-1">Toevoegen</button><button onclick="window.closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
-<div id="editTrackingModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl p-6 w-full max-w-md"><h3 class="font-bold text-xl mb-3">Bewerk tracking</h3><input type="date" id="editEstimatedDelivery" class="input-modern mb-3"><input type="text" id="editCarrierTrackingNumber" class="input-modern mb-3" placeholder="Carrier nr"><input type="text" id="editCarrierName" class="input-modern mb-3" placeholder="Vervoerder"><select id="editCurrentStep" class="input-modern mb-3"><option>Bestelling ontvangen</option><option>Naar vliegveld</option><option>In vliegtuig</option><option>Geland</option><option>In douane</option><option>Sorteercentrum</option><option>Onderweg</option><option>Bezig met bezorgen</option><option>Geleverd</option></select><div class="flex gap-3"><button onclick="window.saveTrackingEdits()" class="btn-gradient flex-1">Opslaan</button><button onclick="window.closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
-<div id="receiptModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-6 receipt-print"></div><div class="flex gap-3 p-4 border-t"><button onclick="window.printReceipt()" class="btn-gradient flex-1">Print / PDF</button><button onclick="window.closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button></div></div></div>
-
-<!-- CHATBOT -->
-<div id="chatbotButton" class="chatbot-button" onclick="window.toggleChatbot()">💬</div>
-<div id="chatbotWindow" class="chatbot-window hidden">
-    <div class="chatbot-header"><span>🤖 AOM Assistant (24/7)</span><button onclick="window.toggleChatbot()" style="background:none; border:none; color:white; font-size:24px;">&times;</button></div>
-    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Ik ben de AI-assistent van AOM Supplies. Ik help je graag met tracking, verzending, resell administratie en al onze diensten. Wat kan ik voor je doen?</div></div></div>
-    <div class="chatbot-input"><input type="text" id="chatInput" placeholder="Typ je bericht..." onkeypress="if(event.key==='Enter') window.sendChatMessage()"><button onclick="window.sendChatMessage()">Verstuur</button></div>
-</div>
-
-<!-- extra modals voor feedback en terms (publiek) -->
-<div id="publicFeedbackModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold mb-4">Feedback</h2><input id="feedbackName" class="input-modern mb-3" placeholder="Naam"><input id="feedbackTrackingCode" class="input-modern mb-3" placeholder="Trackingcode"><textarea id="feedbackMessage" rows="4" class="input-modern mb-3" placeholder="Uw bericht..."></textarea><button onclick="window.submitPublicFeedback()" class="btn-gradient w-full">Versturen</button><div id="feedbackResult" class="mt-3 text-sm"></div><button onclick="window.closeModal('publicFeedbackModal')" class="btn-outline w-full mt-3">Sluiten</button></div></div>
-<div id="termsModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 overflow-y-auto"><div class="bg-white rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"><h1 class="text-2xl font-bold mb-4">Algemene voorwaarden</h1><div class="space-y-3 text-sm"><p><strong>No-Refund Policy</strong><br>Alle verkopen zijn definitief. Geen restitutie.</p><p><strong>Privacy</strong><br>Gegevens worden vertrouwelijk behandeld.</p><p><strong>Aansprakelijkheid</strong><br>AOM Supplies is niet aansprakelijk voor vertragingen of fouten.</p></div><button onclick="window.closeModal('termsModal')" class="btn-outline w-full mt-4">Sluiten</button></div></div>
-
-<script>
-    // ======================== ALLE FUNCTIES GEDEFINIEERD ========================
-    window.navigatePage = (page) => {
-        document.querySelectorAll('.page-section').forEach(p => p.classList.add('hidden'));
-        const target = document.getElementById(`page-${page}`);
-        if(target) target.classList.remove('hidden');
-    };
-    window.navigateAdmin = (section) => {
-        document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
-        const target = document.getElementById(`admin-${section}`);
-        if(target) target.classList.remove('hidden');
-    };
-    window.showAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
-    window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-    window.toggleChatbot = () => document.getElementById('chatbotWindow').classList.toggle('hidden');
-    window.showTermsAccept = () => document.getElementById('termsAcceptModal').classList.remove('hidden');
-    window.acceptTerms = () => {
-        alert('U heeft de algemene voorwaarden geaccepteerd. Bedankt!');
-        window.closeModal('termsAcceptModal');
-        localStorage.setItem('terms_accepted', 'true');
-    };
-    window.sendChatMessage = async () => {
-        const input = document.getElementById('chatInput');
-        const msg = input.value.trim();
-        if(!msg) return;
-        const messagesDiv = document.getElementById('chatMessages');
-        messagesDiv.innerHTML += `<div class="message user"><div class="bubble">${escapeHtml(msg)}</div></div>`;
-        input.value = '';
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        try {
-            const response = await puter.ai.chat(msg, { model: "openai/gpt-5.4-nano" });
-            messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">${escapeHtml(response)}</div></div>`;
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        } catch(e) { messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">Sorry, er ging iets mis. Probeer opnieuw.</div></div>`; }
-    };
-    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    // Stub voor pinpad (wordt later dynamisch gegenereerd)
-    window.generatePinpad = function(field, containerId, displayId) {
-        const container = document.getElementById(containerId);
-        if(!container) return;
-        const btns = ['1','2','3','4','5','6','7','8','9','0','.'].map(v => `<div class="pin-btn" onclick="window.pinInput('${field}','${v}')">${v}</div>`).join('');
-        container.innerHTML = btns + `<div class="pin-btn bg-red-100" onclick="window.pinBackspace('${field}')">⌫</div>`;
-    };
-    let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
-    window.pinInput = (field, val) => {
-        let cur = pinValues[field];
-        if(cur === '0' && val !== '.') cur = '';
-        if(val === '.' && cur.includes('.')) return;
-        pinValues[field] = cur + val;
-        const disp = document.getElementById(`display${field.charAt(0).toUpperCase()+field.slice(1)}`);
-        if(disp) disp.innerText = pinValues[field];
-    };
-    window.pinBackspace = (field) => {
-        let cur = pinValues[field];
-        pinValues[field] = cur.length <=1 ? '0' : cur.slice(0,-1);
-        const disp = document.getElementById(`display${field.charAt(0).toUpperCase()+field.slice(1)}`);
-        if(disp) disp.innerText = pinValues[field];
-    };
-    window.calculatePrice = () => {
-        const base = parseFloat(pinValues.pricecheck)||0;
-        const cat = document.getElementById('priceCategory').value;
-        let markup = cat==='schoenen'?75:cat==='shirt'?40:cat==='airpods'?90:60;
-        const advice = base+markup;
-        document.getElementById('priceFinal').innerHTML = `€${advice.toFixed(2)}`;
-        document.getElementById('priceBreakdown').innerHTML = `Inkoop €${base.toFixed(2)} + ${markup}`;
-        document.getElementById('priceResult').classList.remove('hidden');
-    };
-    // Firebase imports en rest van de CRUD (groot maar functioneel)
-    // We geven een verkorte maar werkende versie van de admin functionaliteiten.
-    // Vanwege de complexiteit wordt de volledige code uit eerdere werkende versie gebruikt.
-    // Voor de leesbaarheid gaan we ervan uit dat de onderstaande stubs werken.
-    console.log("Alle knoppen werken. Admin login wachtwoord: ResellTrivium");
-    // Zorg dat de admin dashboard zichtbaar wordt na login
-    window.doLogin = () => {
-        const user = document.getElementById('loginUser').value;
-        const pass = document.getElementById('loginPass').value;
-        if(pass !== 'ResellTrivium') {
-            document.getElementById('loginError').innerText = 'Wachtwoord onjuist';
-            document.getElementById('loginError').classList.remove('hidden');
-            return;
-        }
-        document.getElementById('adminLoginModal').classList.add('hidden');
-        document.getElementById('mainApp').classList.remove('hidden');
-        document.getElementById('userBadge').innerHTML = `${user} <span class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">ADMIN</span>`;
-        document.getElementById('welcomeText').innerHTML = `Hallo ${user.replace('T','')}!`;
-        // Hier zouden de Firebase listeners starten. In deze demo tonen we een melding.
-        alert('Admin modus actief. In een volledige implementatie zijn alle CRUD functies beschikbaar.');
-    };
-    window.doLogout = () => {
-        document.getElementById('mainApp').classList.add('hidden');
-        window.navigatePage('home');
-    };
-    // Stub voor publieke tracking (realistisch)
-    window.publicSearchTracking = () => {
-        const code = document.getElementById('publicTrackingCode').value.trim();
-        const resultDiv = document.getElementById('publicTrackingResult');
-        if(!code) { resultDiv.innerHTML = '<div class="bg-yellow-50 p-3 rounded-xl">Voer een code in</div>'; return; }
-        resultDiv.innerHTML = `<div class="bg-white p-5 rounded-2xl shadow"><p>Demo tracking voor <strong>${code}</strong>.<br>In een live omgeving worden hier gegevens getoond.</p><a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}" target="_blank" class="text-blue-600 underline">Track op DHL website</a></div>`;
-    };
-    // Initialisatie pinpads
-    setTimeout(() => {
-        window.generatePinpad('cost','costPinpad','displayCost');
-        window.generatePinpad('shipcost','shipPinpad','displayShipCost');
-        window.generatePinpad('other','otherPinpad','displayOther');
-        window.generatePinpad('pricecheck','pricePinpad','displayPriceCheck');
-        document.getElementById('saleDate').valueAsDate = new Date();
-    }, 100);
-    window.navigatePage('home');
 </script>
 </body>
 </html>
