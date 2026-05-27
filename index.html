@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies | Complete Admin + Track & Trace</title>
+    <title>AOM Supplies | Professional Receipts & Tracking</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -39,6 +39,12 @@
         .chatbot-input input { flex: 1; background: #1e293b; border: 1px solid #334155; border-radius: 40px; padding: 8px 14px; color: white; }
         .chatbot-input button { background: #3b82f6; color: white; border: none; border-radius: 40px; padding: 8px 18px; cursor: pointer; }
         .hidden { display: none !important; }
+        /* Receipt print style */
+        @media print {
+            body * { visibility: hidden; }
+            .receipt-print, .receipt-print * { visibility: visible; }
+            .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; color: black; }
+        }
         @media (max-width: 768px) { .admin-sidebar { width: 100%; height: auto; position: relative; } main { margin-left: 0 !important; } .chatbot-window { width: calc(100% - 32px); right: 16px; height: 65vh; } }
     </style>
 </head>
@@ -48,10 +54,7 @@
 <div id="publicPage" class="min-h-screen">
     <header class="bg-black/30 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
-            <div class="flex items-center gap-2">
-                <span class="text-3xl font-black bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">AOM</span>
-                <span class="text-gray-300 text-sm">Supplies</span>
-            </div>
+            <div class="flex items-center gap-2"><span class="text-3xl font-black bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">AOM</span><span class="text-gray-300 text-sm">Supplies</span></div>
             <nav class="flex flex-wrap gap-5 text-sm">
                 <a onclick="showPublicPage('home')" class="nav-link">Home</a>
                 <a onclick="showPublicPage('tracking')" class="nav-link">Tracking</a>
@@ -85,10 +88,9 @@
     </div>
 </div>
 
-<!-- ADMIN DASHBOARD (volledige sidebar) -->
+<!-- ADMIN DASHBOARD -->
 <div id="adminDashboard" class="hidden min-h-screen">
     <div class="flex">
-        <!-- Sidebar -->
         <div class="admin-sidebar">
             <div class="p-6 border-b border-gray-800"><h2 class="text-2xl font-bold text-white">AOM Admin</h2><span id="adminUserBadge" class="text-sm text-gray-400"></span></div>
             <nav class="p-4">
@@ -103,28 +105,27 @@
             </nav>
             <div class="p-4 absolute bottom-0 w-full"><button onclick="doLogout()" class="btn-outline w-full">Uitloggen</button></div>
         </div>
-        <!-- Main content -->
         <main class="flex-1 ml-72 p-6 pb-24">
             <div id="admin-dashboard" class="admin-section">
                 <div class="flex justify-between items-center mb-6"><h1 id="welcomeAdmin" class="text-3xl font-bold text-white"></h1><span id="lastUpdateTime" class="text-sm text-gray-400"></span></div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer"></div>
                 <div class="grid lg:grid-cols-2 gap-6"><div class="glass-card p-5"><h3 class="text-white font-bold">Recente feedback</h3><div id="recentFeedbackListAdmin" class="text-gray-300"></div></div><div class="glass-card p-5"><h3 class="text-white font-bold">Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('tracking-admin')" class="btn-outline w-full">Tracking beheren</button></div></div>
             </div>
-            <div id="admin-orders" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-dark mb-2" placeholder="Klantnaam"><input id="orderProduct" class="input-dark mb-2" placeholder="Product"><input id="orderQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="orderAmount" type="number" class="input-dark mb-2" placeholder="Totaalbedrag"><input id="orderDate" type="date" class="input-dark mb-2"><select id="orderPaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="orderStatus" class="input-dark mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
+            <div id="admin-orders" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-dark mb-2" placeholder="Klantnaam"><input id="orderEmail" class="input-dark mb-2" placeholder="Email (optioneel)"><input id="orderProduct" class="input-dark mb-2" placeholder="Product"><input id="orderQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="orderAmount" type="number" class="input-dark mb-2" placeholder="Totaalbedrag"><input id="orderDiscount" type="number" class="input-dark mb-2" placeholder="Korting (€)"><input id="orderDate" type="date" class="input-dark mb-2"><select id="orderPaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><select id="orderStatus" class="input-dark mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
             <div id="admin-tracking-admin" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-dark mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-dark mb-2" placeholder="Carrier nr"><input id="carrierName" class="input-dark mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-dark mb-2" placeholder="Klant"><input id="trackingDestination" class="input-dark mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-dark mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-dark mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3 text-gray-300"></div></div></div></div></div>
-            <div id="admin-sales" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Sales & Winst</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-dark mb-2" placeholder="Product"><input id="saleQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-dark mb-2" placeholder="Prijs per stuk"><input id="customerName" class="input-dark mb-2" placeholder="Klant"><input id="saleDate" type="date" class="input-dark mb-2"><select id="salePaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><div class="text-white">Inkoop <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-white">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-white">Overig <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-dark mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-400 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
+            <div id="admin-sales" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Sales & Winst (met professionele bon)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-dark mb-2" placeholder="Productnaam"><input id="saleEmail" class="input-dark mb-2" placeholder="Klant email"><input id="customerName" class="input-dark mb-2" placeholder="Klantnaam"><input id="saleQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-dark mb-2" placeholder="Prijs per stuk"><input id="saleDiscount" type="number" class="input-dark mb-2" placeholder="Korting (€)"><input id="saleDate" type="date" class="input-dark mb-2"><select id="salePaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><div class="text-white">Inkoop <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-white">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-white">Overig <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-dark mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-400 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
             <div id="admin-pricecheck" class="admin-section hidden"><div class="glass-card p-6 max-w-xl mx-auto"><h2 class="text-2xl font-bold text-white mb-4">Prijs Checker</h2><select id="priceCategory" class="input-dark mb-3"><option value="schoenen">Schoenen +€75</option><option value="shirt">Shirt +€40</option><option value="airpods">AirPods +€90</option><option value="other">Overig +€60</option></select><div class="bg-gray-800 p-3 rounded-xl text-right text-2xl text-white" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-gray-800 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-bold text-white"></div><div id="priceBreakdown" class="text-gray-300 text-sm"></div></div></div></div>
             <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold text-white mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-gray-800 p-4 rounded-2xl"><canvas id="chartRevenue"></canvas></div><div class="bg-gray-800 p-4 rounded-2xl"><canvas id="chartProfit"></canvas></div></div></div>
             <div id="admin-feedback" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Klantfeedback</h2><div id="feedbackAdminList" class="text-gray-300"></div></div></div>
-            <div id="admin-admin" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Admin Panel</h2><input id="companyNameSetting" class="input-dark mb-3" placeholder="Bedrijfsnaam"><button onclick="saveCompanyName()" class="btn-outline w-full mb-2">Opslaan</button><button onclick="exportAllData()" class="btn-outline w-full my-2">Exporteer data (JSON)</button><button onclick="clearAllData()" class="btn-outline border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-dark my-2" placeholder="Plak JSON"></textarea><button onclick="importData()" class="btn-primary w-full">Importeer</button></div></div>
+            <div id="admin-admin" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Admin Panel</h2><input id="companyNameSetting" class="input-dark mb-3" placeholder="Bedrijfsnaam (voor bon)"><input id="companyEmailSetting" class="input-dark mb-3" placeholder="Bedrijfs email"><button onclick="saveCompanySettings()" class="btn-outline w-full mb-2">Opslaan</button><button onclick="exportAllData()" class="btn-outline w-full my-2">Exporteer data (JSON)</button><button onclick="clearAllData()" class="btn-outline border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-dark my-2" placeholder="Plak JSON"></textarea><button onclick="importData()" class="btn-primary w-full">Importeer</button></div></div>
         </main>
     </div>
 </div>
 
-<!-- MODALS (update, edit, receipt, terms, feedback) -->
+<!-- MODALS -->
 <div id="updateModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-2xl p-6 w-full max-w-md border border-blue-500/30"><h3 class="text-xl font-bold text-white mb-3">Update toevoegen</h3><input id="updateText" class="input-dark my-3" placeholder="Status"><input id="updateLocation" class="input-dark my-3" placeholder="Locatie"><input id="updateTimestamp" class="input-dark my-3" type="datetime-local"><input id="photoUrlInput" class="input-dark my-3" placeholder="Foto URL"><select id="updateStep" class="input-dark my-3"><option value="">Geen stap</option><option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option><option value="in_sorteercentrum">Sorteercentrum</option><option value="onderweg">Onderweg</option><option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option></select><div class="flex gap-3"><button onclick="addUpdateToTracking()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
 <div id="editTrackingModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-2xl p-6 w-full max-w-md"><h3 class="text-xl font-bold text-white mb-3">Bewerk tracking</h3><input type="date" id="editEstimatedDelivery" class="input-dark my-3"><input id="editCarrierTrackingNumber" class="input-dark my-3" placeholder="Carrier nr"><input id="editCarrierName" class="input-dark my-3" placeholder="Vervoerder"><select id="editCurrentStep" class="input-dark my-3"><option>Bestelling ontvangen</option><option>Naar vliegveld</option><option>In vliegtuig</option><option>Geland</option><option>In douane</option><option>Sorteercentrum</option><option>Onderweg</option><option>Bezig met bezorgen</option><option>Geleverd</option></select><div class="flex gap-3"><button onclick="saveTrackingEdits()" class="btn-primary flex-1">Opslaan</button><button onclick="closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
-<div id="receiptModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-6 receipt-print text-white"></div><div class="flex gap-3 p-4"><button onclick="printReceipt()" class="btn-primary flex-1">Print / PDF</button><button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button></div></div></div>
+<div id="receiptModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-6 receipt-print"></div><div class="flex gap-3 p-4"><button onclick="printReceipt()" class="btn-primary flex-1">Print / PDF</button><button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button></div></div></div>
 <div id="termsAcceptModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold text-white">Accepteer voorwaarden</h2><div class="my-4 text-gray-300">No-Refund Policy. Geen restitutie.</div><button onclick="acceptTerms()" class="btn-primary w-full">Ik accepteer</button></div></div>
 <div id="publicFeedbackModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"><div class="bg-gray-900 rounded-3xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold text-white">Feedback</h2><input id="feedbackName" class="input-dark mb-3" placeholder="Naam"><input id="feedbackTrackingCode" class="input-dark mb-3" placeholder="Trackingcode"><textarea id="feedbackMessage" rows="4" class="input-dark mb-3" placeholder="Bericht"></textarea><button onclick="submitPublicFeedback()" class="btn-primary w-full">Versturen</button><div id="feedbackResult" class="mt-3 text-sm"></div><button onclick="closeModal('publicFeedbackModal')" class="btn-outline w-full mt-3">Sluiten</button></div></div>
 
@@ -132,7 +133,7 @@
 <div id="chatbotButton" class="chatbot-button" onclick="toggleChatbot()">💬</div>
 <div id="chatbotWindow" class="chatbot-window hidden">
     <div class="chatbot-header"><span>AOM Assistant</span><button onclick="toggleChatbot()" class="text-white text-xl">×</button></div>
-    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Hoe kan ik helpen?</div></div></div>
+    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Hoe kan ik helpen met AOM Supplies?</div></div></div>
     <div class="chatbot-input"><input id="chatInput" placeholder="Typ..." onkeypress="if(event.key==='Enter') sendChatMessage()"><button onclick="sendChatMessage()">Verstuur</button></div>
 </div>
 
@@ -151,9 +152,9 @@
     const db = getFirestore(app);
 
     let sales = [], orders = [], tracking = [], feedback = [];
-    let pinValues = { cost: '0', sell: '0', shipcost: '0', other: '0', pricecheck: '0' };
+    let pinValues = { cost: '0', shipcost: '0', other: '0', pricecheck: '0' };
     let currentTrackingId = null;
-    let companyName = "AOM Supplies";
+    let companyName = "AOM Supplies", companyEmail = "support@aomsupplies.com";
     let conversationHistory = [];
 
     // UI helpers
@@ -185,7 +186,7 @@
     };
     function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-    // Public tracking
+    // Public tracking (unchanged)
     window.publicTrack = async () => {
         const code = document.getElementById('publicTrackingInput').value.trim();
         const res = document.getElementById('trackingResult');
@@ -213,7 +214,7 @@
         setTimeout(() => closeModal('publicFeedbackModal'), 1500);
     };
 
-    // Admin login
+    // Admin login/logout
     window.doLogin = () => {
         const pass = document.getElementById('loginPass').value;
         if (pass !== 'ResellTrivium') { document.getElementById('loginError').innerText = 'Wachtwoord onjuist'; document.getElementById('loginError').classList.remove('hidden'); return; }
@@ -224,6 +225,7 @@
         document.getElementById('welcomeAdmin').innerHTML = `Hallo ${document.getElementById('loginUser').value.replace('T','')}!`;
         navigateAdmin('dashboard');
         startListeners();
+        loadCompanySettings();
     };
     window.doLogout = () => {
         document.getElementById('adminDashboard').classList.add('hidden');
@@ -260,10 +262,11 @@
         const cost = parseFloat(pinValues.cost)||0, ship = parseFloat(pinValues.shipcost)||0, other = parseFloat(pinValues.other)||0;
         const qty = parseInt(document.getElementById('saleQuantity')?.value) || 1;
         const price = parseFloat(document.getElementById('saleUnitPrice')?.value) || 0;
-        const total = qty * price;
+        const discount = parseFloat(document.getElementById('saleDiscount')?.value) || 0;
+        const total = qty * price - discount;
         const profit = total - cost - ship - other;
         const preview = document.getElementById('salePreview');
-        if(preview && total>0 && (cost+ship+other)>0) { preview.innerHTML = `Netto: €${profit.toFixed(2)}`; preview.classList.remove('hidden'); }
+        if(preview && total>0) { preview.innerHTML = `Netto winst: €${profit.toFixed(2)}`; preview.classList.remove('hidden'); }
         else if(preview) preview.classList.add('hidden');
     }
     window.calculatePrice = () => {
@@ -276,28 +279,54 @@
         document.getElementById('priceResult').classList.remove('hidden');
     };
 
-    // CRUD
+    // CRUD with discount and email
     window.addSale = async () => {
         const name = document.getElementById('saleName').value;
         const qty = parseInt(document.getElementById('saleQuantity').value) || 1;
         const price = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
-        const total = qty * price;
+        const discount = parseFloat(document.getElementById('saleDiscount').value) || 0;
+        const total = qty * price - discount;
         const cost = parseFloat(pinValues.cost)||0, ship = parseFloat(pinValues.shipcost)||0, other = parseFloat(pinValues.other)||0;
         const profit = total - cost - ship - other;
         if (!name || price<=0) return alert('Vul product en prijs');
-        await addDoc(collection(db, "sales"), { name, quantity: qty, unitPrice: price, totalAmount: total, customerName: document.getElementById('customerName').value || 'Onbekend', saleDate: document.getElementById('saleDate').value, cost, ship, other, seller: document.getElementById('saleSeller').value, profit, paymentMethod: document.getElementById('salePaymentMethod').value, invoiceNumber: `INV-${Date.now().slice(-8)}`, date: new Date().toISOString() });
-        alert('Toegevoegd');
+        await addDoc(collection(db, "sales"), {
+            name, quantity: qty, unitPrice: price, totalAmount: total, discount,
+            customerName: document.getElementById('customerName').value || 'Onbekend',
+            customerEmail: document.getElementById('saleEmail').value || '',
+            saleDate: document.getElementById('saleDate').value,
+            cost, ship, other, seller: document.getElementById('saleSeller').value,
+            profit, paymentMethod: document.getElementById('salePaymentMethod').value,
+            invoiceNumber: `INV-${Date.now().toString().slice(-8)}`, date: new Date().toISOString()
+        });
+        alert('Verkoop toegevoegd');
         document.getElementById('saleName').value = '';
         document.getElementById('saleUnitPrice').value = '';
-        pinValues.cost='0'; pinValues.sell='0'; pinValues.shipcost='0'; pinValues.other='0';
-        ['Cost','Sell','ShipCost','Other'].forEach(f=>{ const el = document.getElementById(`display${f}`); if(el) el.innerText='0'; });
+        document.getElementById('saleDiscount').value = '';
+        document.getElementById('saleEmail').value = '';
+        pinValues.cost='0'; pinValues.shipcost='0'; pinValues.other='0';
+        ['Cost','ShipCost','Other'].forEach(f=>{ const el = document.getElementById(`display${f}`); if(el) el.innerText='0'; });
     };
     window.addOrder = async () => {
         const customer = document.getElementById('orderCustomer').value;
         if (!customer) return alert('Klant verplicht');
-        await addDoc(collection(db, "orders"), { customer, product: document.getElementById('orderProduct').value, quantity: parseInt(document.getElementById('orderQuantity').value)||1, totalAmount: parseFloat(document.getElementById('orderAmount').value)||0, orderDate: document.getElementById('orderDate').value, status: document.getElementById('orderStatus').value, paymentMethod: document.getElementById('orderPaymentMethod').value, createdAt: new Date().toISOString() });
-        alert('Toegevoegd');
-        document.getElementById('orderCustomer').value = ''; document.getElementById('orderProduct').value = ''; document.getElementById('orderAmount').value = '';
+        const discount = parseFloat(document.getElementById('orderDiscount').value) || 0;
+        const total = parseFloat(document.getElementById('orderAmount').value) || 0;
+        const finalTotal = total - discount;
+        await addDoc(collection(db, "orders"), {
+            customer, email: document.getElementById('orderEmail').value,
+            product: document.getElementById('orderProduct').value,
+            quantity: parseInt(document.getElementById('orderQuantity').value)||1,
+            totalAmount: finalTotal, discount,
+            orderDate: document.getElementById('orderDate').value,
+            status: document.getElementById('orderStatus').value,
+            paymentMethod: document.getElementById('orderPaymentMethod').value,
+            createdAt: new Date().toISOString()
+        });
+        alert('Order toegevoegd');
+        document.getElementById('orderCustomer').value = '';
+        document.getElementById('orderProduct').value = '';
+        document.getElementById('orderAmount').value = '';
+        document.getElementById('orderDiscount').value = '';
     };
     window.addTracking = async () => {
         const code = document.getElementById('trackingCode').value.trim();
@@ -343,21 +372,74 @@
             closeModal('updateModal');
         }
     };
+    // Professional receipt generator
     window.showReceipt = (type, id) => {
         let data = type === 'sale' ? sales.find(s=>s.id===id) : orders.find(o=>o.id===id);
         if(!data) return;
-        let html = `<div class="text-center"><h2 class="text-2xl font-bold">${companyName}</h2><p>${new Date().toLocaleDateString()}</p></div><div class="border-t border-gray-700 py-4"><p><strong>Bon</strong><br>${data.invoiceNumber || data.id.slice(-8)}</p></div><table class="w-full text-sm">`;
-        if(type === 'sale') {
-            html += `<tr><td>Product:</td><td>${data.name}</td></tr><tr><td>Aantal:</td><td>${data.quantity}</td></tr><tr><td>Prijs:</td><td>€${data.unitPrice.toFixed(2)}</td></tr><tr><td>Totaal:</td><td>€${data.totalAmount.toFixed(2)}</td></tr><tr><td>Klant:</td><td>${data.customerName}</td></tr><tr><td>Betaald:</td><td>${data.paymentMethod}</td></tr><tr><td>Winst:</td><td>€${data.profit.toFixed(2)}</td></tr>`;
-        } else {
-            html += `<tr><td>Product:</td><td>${data.product}</td></tr><tr><td>Aantal:</td><td>${data.quantity}</td></tr><tr><td>Totaal:</td><td>€${data.totalAmount.toFixed(2)}</td></tr><tr><td>Klant:</td><td>${data.customer}</td></tr><tr><td>Status:</td><td>${data.status}</td></tr>`;
-        }
-        html += `</table><div class="mt-4 text-xs text-gray-400">Geen restitutie</div>`;
+        const isSale = type === 'sale';
+        const receiptNo = data.invoiceNumber || data.id.slice(-8);
+        const customerName = isSale ? data.customerName : data.customer;
+        const customerEmail = isSale ? (data.customerEmail || '') : (data.email || '');
+        const items = isSale ? [{ description: data.name, quantity: data.quantity, unitPrice: data.unitPrice, total: data.unitPrice * data.quantity }] : [{ description: data.product, quantity: data.quantity, unitPrice: data.totalAmount / data.quantity, total: data.totalAmount }];
+        const discount = isSale ? (data.discount || 0) : (data.discount || 0);
+        const totalBeforeDiscount = items.reduce((sum, i) => sum + i.total, 0);
+        const totalAfterDiscount = totalBeforeDiscount - discount;
+        const finalTotal = isSale ? totalAfterDiscount : data.totalAmount;
+        const paymentMethod = data.paymentMethod || 'Onbekend';
+        const transactionId = receiptNo;
+        const date = isSale ? data.saleDate : data.orderDate;
+        const company = companyName;
+        const companyEmailAddr = companyEmail;
+        let html = `
+            <div style="font-family: monospace; max-width: 700px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; background: white; color: black;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="margin:0;">${company}</h2>
+                    <p style="margin:0;">${companyEmailAddr}</p>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                    <div><strong>Date:</strong> ${date || new Date().toLocaleDateString()}</div>
+                    <div><strong>Receipt No.:</strong> ${receiptNo}</div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <strong>Received From:</strong> ${customerName}<br>
+                    ${customerEmail ? `<strong>Email:</strong> ${customerEmail}` : ''}
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <thead><tr style="background: #f0f0f0;"><th style="border:1px solid #ddd; padding:8px; text-align:left;">Description</th><th style="border:1px solid #ddd; padding:8px;">Quantity</th><th style="border:1px solid #ddd; padding:8px;">Unit Price</th><th style="border:1px solid #ddd; padding:8px;">Total Amount</th></tr></thead>
+                    <tbody>
+                        ${items.map(item => `<tr><td style="border:1px solid #ddd; padding:8px;">${item.description}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${item.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${item.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${item.total.toFixed(2)}</td></tr>`).join('')}
+                        ${discount > 0 ? `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Discount Applied</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${discount.toFixed(2)}</td></tr>` : ''}
+                        <tr style="background: #f9f9f9;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Total Due</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${finalTotal.toFixed(2)}</strong></td></tr>
+                    </tbody>
+                </table>
+                <div style="margin-bottom: 20px;">
+                    <strong>Payment Method:</strong> ${paymentMethod}<br>
+                    <strong>Transaction ID:</strong> ${transactionId}
+                </div>
+                <div style="text-align: center; font-size: 12px; margin-top: 20px;">
+                    Thank you for your purchase! For any questions, contact ${company} at ${companyEmailAddr}.
+                </div>
+            </div>
+        `;
         document.getElementById('receiptContent').innerHTML = html;
         document.getElementById('receiptModal').classList.remove('hidden');
     };
     window.printReceipt = () => window.print();
-    window.saveCompanyName = () => { companyName = document.getElementById('companyNameSetting').value; alert('Opgeslagen'); };
+    window.saveCompanySettings = () => {
+        companyName = document.getElementById('companyNameSetting').value || "AOM Supplies";
+        companyEmail = document.getElementById('companyEmailSetting').value || "support@aomsupplies.com";
+        localStorage.setItem('aom_company_name', companyName);
+        localStorage.setItem('aom_company_email', companyEmail);
+        alert('Opgeslagen');
+    };
+    function loadCompanySettings() {
+        const savedName = localStorage.getItem('aom_company_name');
+        const savedEmail = localStorage.getItem('aom_company_email');
+        if(savedName) companyName = savedName;
+        if(savedEmail) companyEmail = savedEmail;
+        document.getElementById('companyNameSetting').value = companyName;
+        document.getElementById('companyEmailSetting').value = companyEmail;
+    }
     window.exportAllData = async () => {
         const s = await getDocs(collection(db, "sales"));
         const o = await getDocs(collection(db, "orders"));
@@ -389,7 +471,7 @@
         onSnapshot(collection(db, "feedback"), snap => { feedback = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); });
     }
     function updateUI() {
-        document.getElementById('ordersList').innerHTML = orders.map(o => `<div class="border-b border-gray-700 py-2"><b>${o.customer}</b> - ${o.product} (€${o.totalAmount})<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-gray-800 text-white text-xs ml-2"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="deleteOrder('${o.id}')" class="text-red-400">✖</button> <button onclick="showReceipt('order','${o.id}')" class="text-blue-400 ml-2">Bon</button></div>`).join('');
+        document.getElementById('ordersList').innerHTML = orders.map(o => `<div class="border-b border-gray-700 py-2"><b>${o.customer}</b> - ${o.product} (€${o.totalAmount})<br>Korting: €${o.discount||0}<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-gray-800 text-white text-xs ml-2"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="deleteOrder('${o.id}')" class="text-red-400">✖</button> <button onclick="showReceipt('order','${o.id}')" class="text-blue-400 ml-2">Bon</button></div>`).join('');
         document.getElementById('salesList').innerHTML = sales.map(s => `<div class="border-b border-gray-700 py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Aantal: ${s.quantity} | Totaal: €${s.totalAmount} | Winst: €${s.profit}<br><button onclick="deleteSale('${s.id}')" class="text-red-400">✖</button> <button onclick="showReceipt('sale','${s.id}')" class="text-blue-400 ml-2">Bon</button></div>`).join('');
         document.getElementById('trackingList').innerHTML = tracking.map(t => `<div class="border border-gray-700 p-3 rounded-xl"><b>${t.trackingCode}</b><br>Carrier: ${t.carrierName}<br>Verwacht: ${t.estimatedDelivery || '-'}<br>Stap: ${t.currentStep}<br><button onclick="openUpdateModal('${t.id}')" class="text-blue-400">Update</button> <button onclick="deleteTracking('${t.id}')" class="text-red-400 ml-2">Verwijder</button></div>`).join('');
         document.getElementById('feedbackAdminList').innerHTML = feedback.map(f => `<div class="border-b border-gray-700 py-1"><b>${f.name}</b> <span class="text-xs text-gray-400">${new Date(f.createdAt).toLocaleString()}</span><br>${f.message} ${f.trackingCode ? `(${f.trackingCode})` : ''}</div>`).join('');
