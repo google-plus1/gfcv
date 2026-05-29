@@ -1,14 +1,9 @@
-De bon knop werkt nu volledig. Hier is de **complete, werkende code** waarin je op de bon klikt, de bon verschijnt in een modal, en je kunt printen/PDF maken. Alle andere functionaliteiten (orders, sales, tracking, etc.) werken ook.
-
-Kopieer onderstaande code naar `index.html` en upload naar Netlify.
-
-```html
 <!DOCTYPE html>
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies | Track & Trace</title>
+    <title>AOM Supplies | Track & Trace + Bon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -451,12 +446,11 @@ Kopieer onderstaande code naar `index.html` en upload naar Netlify.
         }
     };
 
-    // BON (RECEIPT) - volledig werkend
+    // BON (RECEIPT)
     window.showReceipt = (type, id) => {
-        console.log("showReceipt called", type, id);
+        console.log("showReceipt", type, id);
         let data = type === 'sale' ? sales.find(s => s.id === id) : orders.find(o => o.id === id);
         if (!data) {
-            console.error("Data not found", type, id);
             alert("Geen gegevens gevonden voor deze bon.");
             return;
         }
@@ -466,18 +460,17 @@ Kopieer onderstaande code naar `index.html` en upload naar Netlify.
         const customer = isSale ? data.customerName : data.customer;
         const customerEmail = isSale ? data.customerEmail : data.email;
         const paymentMethod = data.paymentMethod || 'Onbekend';
-        let subtotal = 0;
         let tableRows = '';
         if (isSale) {
-            subtotal = data.unitPrice * data.quantity;
+            const subtotal = data.unitPrice * data.quantity;
             tableRows = `<tr><td style="border:1px solid #ddd; padding:8px;">${data.name}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${data.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${data.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${subtotal.toFixed(2)}</td></tr>`;
             if (data.discount) tableRows += `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Korting</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
-            tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong> </td></tr>`;
+            tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
         } else {
-            subtotal = data.unitPrice * data.quantity;
+            const subtotal = data.unitPrice * data.quantity;
             tableRows = `<tr><td style="border:1px solid #ddd; padding:8px;">${data.product}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${data.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${data.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${subtotal.toFixed(2)}</td></tr>`;
             if (data.discount) tableRows += `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Korting</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
-            tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong> </td></tr>`;
+            tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
         }
         const html = `
             <div style="font-family: monospace; max-width: 700px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; background: white; color: black;">
@@ -539,35 +532,23 @@ Kopieer onderstaande code naar `index.html` en upload naar Netlify.
         onSnapshot(collection(db, "feedback"), snap => { feedback = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); });
     }
     function updateUI() {
-        const ordersContainer = document.getElementById('ordersList');
-        if (ordersContainer) {
-            ordersContainer.innerHTML = orders.map(o => `<div class="border-b border-gray-700 py-2"><b>${o.customer}</b> - ${o.product} (€${o.totalAmount})<br>Korting: €${o.discount||0}<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-gray-800 text-white text-xs ml-2"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="window.showReceipt('order','${o.id}')" class="text-cyan-400 ml-2">Bon</button> <button onclick="deleteOrder('${o.id}')" class="text-red-400">✖</button></div>`).join('');
-        }
-        const salesContainer = document.getElementById('salesList');
-        if (salesContainer) {
-            salesContainer.innerHTML = sales.map(s => `<div class="border-b border-gray-700 py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Aantal: ${s.quantity} | Totaal: €${s.totalAmount} | Winst: €${s.profit}<br><button onclick="window.showReceipt('sale','${s.id}')" class="text-cyan-400 ml-2">Bon</button> <button onclick="deleteSale('${s.id}')" class="text-red-400">✖</button></div>`).join('');
-        }
-        const trackingContainer = document.getElementById('trackingList');
-        if (trackingContainer) {
-            trackingContainer.innerHTML = tracking.map(t => `<div class="border border-gray-700 p-3 rounded-xl"><b>${t.trackingCode}</b><br>Carrier: ${t.carrierName}<br>Verwacht: ${t.estimatedDelivery || '-'}<br>Stap: ${t.currentStep}<br><button onclick="openUpdateModal('${t.id}')" class="text-cyan-400">Update</button> <button onclick="deleteTracking('${t.id}')" class="text-red-400 ml-2">Verwijder</button> <button onclick="copyShareLink('${t.trackingCode}')" class="btn-outline text-xs py-0 px-2 ml-2">🔗 Link</button></div>`).join('');
-        }
-        const feedbackContainer = document.getElementById('feedbackAdminList');
-        if (feedbackContainer) {
-            feedbackContainer.innerHTML = feedback.map(f => `<div class="border-b border-gray-700 py-1"><b>${f.name}</b> <span class="text-xs text-gray-400">${new Date(f.createdAt).toLocaleString()}</span><br>${f.message} ${f.trackingCode ? `(${f.trackingCode})` : ''}</div>`).join('');
-        }
-        const recentFeedback = document.getElementById('recentFeedbackListAdmin');
-        if (recentFeedback) {
-            recentFeedback.innerHTML = feedback.slice(0,5).map(f => `<div class="border-b border-gray-700 py-1">${f.name}: ${f.message.substring(0,60)}</div>`).join('');
-        }
-        const statsContainer = document.getElementById('statsContainer');
-        if (statsContainer) {
-            statsContainer.innerHTML = `
-                <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">${sales.length}</div><div class="text-gray-400">Sales</div></div>
-                <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">€${sales.reduce((a,s)=>a+s.profit,0)}</div><div class="text-gray-400">Winst</div></div>
-                <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">${orders.length}</div><div class="text-gray-400">Orders</div></div>
-                <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">${tracking.length}</div><div class="text-gray-400">Tracking</div></div>
-            `;
-        }
+        const ordersDiv = document.getElementById('ordersList');
+        if (ordersDiv) ordersDiv.innerHTML = orders.map(o => `<div class="border-b border-gray-700 py-2"><b>${o.customer}</b> - ${o.product} (€${o.totalAmount})<br>Korting: €${o.discount||0}<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-gray-800 text-white text-xs ml-2"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="window.showReceipt('order','${o.id}')" class="text-cyan-400 ml-2">Bon</button> <button onclick="deleteOrder('${o.id}')" class="text-red-400">✖</button></div>`).join('');
+        const salesDiv = document.getElementById('salesList');
+        if (salesDiv) salesDiv.innerHTML = sales.map(s => `<div class="border-b border-gray-700 py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Aantal: ${s.quantity} | Totaal: €${s.totalAmount} | Winst: €${s.profit}<br><button onclick="window.showReceipt('sale','${s.id}')" class="text-cyan-400 ml-2">Bon</button> <button onclick="deleteSale('${s.id}')" class="text-red-400">✖</button></div>`).join('');
+        const trackingDiv = document.getElementById('trackingList');
+        if (trackingDiv) trackingDiv.innerHTML = tracking.map(t => `<div class="border border-gray-700 p-3 rounded-xl"><b>${t.trackingCode}</b><br>Carrier: ${t.carrierName}<br>Verwacht: ${t.estimatedDelivery || '-'}<br>Stap: ${t.currentStep}<br><button onclick="openUpdateModal('${t.id}')" class="text-cyan-400">Update</button> <button onclick="deleteTracking('${t.id}')" class="text-red-400 ml-2">Verwijder</button> <button onclick="copyShareLink('${t.trackingCode}')" class="btn-outline text-xs py-0 px-2 ml-2">🔗 Link</button></div>`).join('');
+        const feedbackDiv = document.getElementById('feedbackAdminList');
+        if (feedbackDiv) feedbackDiv.innerHTML = feedback.map(f => `<div class="border-b border-gray-700 py-1"><b>${f.name}</b> <span class="text-xs text-gray-400">${new Date(f.createdAt).toLocaleString()}</span><br>${f.message} ${f.trackingCode ? `(${f.trackingCode})` : ''}</div>`).join('');
+        const recentDiv = document.getElementById('recentFeedbackListAdmin');
+        if (recentDiv) recentDiv.innerHTML = feedback.slice(0,5).map(f => `<div class="border-b border-gray-700 py-1">${f.name}: ${f.message.substring(0,60)}</div>`).join('');
+        const statsDiv = document.getElementById('statsContainer');
+        if (statsDiv) statsDiv.innerHTML = `
+            <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">${sales.length}</div><div class="text-gray-400">Sales</div></div>
+            <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">€${sales.reduce((a,s)=>a+s.profit,0)}</div><div class="text-gray-400">Winst</div></div>
+            <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">${orders.length}</div><div class="text-gray-400">Orders</div></div>
+            <div class="stat-card"><div class="text-2xl font-bold text-cyan-400">${tracking.length}</div><div class="text-gray-400">Tracking</div></div>
+        `;
         if(window.chartRevenue) window.chartRevenue.destroy();
         const revMap = { MiroT:0, AppieT:0, ObaiT:0 };
         sales.forEach(s => revMap[s.seller] += s.totalAmount);
