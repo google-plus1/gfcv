@@ -116,7 +116,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer"></div>
                 <div class="grid lg:grid-cols-2 gap-6"><div class="glass-card p-5"><h3 class="text-white font-bold">Recente feedback</h3><div id="recentFeedbackListAdmin" class="text-gray-300 text-sm"></div></div><div class="glass-card p-5"><h3 class="text-white font-bold">Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('tracking-admin')" class="btn-outline w-full">Tracking beheren</button></div></div>
             </div>
-            <!-- Orders (verbeterd) -->
+            <!-- Orders -->
             <div id="admin-orders" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-dark mb-2" placeholder="Klantnaam *"><input id="orderEmail" class="input-dark mb-2" placeholder="Email (optioneel)"><input id="orderProduct" class="input-dark mb-2" placeholder="Product *"><input id="orderQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="orderUnitPrice" type="number" class="input-dark mb-2" placeholder="Prijs per stuk (€)"><input id="orderDiscount" type="number" class="input-dark mb-2" placeholder="Korting (€)"><input id="orderDate" type="date" class="input-dark mb-2"><select id="orderPaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><select id="orderStatus" class="input-dark mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
             <!-- Tracking Admin -->
             <div id="admin-tracking-admin" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-dark mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-dark mb-2" placeholder="Carrier nummer"><input id="carrierName" class="input-dark mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-dark mb-2" placeholder="Klant"><input id="trackingDestination" class="input-dark mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-dark mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-dark mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3 text-gray-300"></div></div></div></div></div>
@@ -180,7 +180,7 @@
     window.acceptTerms = () => { alert('Geaccepteerd'); closeModal('termsAcceptModal'); };
     window.showPublicFeedback = () => document.getElementById('publicFeedbackModal').classList.remove('hidden');
 
-    // Chatbot Nederlands
+    // Chatbot
     window.sendChatMessage = async () => {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
@@ -300,7 +300,7 @@
         document.getElementById('priceResult').classList.remove('hidden');
     };
 
-    // ORDER FUNCTIES (verbeterd)
+    // ORDER FUNCTIES
     window.addOrder = async () => {
         const customer = document.getElementById('orderCustomer').value.trim();
         const product = document.getElementById('orderProduct').value.trim();
@@ -438,24 +438,30 @@
         }
     };
 
-    // BON (verbeterd voor orders)
+    // BON (RECEIPT) - volledig werkend
     window.showReceipt = (type, id) => {
-        let data = type === 'sale' ? sales.find(s=>s.id===id) : orders.find(o=>o.id===id);
-        if(!data) return;
+        console.log("showReceipt called", type, id);
+        let data = type === 'sale' ? sales.find(s => s.id === id) : orders.find(o => o.id === id);
+        if (!data) {
+            console.error("Data not found", type, id);
+            alert("Geen gegevens gevonden voor deze bon.");
+            return;
+        }
         const isSale = type === 'sale';
         const receiptNo = data.invoiceNumber || data.id.slice(-8);
         const date = isSale ? data.saleDate : data.orderDate;
         const customer = isSale ? data.customerName : data.customer;
         const customerEmail = isSale ? data.customerEmail : data.email;
         const paymentMethod = data.paymentMethod || 'Onbekend';
+        let subtotal = 0;
         let tableRows = '';
         if (isSale) {
-            const subtotal = data.unitPrice * data.quantity;
+            subtotal = data.unitPrice * data.quantity;
             tableRows = `<tr><td style="border:1px solid #ddd; padding:8px;">${data.name}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${data.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${data.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${subtotal.toFixed(2)}</td></tr>`;
             if (data.discount) tableRows += `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Korting</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
             tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
         } else {
-            const subtotal = data.unitPrice * data.quantity;
+            subtotal = data.unitPrice * data.quantity;
             tableRows = `<tr><td style="border:1px solid #ddd; padding:8px;">${data.product}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${data.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${data.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${subtotal.toFixed(2)}</td></tr>`;
             if (data.discount) tableRows += `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Korting</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
             tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
@@ -467,7 +473,7 @@
                 <div><strong>Afnemer:</strong> ${customer}<br>${customerEmail ? `<strong>Email:</strong> ${customerEmail}` : ''}</div>
                 <table style="width:100%; border-collapse: collapse; margin: 15px 0;"><thead><tr style="background:#f0f0f0;"><th>Omschrijving</th><th>Aantal</th><th>Prijs p/st</th><th>Totaal</th></tr></thead><tbody>${tableRows}</tbody></table>
                 <div><strong>Betaalmethode:</strong> ${paymentMethod}</div>
-                <div style="text-align: center; margin-top: 20px;">Bedankt voor uw aankoop! Bij vragen kunt u contact opnemen met ${companyName} via ${companyEmail}.</div>
+                <div style="text-align: center; margin-top: 20px;">Bedankt voor uw aankoop! Bij vragen kunt u contact opnemen met ${companyName} via ${companyEmail}.<br><small>Geen restitutie mogelijk (No-Refund Policy)</small></div>
             </div>
         `;
         document.getElementById('receiptContent').innerHTML = html;
@@ -486,8 +492,8 @@
         const savedEmail = localStorage.getItem('aom_company_email');
         if(savedName) companyName = savedName;
         if(savedEmail) companyEmail = savedEmail;
-        document.getElementById('companyNameSetting').value = companyName;
-        document.getElementById('companyEmailSetting').value = companyEmail;
+        if (document.getElementById('companyNameSetting')) document.getElementById('companyNameSetting').value = companyName;
+        if (document.getElementById('companyEmailSetting')) document.getElementById('companyEmailSetting').value = companyEmail;
     }
     window.exportAllData = async () => {
         const s = await getDocs(collection(db, "sales"));
