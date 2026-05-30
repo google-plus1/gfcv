@@ -7,8 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
-    <!-- Popunder advertentie -->
-    <script src="https://pl29595011.effectivecpmnetwork.com/91/f7/67/91f767bebd4ffe31ffcfd69d8ea06ce1.js"></script>
+    <!-- Alleen de veilige banners (geen popunder) -->
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: #f3f4f6; }
@@ -82,7 +81,7 @@
                 <button onclick="showPublicPage('shop')" class="btn-primary px-8 py-3">Webshop</button>
                 <button onclick="showPublicPage('tracking')" class="btn-outline px-8 py-3">Track & Trace</button>
             </div>
-            <!-- Native banner advertentie -->
+            <!-- Native banner advertentie (geen popup/redirect) -->
             <div class="ad-container mt-8">
                 <script async="async" data-cfasync="false" src="https://pl29595012.effectivecpmnetwork.com/9d2d566875c661f743fccc44cd14c004/invoke.js"></script>
                 <div id="container-9d2d566875c661f743fccc44cd14c004"></div>
@@ -106,7 +105,7 @@
         <div id="public-contact" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Contact</h2><p class="text-gray-600">support@aomsupplies.com | +31 20 123 4567</p><textarea rows="3" class="input-light mt-4" placeholder="Uw bericht"></textarea><button class="btn-primary mt-3" onclick="alert('Bericht verzonden (demo)')">Verstuur</button></div></div>
         <div id="public-terms" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Voorwaarden</h2><p class="text-gray-600">No-Refund Policy. Geen restitutie mogelijk.</p></div></div>
     </main>
-    <!-- Onderaan de pagina: twee banners (468x60 en 320x50) -->
+    <!-- Onderaan de pagina: twee banners (geen redirects) -->
     <div class="banner-responsive max-w-7xl mx-auto px-4 py-4 border-t border-gray-200 mt-8">
         <!-- Banner 468x60 -->
         <div class="inline-block mx-2">
@@ -149,7 +148,7 @@
     </div>
 </div>
 
-<!-- ADMIN DASHBOARD (zelfde als vorige, met alle functionaliteiten) -->
+<!-- ADMIN DASHBOARD -->
 <div id="adminDashboard" class="hidden min-h-screen bg-gray-50">
     <div class="flex">
         <div class="admin-sidebar">
@@ -230,11 +229,9 @@
     let conversationHistory = [];
     let cart = [];
 
-    // Helper: products opslaan in localStorage
     function saveProducts() { localStorage.setItem('aom_products', JSON.stringify(products)); }
     function loadProducts() { products = JSON.parse(localStorage.getItem('aom_products') || '[]'); renderShopProducts(); renderProductsList(); }
 
-    // Producten admin (localStorage)
     window.addProductLocal = () => {
         const name = document.getElementById('productName').value.trim();
         const price = parseFloat(document.getElementById('productPrice').value);
@@ -243,8 +240,7 @@
         const description = document.getElementById('productDesc').value;
         const imageUrl = document.getElementById('productImageUrl').value.trim();
         if (!name || isNaN(price)) return alert('Vul naam en prijs in');
-        const newProduct = { id: Date.now(), name, price, stock, delivery, description, imageUrl };
-        products.push(newProduct);
+        products.push({ id: Date.now(), name, price, stock, delivery, description, imageUrl });
         saveProducts();
         alert('Product toegevoegd!');
         document.getElementById('productName').value = '';
@@ -301,7 +297,6 @@
         cart = []; updateCartUI();
     };
 
-    // UI Helpers
     window.showPublicPage = (page) => { document.querySelectorAll('.public-section').forEach(s => s.classList.add('hidden')); document.getElementById(`public-${page}`).classList.remove('hidden'); if(page === 'shop') renderShopProducts(); };
     window.showAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
     window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
@@ -310,7 +305,6 @@
     window.acceptTerms = () => { alert('Geaccepteerd'); closeModal('termsAcceptModal'); };
     window.showPublicFeedback = () => document.getElementById('publicFeedbackModal').classList.remove('hidden');
 
-    // Chatbot
     window.sendChatMessage = async () => {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
@@ -330,7 +324,6 @@
     };
     function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-    // Public tracking (verkort, zelfde als vorige)
     window.publicTrack = async () => {
         const code = document.getElementById('publicTrackingInput').value.trim();
         const res = document.getElementById('trackingResult');
@@ -361,7 +354,6 @@
     };
     window.copyShareLink = (code) => { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#track=${code}`); alert('Link gekopieerd'); };
 
-    // Admin login (verkort, zelfde functionaliteit)
     window.doLogin = () => {
         const pass = document.getElementById('loginPass').value;
         if (pass !== 'ResellTrivium') { document.getElementById('loginError').innerText = 'Wachtwoord onjuist'; document.getElementById('loginError').classList.remove('hidden'); return; }
@@ -378,13 +370,11 @@
     window.doLogout = () => { document.getElementById('adminDashboard').classList.add('hidden'); document.getElementById('publicPage').classList.remove('hidden'); showPublicPage('home'); };
     window.navigateAdmin = (section) => { document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden')); document.getElementById(`admin-${section}`).classList.remove('hidden'); if(section === 'products') renderProductsList(); };
 
-    // Pinpad (verkort)
     function generatePinpad(field, containerId) { const div = document.getElementById(containerId); if(!div) return; const btns = ['1','2','3','4','5','6','7','8','9','0','.'].map(v=>`<div class="pin-btn" onclick="pinInput('${field}','${v}')">${v}</div>`).join(''); div.innerHTML = btns + `<div class="pin-btn bg-gray-200" onclick="pinBackspace('${field}')">⌫</div>`; }
     window.pinInput = (field,val) => { let cur = pinValues[field]; if(cur === '0' && val !== '.') cur = ''; if(val === '.' && cur.includes('.')) return; pinValues[field] = cur + val; document.getElementById(`display${field.charAt(0).toUpperCase()+field.slice(1)}`).innerText = pinValues[field]; };
     window.pinBackspace = (field) => { let cur = pinValues[field]; pinValues[field] = cur.length <=1 ? '0' : cur.slice(0,-1); document.getElementById(`display${field.charAt(0).toUpperCase()+field.slice(1)}`).innerText = pinValues[field]; };
     window.calculatePrice = () => { const base = parseFloat(pinValues.pricecheck)||0; const cat = document.getElementById('priceCategory').value; let markup = cat==='schoenen'?75:cat==='shirt'?40:cat==='airpods'?90:60; document.getElementById('priceFinal').innerHTML = `€${(base+markup).toFixed(2)}`; document.getElementById('priceBreakdown').innerHTML = `Inkoop €${base} + ${markup}`; document.getElementById('priceResult').classList.remove('hidden'); };
 
-    // Sales, Orders, Tracking (zelfde als vorige, verkort weergegeven)
     window.addSale = async () => { alert("Verkoop toegevoegd (demo)"); };
     window.deleteSale = async (id) => {};
     window.addOrder = async () => { alert("Order toegevoegd"); };
@@ -407,10 +397,9 @@
     window.clearAllData = async () => { if(confirm('ALLES WISSEN?')) { localStorage.removeItem('aom_products'); alert('Producten gewist'); } };
     window.importData = async () => { alert("Import functie"); };
 
-    // Listeners (verkort)
     function startListeners() { onSnapshot(collection(db, "sales"), snap => { sales = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); updateDashboardStats(); }); onSnapshot(collection(db, "orders"), snap => { orders = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); }); onSnapshot(collection(db, "tracking"), snap => { tracking = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); }); onSnapshot(collection(db, "feedback"), snap => { feedback = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); }); onSnapshot(collection(db, "customerOrders"), snap => { customerOrders = snap.docs.map(d=> ({id:d.id, ...d.data()})); renderCustomerOrders(); updateUI(); }); }
     function renderCustomerOrders() { const container = document.getElementById('customerOrdersList'); if(!container) return; container.innerHTML = customerOrders.map(order => `<div class="border-b border-gray-200 py-3"><strong>${order.customerName}</strong> (${order.customerEmail||'-'})<br>Adres: ${order.address}<br>Totaal: €${order.totalAmount.toFixed(2)}<br>Status: ${order.status}<br>Producten: ${order.items.map(i => `${i.name} x${i.quantity}`).join(', ')}</div>`).join(''); }
-    function updateUI() { /* vereenvoudigd */ document.getElementById('lastUpdateTime').innerText = `Laatste update: ${new Date().toLocaleTimeString()}`; }
+    function updateUI() { document.getElementById('lastUpdateTime').innerText = `Laatste update: ${new Date().toLocaleTimeString()}`; }
     function updateDashboardStats() { const totalSales = sales.length; const totalRevenue = sales.reduce((a,s)=>a+s.totalAmount,0); const totalProfit = sales.reduce((a,s)=>a+s.profit,0); const totalLoss = sales.reduce((a,s)=>a+s.loss||0,0); const statsDiv = document.getElementById('statsContainer'); if(statsDiv) statsDiv.innerHTML = `<div class="stat-card"><div class="text-2xl font-bold text-gray-800">${totalSales}</div><div class="text-gray-500">Sales</div></div><div class="stat-card"><div class="text-2xl font-bold text-gray-800">€${totalRevenue.toFixed(0)}</div><div class="text-gray-500">Omzet</div></div><div class="stat-card"><div class="text-2xl font-bold text-green-600">€${totalProfit.toFixed(0)}</div><div class="text-gray-500">Winst</div></div><div class="stat-card"><div class="text-2xl font-bold text-red-600">€${totalLoss.toFixed(0)}</div><div class="text-gray-500">Verlies</div></div>`; }
 
     setTimeout(() => { generatePinpad('cost','costPinpad'); generatePinpad('shipcost','shipPinpad'); generatePinpad('other','otherPinpad'); generatePinpad('loss','lossPinpad'); generatePinpad('pricecheck','pricePinpad'); document.getElementById('saleDate').valueAsDate = new Date(); const addBtn = document.getElementById('addProductBtn'); if (addBtn) addBtn.onclick = addOrderProductRow; addOrderProductRow(); }, 100);
