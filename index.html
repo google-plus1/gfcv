@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies | Professionele bon + Orders</title>
+    <title>AOM Supplies | Orders met meerdere producten + Professionele bon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -50,8 +50,8 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, #00c6ff, #0072ff); width: 0%; transition: width 0.3s; }
         @media print { body * { visibility: hidden; } .receipt-print, .receipt-print * { visibility: visible; } .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; color: black; } }
         @media (max-width: 768px) { .admin-sidebar { width: 100%; height: auto; position: relative; } main { margin-left: 0 !important; } .chatbot-window { width: calc(100% - 32px); right: 16px; height: 65vh; } }
-        .product-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
-        .product-row input { flex: 1; }
+        .product-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+        .product-row input { flex: 1; min-width: 80px; }
     </style>
 </head>
 <body>
@@ -118,14 +118,14 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer"></div>
                 <div class="grid lg:grid-cols-2 gap-6"><div class="glass-card p-5"><h3 class="text-white font-bold">Recente feedback</h3><div id="recentFeedbackListAdmin" class="text-gray-300 text-sm"></div></div><div class="glass-card p-5"><h3 class="text-white font-bold">Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('tracking-admin')" class="btn-outline w-full">Tracking beheren</button></div></div>
             </div>
-            <!-- Orders (met meerdere producten) -->
+            <!-- Orders (meerdere producten) -->
             <div id="admin-orders" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Orders (meerdere producten)</h2>
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
                         <input id="orderCustomer" class="input-dark mb-2" placeholder="Klantnaam *">
                         <input id="orderEmail" class="input-dark mb-2" placeholder="Email (optioneel)">
                         <div id="orderProductsContainer"></div>
-                        <button onclick="addOrderProductRow()" class="btn-outline text-sm mb-2">+ Product toevoegen</button>
+                        <button type="button" id="addProductBtn" class="btn-outline text-sm mb-2">+ Product toevoegen</button>
                         <input id="orderDiscount" type="number" class="input-dark mb-2" placeholder="Korting (€)">
                         <input id="orderDate" type="date" class="input-dark mb-2">
                         <select id="orderPaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select>
@@ -151,7 +151,7 @@
     </div>
 </div>
 
-<!-- MODALS -->
+<!-- MODALS (idem) -->
 <div id="updateModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="glass-card p-6 w-full max-w-md"><h3 class="text-xl font-bold text-white mb-3">Update toevoegen</h3><input id="updateText" class="input-dark my-3" placeholder="Status"><input id="updateLocation" class="input-dark my-3" placeholder="Locatie"><input id="updateTimestamp" class="input-dark my-3" type="datetime-local"><div class="my-3"><label class="text-white">Afbeelding uploaden (PNG/JPEG)</label><input type="file" id="updateImageFile" accept="image/png,image/jpeg" class="input-dark"><div id="uploadProgress" class="text-xs text-cyan-400 mt-1 hidden"></div></div><select id="updateStep" class="input-dark my-3"><option value="">Geen stapwijziging</option><option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option><option value="in_sorteercentrum">In sorteercentrum</option><option value="onderweg">Onderweg</option><option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option></select><div class="flex gap-3"><button onclick="addUpdateToTrackingWithImage()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
 <div id="editTrackingModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="glass-card p-6 w-full max-w-md"><h3 class="text-xl font-bold text-white mb-3">Bewerk tracking</h3><input type="date" id="editEstimatedDelivery" class="input-dark my-3"><input id="editCarrierTrackingNumber" class="input-dark my-3" placeholder="Carrier nummer"><input id="editCarrierName" class="input-dark my-3" placeholder="Vervoerder"><select id="editCurrentStep" class="input-dark my-3"><option>Bestelling ontvangen</option><option>Naar vliegveld</option><option>In vliegtuig</option><option>Geland</option><option>In douane</option><option>Sorteercentrum</option><option>Onderweg</option><option>Bezig met bezorgen</option><option>Geleverd</option></select><div class="flex gap-3"><button onclick="saveTrackingEdits()" class="btn-primary flex-1">Opslaan</button><button onclick="closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
 <div id="receiptModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -326,11 +326,10 @@
     };
 
     // ORDER FUNCTIES (meerdere producten)
-    let orderProductRows = [];
     function addOrderProductRow() {
         const container = document.getElementById('orderProductsContainer');
+        if (!container) return;
         const rowId = Date.now();
-        orderProductRows.push(rowId);
         const div = document.createElement('div');
         div.className = 'product-row';
         div.id = `orderProductRow_${rowId}`;
@@ -338,14 +337,14 @@
             <input type="text" placeholder="Productnaam" class="input-dark product-name" style="flex:2;">
             <input type="number" placeholder="Aantal" class="input-dark product-qty" style="flex:1;" value="1">
             <input type="number" placeholder="Prijs p/st" class="input-dark product-price" style="flex:1;">
-            <button onclick="removeOrderProductRow(${rowId})" class="text-red-400 text-sm">✖</button>
+            <button type="button" onclick="removeOrderProductRow(${rowId})" class="text-red-400 text-sm">✖</button>
         `;
         container.appendChild(div);
     }
+    window.addOrderProductRow = addOrderProductRow;
     window.removeOrderProductRow = (id) => {
         const el = document.getElementById(`orderProductRow_${id}`);
         if (el) el.remove();
-        orderProductRows = orderProductRows.filter(i => i !== id);
     };
     window.addOrder = async () => {
         const customer = document.getElementById('orderCustomer').value.trim();
@@ -380,8 +379,7 @@
         document.getElementById('orderDiscount').value = '';
         document.getElementById('orderDate').value = '';
         document.getElementById('orderProductsContainer').innerHTML = '';
-        orderProductRows = [];
-        addOrderProductRow(); // add one empty row
+        addOrderProductRow(); // start with one empty row
     };
     window.deleteOrder = async (id) => { if(confirm('Verwijder order?')) await deleteDoc(doc(db, "orders", id)); };
     window.updateOrderStatus = async (id, newStatus) => { await updateDoc(doc(db, "orders", id), { status: newStatus }); };
@@ -514,7 +512,6 @@
             if (data.discount) tableRows += `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Korting</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
             tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
         } else {
-            // Order with multiple products
             data.products.forEach(prod => {
                 subtotal += prod.total;
                 tableRows += `<tr><td style="border:1px solid #ddd; padding:8px;">${prod.name}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${prod.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${prod.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${prod.total.toFixed(2)}</td></tr>`;
@@ -616,7 +613,10 @@
         generatePinpad('other','otherPinpad');
         generatePinpad('pricecheck','pricePinpad');
         document.getElementById('saleDate').valueAsDate = new Date();
-        addOrderProductRow(); // start with one product row
+        // add product rows button event listener
+        const addBtn = document.getElementById('addProductBtn');
+        if (addBtn) addBtn.onclick = () => addOrderProductRow();
+        addOrderProductRow(); // start with one empty row
     }, 100);
     showPublicPage('home');
     if (window.location.hash.startsWith('#track=')) {
