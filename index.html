@@ -75,7 +75,7 @@
         <div id="public-shop" class="public-section hidden"><h2 class="text-3xl font-bold text-gray-800 mb-6">Onze producten</h2><div id="shopProductsContainer" class="grid md:grid-cols-3 gap-6"></div><div class="card p-6 mt-8"><h3 class="text-2xl font-bold text-gray-800 mb-4">Winkelwagen</h3><div id="cartItems" class="text-gray-600"></div><div id="cartTotal" class="text-gray-800 font-bold mt-2"></div><button onclick="checkout()" class="btn-primary mt-4">Bestelling plaatsen</button></div></div>
         <div id="public-services" class="public-section hidden"><div class="card p-6"><h3 class="text-xl font-bold text-indigo-600">Resell platform</h3><p class="text-gray-600">Beheer verkopen, winst en klanten.</p></div><div class="card p-6 mt-4"><h3 class="text-xl font-bold text-indigo-600">Internationale tracking</h3><p class="text-gray-600">Luchtvracht, douane, eindbezorging.</p></div></div>
         <div id="public-about" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Over AOM Supplies</h2><p class="text-gray-600 mt-4">Wij zijn specialist in resell logistiek en tracking.</p></div></div>
-        <div id="public-contact" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Contact</h2><p class="text-gray-600">support@aomsupplies.com | +31 20 123 4567</p><textarea rows="3" class="input-light mt-4" placeholder="Uw bericht"></textarea><button class="btn-primary mt-3" onclick="submitContact()">Verstuur</button></div></div>
+        <div id="public-contact" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Contact</h2><p class="text-gray-600">support@aomsupplies.com | +31 20 123 4567</p><textarea rows="3" class="input-light mt-4" placeholder="Uw bericht"></textarea><button class="btn-primary mt-3" onclick="alert('Bericht verzonden (demo)')">Verstuur</button></div></div>
         <div id="public-terms" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Voorwaarden</h2><p class="text-gray-600">No-Refund Policy. Geen restitutie mogelijk.</p></div></div>
     </main>
 </div>
@@ -176,7 +176,6 @@
     window.showTermsAccept = () => document.getElementById('termsAcceptModal').classList.remove('hidden');
     window.acceptTerms = () => { alert('Geaccepteerd'); closeModal('termsAcceptModal'); };
     window.showPublicFeedback = () => document.getElementById('publicFeedbackModal').classList.remove('hidden');
-    window.submitContact = () => alert('Bericht verzonden (demo)');
 
     // Chatbot
     window.sendChatMessage = async () => {
@@ -441,7 +440,7 @@
         }
     };
 
-    // Producten admin
+    // PRODUCTEN ADMIN - FIXED
     window.addProduct = async () => {
         const name = document.getElementById('productName').value.trim();
         const price = parseFloat(document.getElementById('productPrice').value);
@@ -454,22 +453,18 @@
         if (file) {
             const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
             const uploadTask = uploadBytesResumable(storageRef, file);
-            // Show upload progress
-            document.getElementById('productImage').style.opacity = '0.5';
-            await new Promise((resolve, reject) => {
-                uploadTask.on('state_changed', 
-                    (snapshot) => { /* progress */ },
-                    (error) => { console.error(error); reject(error); },
-                    async () => {
-                        photoUrl = await getDownloadURL(uploadTask.snapshot.ref);
-                        resolve();
-                    }
-                );
+            // Show upload progress (optioneel)
+            const uploadPromise = new Promise((resolve, reject) => {
+                uploadTask.on('state_changed', null, reject, async () => {
+                    photoUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                    resolve();
+                });
             });
-            document.getElementById('productImage').style.opacity = '1';
+            await uploadPromise;
         }
         await addDoc(collection(db, "products"), { name, price, stock, delivery, description, photoUrl, createdAt: new Date().toISOString() });
-        alert('Product toegevoegd');
+        alert('Product toegevoegd en verschijnt direct in de webshop');
+        // Clear form
         document.getElementById('productName').value = '';
         document.getElementById('productPrice').value = '';
         document.getElementById('productStock').value = '';
@@ -534,6 +529,7 @@
         alert('Bestelling geplaatst!');
         cart = [];
         updateCartUI();
+        // Optioneel: voorraad bijwerken (kan later)
     };
 
     // Statistieken en listeners
