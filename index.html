@@ -48,12 +48,22 @@
         .step-label { font-size: 0.7rem; color: #a0b0c0; }
         .progress-bar { height: 8px; background: #1a2a3a; border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #00c6ff, #0072ff); width: 0%; transition: width 0.3s; }
-        /* Print stijlen - bon moet goed leesbaar zijn */
+        /* Verbeterde printstijlen - bon volledig zichtbaar */
         @media print {
             body * { visibility: hidden; }
             .receipt-print, .receipt-print * { visibility: visible; }
-            .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; color: black; font-family: monospace; }
-            .receipt-print .no-print { display: none; }
+            .receipt-print {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                padding: 20px;
+                background: white;
+                color: black;
+                font-family: monospace;
+                z-index: 9999;
+            }
+            .no-print { display: none; }
         }
         @media (max-width: 768px) { .admin-sidebar { width: 100%; height: auto; position: relative; } main { margin-left: 0 !important; } .chatbot-window { width: calc(100% - 32px); right: 16px; height: 65vh; } }
         .product-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
@@ -163,7 +173,7 @@
 <div id="receiptModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="glass-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div id="receiptContent" class="p-6 receipt-print"></div>
-        <div class="flex gap-3 p-4 border-t border-gray-700">
+        <div class="flex gap-3 p-4 border-t border-gray-700 no-print">
             <button onclick="printReceipt()" class="btn-primary flex-1">🖨️ Print / PDF</button>
             <button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button>
         </div>
@@ -546,7 +556,11 @@
         document.getElementById('receiptContent').innerHTML = html;
         document.getElementById('receiptModal').classList.remove('hidden');
     };
-    window.printReceipt = () => window.print();
+    // Print functie: forceer dat de modal inhoud goed wordt afgedrukt
+    window.printReceipt = () => {
+        // Zorg ervoor dat het printen de juiste context heeft
+        window.print();
+    };
     window.saveCompanySettings = () => {
         companyName = document.getElementById('companyNameSetting').value || "AOM Supplies";
         companyEmail = document.getElementById('companyEmailSetting').value || "support@aomsupplies.com";
@@ -629,7 +643,7 @@
         document.getElementById('saleDate').valueAsDate = new Date();
         const addBtn = document.getElementById('addProductBtn');
         if (addBtn) addBtn.onclick = () => addOrderProductRow();
-        addOrderProductRow(); // start met een lege rij
+        addOrderProductRow();
     }, 100);
     showPublicPage('home');
     if (window.location.hash.startsWith('#track=')) {
