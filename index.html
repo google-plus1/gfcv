@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies - Gratis Oplossing</title>
+    <title>AOM Supplies - Webshop + Track & Trace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -59,8 +59,8 @@
             <div class="flex items-center gap-2"><span class="text-2xl font-black text-indigo-600">AOM</span><span class="text-gray-500 text-sm">Supplies</span></div>
             <nav class="flex flex-wrap gap-5 text-sm font-medium">
                 <a onclick="showPublicPage('home')" class="nav-link">Home</a>
-                <a onclick="showPublicPage('tracking')" class="nav-link">Track & Trace</a>
                 <a onclick="showPublicPage('shop')" class="nav-link">Webshop</a>
+                <a onclick="showPublicPage('tracking')" class="nav-link">Track & Trace</a>
                 <a onclick="showPublicPage('services')" class="nav-link">Diensten</a>
                 <a onclick="showPublicPage('about')" class="nav-link">Over ons</a>
                 <a onclick="showPublicPage('contact')" class="nav-link">Contact</a>
@@ -70,9 +70,43 @@
         </div>
     </header>
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <div id="public-home" class="public-section text-center"><h1 class="text-5xl font-black text-gray-800">AOM Supplies</h1><p class="text-gray-500 mt-4">Webshop + Track & Trace voor resellers</p><div class="mt-10"><button onclick="showPublicPage('shop')" class="btn-primary">Shop nu</button></div></div>
-        <div id="public-tracking" class="public-section hidden"><div class="card p-8 max-w-3xl mx-auto"><h2 class="text-3xl font-bold text-gray-800 mb-2">Track & Trace</h2><p class="text-gray-500 mb-6">Voer uw AOM trackingcode in</p><div class="flex flex-col sm:flex-row gap-4"><input type="text" id="publicTrackingInput" class="input-light" placeholder="AOM..."><button onclick="publicTrack()" class="btn-primary">Zoeken</button></div><div id="trackingResult" class="mt-8"></div><div class="mt-8 text-center"><button onclick="showTermsAccept()" class="text-indigo-600 underline text-sm mr-4">Voorwaarden</button><button onclick="showPublicFeedback()" class="text-indigo-600 underline text-sm">Feedback</button></div></div></div>
-        <div id="public-shop" class="public-section hidden"><h2 class="text-3xl font-bold text-gray-800 mb-6">Onze producten</h2><div id="shopProductsContainer" class="grid md:grid-cols-3 gap-6"></div><div class="card p-6 mt-8"><h3 class="text-2xl font-bold text-gray-800 mb-4">Winkelwagen</h3><div id="cartItems" class="text-gray-600"></div><div id="cartTotal" class="text-gray-800 font-bold mt-2"></div><button onclick="checkout()" class="btn-primary mt-4">Bestelling plaatsen</button></div></div>
+        <!-- Homepagina met twee knoppen -->
+        <div id="public-home" class="public-section text-center">
+            <h1 class="text-5xl font-black text-gray-800">AOM Supplies</h1>
+            <p class="text-gray-500 mt-4">Webshop + Track & Trace voor resellers</p>
+            <div class="flex flex-wrap justify-center gap-4 mt-10">
+                <button onclick="showPublicPage('shop')" class="btn-primary px-8 py-3">Webshop</button>
+                <button onclick="showPublicPage('tracking')" class="btn-outline px-8 py-3">Track & Trace</button>
+            </div>
+        </div>
+        <!-- Webshop -->
+        <div id="public-shop" class="public-section hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Onze producten</h2>
+            <div id="shopProductsContainer" class="grid md:grid-cols-3 gap-6"></div>
+            <div class="card p-6 mt-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Winkelwagen</h3>
+                <div id="cartItems" class="text-gray-600"></div>
+                <div id="cartTotal" class="text-gray-800 font-bold mt-2"></div>
+                <button onclick="checkout()" class="btn-primary mt-4">Bestelling plaatsen</button>
+            </div>
+        </div>
+        <!-- Track & Trace -->
+        <div id="public-tracking" class="public-section hidden">
+            <div class="card p-8 max-w-3xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Track & Trace</h2>
+                <p class="text-gray-500 mb-6">Voer uw AOM trackingcode in</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" id="publicTrackingInput" class="input-light" placeholder="AOM...">
+                    <button onclick="publicTrack()" class="btn-primary">Zoeken</button>
+                </div>
+                <div id="trackingResult" class="mt-8"></div>
+                <div class="mt-8 text-center">
+                    <button onclick="showTermsAccept()" class="text-indigo-600 underline text-sm mr-4">Voorwaarden</button>
+                    <button onclick="showPublicFeedback()" class="text-indigo-600 underline text-sm">Feedback</button>
+                </div>
+            </div>
+        </div>
+        <!-- Overige pagina's -->
         <div id="public-services" class="public-section hidden"><div class="card p-6"><h3 class="text-xl font-bold text-indigo-600">Resell platform</h3><p class="text-gray-600">Beheer verkopen, winst en klanten.</p></div><div class="card p-6 mt-4"><h3 class="text-xl font-bold text-indigo-600">Internationale tracking</h3><p class="text-gray-600">Luchtvracht, douane, eindbezorging.</p></div></div>
         <div id="public-about" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Over AOM Supplies</h2><p class="text-gray-600 mt-4">Wij zijn specialist in resell logistiek en tracking.</p></div></div>
         <div id="public-contact" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Contact</h2><p class="text-gray-600">support@aomsupplies.com | +31 20 123 4567</p><textarea rows="3" class="input-light mt-4" placeholder="Uw bericht"></textarea><button class="btn-primary mt-3" onclick="alert('Bericht verzonden (demo)')">Verstuur</button></div></div>
@@ -112,20 +146,29 @@
             <div class="p-4 absolute bottom-0 w-full"><button onclick="doLogout()" class="btn-outline w-full">Uitloggen</button></div>
         </div>
         <main class="flex-1 ml-72 p-6 pb-24">
+            <!-- Dashboard -->
             <div id="admin-dashboard" class="admin-section">
                 <div class="flex justify-between items-center mb-6"><h1 id="welcomeAdmin" class="text-3xl font-bold text-gray-800"></h1><span id="lastUpdateTime" class="text-sm text-gray-500"></span></div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer"></div>
                 <div class="grid lg:grid-cols-2 gap-6"><div class="card p-5"><h3 class="text-gray-800 font-bold">Recente feedback</h3><div id="recentFeedbackListAdmin" class="text-gray-600 text-sm"></div></div><div class="card p-5"><h3 class="text-gray-800 font-bold">Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('products')" class="btn-outline w-full">Product toevoegen</button></div></div>
             </div>
+            <!-- Resell Orders -->
             <div id="admin-orders" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Resell Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-light mb-2" placeholder="Klantnaam"><input id="orderEmail" class="input-light mb-2" placeholder="Email"><div id="orderProductsContainer"></div><button type="button" id="addProductBtn" class="btn-outline text-sm mb-2">+ Product</button><input id="orderDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="orderDate" type="date" class="input-light mb-2"><select id="orderPaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="orderPaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><select id="orderStatus" class="input-light mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
-            <div id="admin-sales" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Sales & Winst (incl. verlies)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-light mb-2" placeholder="Product"><input id="saleEmail" class="input-light mb-2" placeholder="Klant email"><input id="customerName" class="input-light mb-2" placeholder="Klantnaam"><input id="saleQuantity" type="number" class="input-light mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-light mb-2" placeholder="Prijs p/st"><input id="saleDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="saleDate" type="date" class="input-light mb-2"><select id="salePaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="salePaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><div class="text-gray-700">Inkoopkosten <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Overige kosten <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verlies <span id="displayLoss">0</span><div id="lossPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-light mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-600 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
+            <!-- Sales & Winst -->
+            <div id="admin-sales" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Sales & Winst</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-light mb-2" placeholder="Product"><input id="saleEmail" class="input-light mb-2" placeholder="Klant email"><input id="customerName" class="input-light mb-2" placeholder="Klantnaam"><input id="saleQuantity" type="number" class="input-light mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-light mb-2" placeholder="Prijs p/st"><input id="saleDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="saleDate" type="date" class="input-light mb-2"><select id="salePaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="salePaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><div class="text-gray-700">Inkoopkosten <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Overige kosten <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verlies <span id="displayLoss">0</span><div id="lossPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-light mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-600 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
+            <!-- Tracking Admin -->
             <div id="admin-tracking-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-light mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-light mb-2" placeholder="Carrier nr"><input id="carrierName" class="input-light mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-light mb-2" placeholder="Klant"><input id="trackingDestination" class="input-light mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-light mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-light mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
-            <!-- Producten beheer (geen bestandsupload meer, alleen URL) -->
-            <div id="admin-products" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Producten (Webshop) - Gratis afbeeldingen via URL</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="productName" class="input-light mb-2" placeholder="Productnaam"><input id="productPrice" type="number" class="input-light mb-2" placeholder="Prijs (€)"><input id="productStock" type="number" class="input-light mb-2" placeholder="Voorraad"><input id="productDelivery" class="input-light mb-2" placeholder="Levertijd"><textarea id="productDesc" rows="3" class="input-light mb-2" placeholder="Beschrijving"></textarea><input id="productImageUrl" class="input-light mb-2" placeholder="Afbeelding URL (plak directe link van Imgur, etc.)"><button onclick="addProduct()" class="btn-primary w-full">Product toevoegen</button></div><div><div id="productsList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
+            <!-- Producten beheer (gratis URL) -->
+            <div id="admin-products" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Producten (Webshop)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="productName" class="input-light mb-2" placeholder="Productnaam"><input id="productPrice" type="number" class="input-light mb-2" placeholder="Prijs (€)"><input id="productStock" type="number" class="input-light mb-2" placeholder="Voorraad"><input id="productDelivery" class="input-light mb-2" placeholder="Levertijd"><textarea id="productDesc" rows="3" class="input-light mb-2" placeholder="Beschrijving"></textarea><input id="productImageUrl" class="input-light mb-2" placeholder="Afbeelding URL (gratis, bijv. Imgur link)"><button onclick="addProduct()" class="btn-primary w-full">Product toevoegen</button></div><div><div id="productsList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
+            <!-- Klantbestellingen -->
             <div id="admin-customer-orders" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Klantbestellingen (Webshop)</h2><div id="customerOrdersList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div>
+            <!-- Prijs Checker -->
             <div id="admin-pricecheck" class="admin-section hidden"><div class="card p-6 max-w-xl mx-auto"><h2 class="text-2xl font-bold text-gray-800 mb-4">Prijs Checker</h2><select id="priceCategory" class="input-light mb-3"><option value="schoenen">Schoenen +75</option><option value="shirt">Shirt +40</option><option value="airpods">AirPods +90</option><option value="other">Overig +60</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl text-gray-800" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-gray-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-bold text-indigo-600"></div><div id="priceBreakdown" class="text-gray-500 text-sm"></div></div></div></div>
+            <!-- Analytics -->
             <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold text-gray-800 mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-4 rounded-2xl"><canvas id="chartProfit"></canvas></div></div></div>
+            <!-- Feedback -->
             <div id="admin-feedback" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Klantfeedback</h2><div id="feedbackAdminList" class="text-gray-600"></div></div></div>
+            <!-- Instellingen -->
             <div id="admin-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Instellingen</h2><input id="companyNameSetting" class="input-light mb-3" placeholder="Bedrijfsnaam"><input id="companyEmailSetting" class="input-light mb-3" placeholder="Bedrijfs email"><button onclick="saveCompanySettings()" class="btn-outline w-full mb-2">Opslaan</button><button onclick="exportAllData()" class="btn-outline w-full my-2">Exporteer data</button><button onclick="clearAllData()" class="btn-outline border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-light my-2" placeholder="Plak JSON"></textarea><button onclick="importData()" class="btn-primary w-full">Importeer</button></div></div>
         </main>
     </div>
@@ -159,7 +202,6 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    // Geen storage meer nodig
 
     let sales = [], orders = [], tracking = [], feedback = [], products = [], customerOrders = [];
     let pinValues = { cost: '0', shipcost: '0', other: '0', loss: '0', pricecheck: '0' };
@@ -169,7 +211,11 @@
     let cart = [];
 
     // UI Helpers
-    window.showPublicPage = (page) => { document.querySelectorAll('.public-section').forEach(s => s.classList.add('hidden')); document.getElementById(`public-${page}`).classList.remove('hidden'); if(page==='shop') renderShopProducts(); };
+    window.showPublicPage = (page) => {
+        document.querySelectorAll('.public-section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(`public-${page}`).classList.remove('hidden');
+        if (page === 'shop') renderShopProducts();
+    };
     window.showAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
     window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
     window.toggleChatbot = () => document.getElementById('chatbotWindow').classList.toggle('hidden');
@@ -186,7 +232,7 @@
         messagesDiv.innerHTML += `<div class="message user"><div class="bubble">${escapeHtml(msg)}</div></div>`;
         input.value = '';
         conversationHistory.push({ role: "user", content: msg });
-        const sys = "Je bent AI-assistent van AOM Supplies. Beantwoord vragen over producten, bestellingen, tracking, no-refund. Antwoord in Nederlands, kort en behulpzaam.";
+        const sys = "Je bent AI-assistent van AOM Supplies. Beantwoord vragen over producten, bestellingen, tracking, no-refund. Antwoord in Nederlands, kort.";
         const prompt = sys + "\n" + conversationHistory.map(m => `${m.role === 'user' ? 'Gebruiker' : 'Assistent'}: ${m.content}`).join("\n") + "\nAssistent:";
         try {
             const reply = await puter.ai.chat(prompt, { model: "openai/gpt-5.4-nano" });
@@ -197,7 +243,7 @@
     };
     function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-    // Public tracking (aangepast voor URL foto)
+    // Public tracking
     window.publicTrack = async () => {
         const code = document.getElementById('publicTrackingInput').value.trim();
         const res = document.getElementById('trackingResult');
@@ -425,7 +471,7 @@
         }
     };
 
-    // PRODUCTEN ADMIN (gratis URL)
+    // PRODUCTEN ADMIN (gratis URL) - FIXED
     window.addProduct = async () => {
         const name = document.getElementById('productName').value.trim();
         const price = parseFloat(document.getElementById('productPrice').value);
@@ -435,18 +481,20 @@
         const imageUrl = document.getElementById('productImageUrl').value.trim();
         if (!name || isNaN(price)) return alert('Vul naam en prijs in');
         await addDoc(collection(db, "products"), { name, price, stock, delivery, description, imageUrl, createdAt: new Date().toISOString() });
-        alert('Product toegevoegd en direct zichtbaar in de webshop');
+        alert('Product toegevoegd! Het verschijnt direct in de webshop.');
         document.getElementById('productName').value = '';
         document.getElementById('productPrice').value = '';
         document.getElementById('productStock').value = '';
         document.getElementById('productDelivery').value = '';
         document.getElementById('productDesc').value = '';
         document.getElementById('productImageUrl').value = '';
+        // Forceer herladen webshop als deze zichtbaar is
+        renderShopProducts();
     };
     window.deleteProduct = async (id) => { if(confirm('Verwijder product?')) await deleteDoc(doc(db, "products", id)); };
     window.updateCustomerOrderStatus = async (id, newStatus) => { await updateDoc(doc(db, "customerOrders", id), { status: newStatus }); };
 
-    // Webshop publiek
+    // Webshop publiek - Zorgt dat producten worden getoond
     function renderShopProducts() {
         const container = document.getElementById('shopProductsContainer');
         if (!container) return;
@@ -582,7 +630,7 @@
         if (isSale) {
             subtotal = data.unitPrice * data.quantity;
             tableRows = `<tr><td style="border:1px solid #ddd; padding:8px;">${data.name}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${data.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${data.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${subtotal.toFixed(2)}</td></tr>`;
-            if (data.discount) tableRows += `<tr><td colspan="3" style="padding:8px; text-align:right;">Korting</td><td style="padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
+            if (data.discount) tableRows += `<td><td colspan="3" style="padding:8px; text-align:right;">Korting</td><td style="padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td> </tr>`;
             tableRows += `<tr style="background:#f9fafb;"><td colspan="3" style="padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
         } else {
             data.products.forEach(prod => {
