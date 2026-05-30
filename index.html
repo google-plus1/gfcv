@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies - Complete Management</title>
+    <title>AOM Supplies - Gratis Oplossing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -120,7 +120,8 @@
             <div id="admin-orders" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Resell Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-light mb-2" placeholder="Klantnaam"><input id="orderEmail" class="input-light mb-2" placeholder="Email"><div id="orderProductsContainer"></div><button type="button" id="addProductBtn" class="btn-outline text-sm mb-2">+ Product</button><input id="orderDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="orderDate" type="date" class="input-light mb-2"><select id="orderPaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="orderPaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><select id="orderStatus" class="input-light mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
             <div id="admin-sales" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Sales & Winst (incl. verlies)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-light mb-2" placeholder="Product"><input id="saleEmail" class="input-light mb-2" placeholder="Klant email"><input id="customerName" class="input-light mb-2" placeholder="Klantnaam"><input id="saleQuantity" type="number" class="input-light mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-light mb-2" placeholder="Prijs p/st"><input id="saleDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="saleDate" type="date" class="input-light mb-2"><select id="salePaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="salePaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><div class="text-gray-700">Inkoopkosten <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Overige kosten <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verlies <span id="displayLoss">0</span><div id="lossPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-light mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-600 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
             <div id="admin-tracking-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-light mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-light mb-2" placeholder="Carrier nr"><input id="carrierName" class="input-light mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-light mb-2" placeholder="Klant"><input id="trackingDestination" class="input-light mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-light mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-light mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
-            <div id="admin-products" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Producten (Webshop)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="productName" class="input-light mb-2" placeholder="Productnaam"><input id="productPrice" type="number" class="input-light mb-2" placeholder="Prijs (€)"><input id="productStock" type="number" class="input-light mb-2" placeholder="Voorraad"><input id="productDelivery" class="input-light mb-2" placeholder="Levertijd"><textarea id="productDesc" rows="3" class="input-light mb-2" placeholder="Beschrijving"></textarea><div class="my-2"><label class="text-gray-700">Foto uploaden</label><input type="file" id="productImage" accept="image/png,image/jpeg" class="input-light"></div><button onclick="addProduct()" class="btn-primary w-full">Product toevoegen</button></div><div><div id="productsList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
+            <!-- Producten beheer (geen bestandsupload meer, alleen URL) -->
+            <div id="admin-products" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Producten (Webshop) - Gratis afbeeldingen via URL</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="productName" class="input-light mb-2" placeholder="Productnaam"><input id="productPrice" type="number" class="input-light mb-2" placeholder="Prijs (€)"><input id="productStock" type="number" class="input-light mb-2" placeholder="Voorraad"><input id="productDelivery" class="input-light mb-2" placeholder="Levertijd"><textarea id="productDesc" rows="3" class="input-light mb-2" placeholder="Beschrijving"></textarea><input id="productImageUrl" class="input-light mb-2" placeholder="Afbeelding URL (plak directe link van Imgur, etc.)"><button onclick="addProduct()" class="btn-primary w-full">Product toevoegen</button></div><div><div id="productsList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
             <div id="admin-customer-orders" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Klantbestellingen (Webshop)</h2><div id="customerOrdersList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div>
             <div id="admin-pricecheck" class="admin-section hidden"><div class="card p-6 max-w-xl mx-auto"><h2 class="text-2xl font-bold text-gray-800 mb-4">Prijs Checker</h2><select id="priceCategory" class="input-light mb-3"><option value="schoenen">Schoenen +75</option><option value="shirt">Shirt +40</option><option value="airpods">AirPods +90</option><option value="other">Overig +60</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl text-gray-800" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-gray-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-bold text-indigo-600"></div><div id="priceBreakdown" class="text-gray-500 text-sm"></div></div></div></div>
             <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold text-gray-800 mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-4 rounded-2xl"><canvas id="chartProfit"></canvas></div></div></div>
@@ -131,7 +132,7 @@
 </div>
 
 <!-- MODALS -->
-<div id="updateModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="card p-6 w-full max-w-md"><h3 class="text-xl font-bold text-gray-800 mb-3">Update toevoegen</h3><input id="updateText" class="input-light my-3" placeholder="Status"><input id="updateLocation" class="input-light my-3" placeholder="Locatie"><input id="updateTimestamp" class="input-light my-3" type="datetime-local"><div class="my-3"><label class="text-gray-700">Afbeelding</label><input type="file" id="updateImageFile" accept="image/png,image/jpeg" class="input-light"><div id="uploadProgress" class="text-xs text-indigo-600 mt-1 hidden"></div></div><select id="updateStep" class="input-light my-3"><option value="">Geen stap</option><option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option><option value="in_sorteercentrum">Sorteercentrum</option><option value="onderweg">Onderweg</option><option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option></select><div class="flex gap-3"><button onclick="addUpdateToTrackingWithImage()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
+<div id="updateModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="card p-6 w-full max-w-md"><h3 class="text-xl font-bold text-gray-800 mb-3">Update toevoegen</h3><input id="updateText" class="input-light my-3" placeholder="Status"><input id="updateLocation" class="input-light my-3" placeholder="Locatie"><input id="updateTimestamp" class="input-light my-3" type="datetime-local"><input id="updatePhotoUrl" class="input-light my-3" placeholder="Foto URL (optioneel)"><select id="updateStep" class="input-light my-3"><option value="">Geen stap</option><option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option><option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option><option value="in_sorteercentrum">Sorteercentrum</option><option value="onderweg">Onderweg</option><option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option></select><div class="flex gap-3"><button onclick="addUpdateToTracking()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
 <div id="editTrackingModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="card p-6 w-full max-w-md"><h3 class="text-xl font-bold text-gray-800 mb-3">Bewerk tracking</h3><input type="date" id="editEstimatedDelivery" class="input-light my-3"><input id="editCarrierTrackingNumber" class="input-light my-3" placeholder="Carrier nr"><input id="editCarrierName" class="input-light my-3" placeholder="Vervoerder"><select id="editCurrentStep" class="input-light my-3"><option>Bestelling ontvangen</option><option>Naar vliegveld</option><option>In vliegtuig</option><option>Geland</option><option>In douane</option><option>Sorteercentrum</option><option>Onderweg</option><option>Bezig met bezorgen</option><option>Geleverd</option></select><div class="flex gap-3"><button onclick="saveTrackingEdits()" class="btn-primary flex-1">Opslaan</button><button onclick="closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
 <div id="receiptModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-6 receipt-print"></div><div class="flex gap-3 p-4"><button onclick="printReceipt()" class="btn-primary flex-1">Print / PDF</button><button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button></div></div></div>
 <div id="termsAcceptModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="card p-6 w-full max-w-md"><h2 class="text-2xl font-bold text-gray-800">Accepteer voorwaarden</h2><div class="my-4 text-gray-600">No-Refund Policy. Geen restitutie.</div><button onclick="acceptTerms()" class="btn-primary w-full">Ik accepteer</button></div></div>
@@ -148,7 +149,6 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, orderBy, where, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
     const firebaseConfig = {
         apiKey: "AIzaSyDXoY8KxIihvi35RCAMKVFlYlntHOPdiZk",
         authDomain: "fatbike-reparatie.firebaseapp.com",
@@ -159,7 +159,7 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const storage = getStorage(app);
+    // Geen storage meer nodig
 
     let sales = [], orders = [], tracking = [], feedback = [], products = [], customerOrders = [];
     let pinValues = { cost: '0', shipcost: '0', other: '0', loss: '0', pricecheck: '0' };
@@ -197,7 +197,7 @@
     };
     function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-    // Public tracking
+    // Public tracking (aangepast voor URL foto)
     window.publicTrack = async () => {
         const code = document.getElementById('publicTrackingInput').value.trim();
         const res = document.getElementById('trackingResult');
@@ -404,28 +404,14 @@
         closeModal('editTrackingModal');
     };
     window.openUpdateModal = (id) => { currentTrackingId = id; document.getElementById('updateModal').classList.remove('hidden'); };
-    window.addUpdateToTrackingWithImage = async () => {
+    window.addUpdateToTracking = async () => {
         if(!currentTrackingId) { alert('Selecteer tracking'); return; }
         const text = document.getElementById('updateText').value;
         if (!text) return alert('Status verplicht');
         const location = document.getElementById('updateLocation').value;
         const timestamp = document.getElementById('updateTimestamp').value || new Date().toISOString();
         const stepChange = document.getElementById('updateStep').value;
-        const fileInput = document.getElementById('updateImageFile');
-        let photoUrl = null;
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const storageRef = ref(storage, `tracking/${currentTrackingId}/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            document.getElementById('uploadProgress').classList.remove('hidden');
-            await new Promise((resolve, reject) => {
-                uploadTask.on('state_changed',
-                    (snapshot) => { const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100; document.getElementById('uploadProgress').innerText = `Uploaden: ${Math.round(progress)}%`; },
-                    reject,
-                    async () => { photoUrl = await getDownloadURL(uploadTask.snapshot.ref); document.getElementById('uploadProgress').classList.add('hidden'); resolve(); }
-                );
-            });
-        }
+        const photoUrl = document.getElementById('updatePhotoUrl').value;
         const trackRef = doc(db, "tracking", currentTrackingId);
         const snap = await getDoc(trackRef);
         if(snap.exists()) {
@@ -436,41 +422,26 @@
             await updateDoc(trackRef, data);
             alert('Update toegevoegd');
             closeModal('updateModal');
-            document.getElementById('updateImageFile').value = '';
         }
     };
 
-    // PRODUCTEN ADMIN - FIXED
+    // PRODUCTEN ADMIN (gratis URL)
     window.addProduct = async () => {
         const name = document.getElementById('productName').value.trim();
         const price = parseFloat(document.getElementById('productPrice').value);
         const stock = parseInt(document.getElementById('productStock').value);
         const delivery = document.getElementById('productDelivery').value;
         const description = document.getElementById('productDesc').value;
+        const imageUrl = document.getElementById('productImageUrl').value.trim();
         if (!name || isNaN(price)) return alert('Vul naam en prijs in');
-        let photoUrl = "";
-        const file = document.getElementById('productImage').files[0];
-        if (file) {
-            const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            // Show upload progress (optioneel)
-            const uploadPromise = new Promise((resolve, reject) => {
-                uploadTask.on('state_changed', null, reject, async () => {
-                    photoUrl = await getDownloadURL(uploadTask.snapshot.ref);
-                    resolve();
-                });
-            });
-            await uploadPromise;
-        }
-        await addDoc(collection(db, "products"), { name, price, stock, delivery, description, photoUrl, createdAt: new Date().toISOString() });
-        alert('Product toegevoegd en verschijnt direct in de webshop');
-        // Clear form
+        await addDoc(collection(db, "products"), { name, price, stock, delivery, description, imageUrl, createdAt: new Date().toISOString() });
+        alert('Product toegevoegd en direct zichtbaar in de webshop');
         document.getElementById('productName').value = '';
         document.getElementById('productPrice').value = '';
         document.getElementById('productStock').value = '';
         document.getElementById('productDelivery').value = '';
         document.getElementById('productDesc').value = '';
-        document.getElementById('productImage').value = '';
+        document.getElementById('productImageUrl').value = '';
     };
     window.deleteProduct = async (id) => { if(confirm('Verwijder product?')) await deleteDoc(doc(db, "products", id)); };
     window.updateCustomerOrderStatus = async (id, newStatus) => { await updateDoc(doc(db, "customerOrders", id), { status: newStatus }); };
@@ -485,7 +456,7 @@
         }
         container.innerHTML = products.map(p => `
             <div class="product-card p-4">
-                ${p.photoUrl ? `<img src="${p.photoUrl}" class="w-full h-40 object-cover rounded-xl mb-3">` : '<div class="w-full h-40 bg-gray-100 rounded-xl mb-3 flex items-center justify-center text-gray-400">Geen foto</div>'}
+                ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-40 object-cover rounded-xl mb-3" onerror="this.src='https://placehold.co/400x300?text=Geen+foto'">` : '<div class="w-full h-40 bg-gray-100 rounded-xl mb-3 flex items-center justify-center text-gray-400">Geen foto</div>'}
                 <h3 class="text-xl font-bold text-gray-800">${p.name}</h3>
                 <p class="text-indigo-600 font-bold">€${p.price.toFixed(2)}</p>
                 <p class="text-gray-500 text-sm">Voorraad: ${p.stock}</p>
@@ -529,7 +500,6 @@
         alert('Bestelling geplaatst!');
         cart = [];
         updateCartUI();
-        // Optioneel: voorraad bijwerken (kan later)
     };
 
     // Statistieken en listeners
