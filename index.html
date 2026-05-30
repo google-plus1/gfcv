@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies | Track & Trace + Bon</title>
+    <title>AOM Supplies | Professionele bon + Orders</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -50,6 +50,8 @@
         .progress-fill { height: 100%; background: linear-gradient(90deg, #00c6ff, #0072ff); width: 0%; transition: width 0.3s; }
         @media print { body * { visibility: hidden; } .receipt-print, .receipt-print * { visibility: visible; } .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; color: black; } }
         @media (max-width: 768px) { .admin-sidebar { width: 100%; height: auto; position: relative; } main { margin-left: 0 !important; } .chatbot-window { width: calc(100% - 32px); right: 16px; height: 65vh; } }
+        .product-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .product-row input { flex: 1; }
     </style>
 </head>
 <body>
@@ -116,8 +118,23 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer"></div>
                 <div class="grid lg:grid-cols-2 gap-6"><div class="glass-card p-5"><h3 class="text-white font-bold">Recente feedback</h3><div id="recentFeedbackListAdmin" class="text-gray-300 text-sm"></div></div><div class="glass-card p-5"><h3 class="text-white font-bold">Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('tracking-admin')" class="btn-outline w-full">Tracking beheren</button></div></div>
             </div>
-            <!-- Orders -->
-            <div id="admin-orders" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-dark mb-2" placeholder="Klantnaam *"><input id="orderEmail" class="input-dark mb-2" placeholder="Email (optioneel)"><input id="orderProduct" class="input-dark mb-2" placeholder="Product *"><input id="orderQuantity" type="number" class="input-dark mb-2" placeholder="Aantal" value="1"><input id="orderUnitPrice" type="number" class="input-dark mb-2" placeholder="Prijs per stuk (€)"><input id="orderDiscount" type="number" class="input-dark mb-2" placeholder="Korting (€)"><input id="orderDate" type="date" class="input-dark mb-2"><select id="orderPaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select><select id="orderStatus" class="input-dark mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-300"></div></div></div></div></div>
+            <!-- Orders (met meerdere producten) -->
+            <div id="admin-orders" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Orders (meerdere producten)</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <input id="orderCustomer" class="input-dark mb-2" placeholder="Klantnaam *">
+                        <input id="orderEmail" class="input-dark mb-2" placeholder="Email (optioneel)">
+                        <div id="orderProductsContainer"></div>
+                        <button onclick="addOrderProductRow()" class="btn-outline text-sm mb-2">+ Product toevoegen</button>
+                        <input id="orderDiscount" type="number" class="input-dark mb-2" placeholder="Korting (€)">
+                        <input id="orderDate" type="date" class="input-dark mb-2">
+                        <select id="orderPaymentMethod" class="input-dark mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option><option>Tikkie</option></select>
+                        <select id="orderStatus" class="input-dark mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select>
+                        <button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button>
+                    </div>
+                    <div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-300"></div></div>
+                </div>
+            </div></div>
             <!-- Tracking Admin -->
             <div id="admin-tracking-admin" class="admin-section hidden"><div class="glass-card p-6"><h2 class="text-2xl font-bold text-white mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-dark mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-dark mb-2" placeholder="Carrier nummer"><input id="carrierName" class="input-dark mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-dark mb-2" placeholder="Klant"><input id="trackingDestination" class="input-dark mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-dark mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-dark mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk geselecteerde</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3 text-gray-300"></div></div></div></div></div>
             <!-- Sales -->
@@ -308,20 +325,50 @@
         document.getElementById('priceResult').classList.remove('hidden');
     };
 
-    // ORDER FUNCTIES
+    // ORDER FUNCTIES (meerdere producten)
+    let orderProductRows = [];
+    function addOrderProductRow() {
+        const container = document.getElementById('orderProductsContainer');
+        const rowId = Date.now();
+        orderProductRows.push(rowId);
+        const div = document.createElement('div');
+        div.className = 'product-row';
+        div.id = `orderProductRow_${rowId}`;
+        div.innerHTML = `
+            <input type="text" placeholder="Productnaam" class="input-dark product-name" style="flex:2;">
+            <input type="number" placeholder="Aantal" class="input-dark product-qty" style="flex:1;" value="1">
+            <input type="number" placeholder="Prijs p/st" class="input-dark product-price" style="flex:1;">
+            <button onclick="removeOrderProductRow(${rowId})" class="text-red-400 text-sm">✖</button>
+        `;
+        container.appendChild(div);
+    }
+    window.removeOrderProductRow = (id) => {
+        const el = document.getElementById(`orderProductRow_${id}`);
+        if (el) el.remove();
+        orderProductRows = orderProductRows.filter(i => i !== id);
+    };
     window.addOrder = async () => {
         const customer = document.getElementById('orderCustomer').value.trim();
-        const product = document.getElementById('orderProduct').value.trim();
-        if (!customer || !product) return alert('Klantnaam en product zijn verplicht');
-        const quantity = parseInt(document.getElementById('orderQuantity').value) || 1;
-        const unitPrice = parseFloat(document.getElementById('orderUnitPrice').value) || 0;
+        if (!customer) return alert('Klantnaam verplicht');
+        const products = [];
+        let hasProducts = false;
+        document.querySelectorAll('#orderProductsContainer .product-row').forEach(row => {
+            const name = row.querySelector('.product-name').value.trim();
+            const qty = parseInt(row.querySelector('.product-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.product-price').value) || 0;
+            if (name && qty > 0 && price > 0) {
+                products.push({ name, quantity: qty, unitPrice: price, total: qty * price });
+                hasProducts = true;
+            }
+        });
+        if (!hasProducts) return alert('Voeg ten minste één product toe');
         const discount = parseFloat(document.getElementById('orderDiscount').value) || 0;
-        const totalBeforeDiscount = unitPrice * quantity;
-        const totalAmount = totalBeforeDiscount - discount;
-        if (unitPrice <= 0 && totalAmount <= 0) return alert('Voer een geldige prijs in');
+        const subtotal = products.reduce((sum, p) => sum + p.total, 0);
+        const totalAmount = subtotal - discount;
         await addDoc(collection(db, "orders"), {
             customer, email: document.getElementById('orderEmail').value,
-            product, quantity, unitPrice, discount, totalBeforeDiscount, totalAmount,
+            products: products,
+            discount, subtotal, totalAmount,
             orderDate: document.getElementById('orderDate').value || new Date().toISOString().split('T')[0],
             status: document.getElementById('orderStatus').value,
             paymentMethod: document.getElementById('orderPaymentMethod').value,
@@ -330,11 +377,11 @@
         alert('Order toegevoegd');
         document.getElementById('orderCustomer').value = '';
         document.getElementById('orderEmail').value = '';
-        document.getElementById('orderProduct').value = '';
-        document.getElementById('orderQuantity').value = '1';
-        document.getElementById('orderUnitPrice').value = '';
         document.getElementById('orderDiscount').value = '';
         document.getElementById('orderDate').value = '';
+        document.getElementById('orderProductsContainer').innerHTML = '';
+        orderProductRows = [];
+        addOrderProductRow(); // add one empty row
     };
     window.deleteOrder = async (id) => { if(confirm('Verwijder order?')) await deleteDoc(doc(db, "orders", id)); };
     window.updateOrderStatus = async (id, newStatus) => { await updateDoc(doc(db, "orders", id), { status: newStatus }); };
@@ -446,9 +493,8 @@
         }
     };
 
-    // BON (RECEIPT)
+    // PROFESSIONELE BON
     window.showReceipt = (type, id) => {
-        console.log("showReceipt", type, id);
         let data = type === 'sale' ? sales.find(s => s.id === id) : orders.find(o => o.id === id);
         if (!data) {
             alert("Geen gegevens gevonden voor deze bon.");
@@ -461,14 +507,18 @@
         const customerEmail = isSale ? data.customerEmail : data.email;
         const paymentMethod = data.paymentMethod || 'Onbekend';
         let tableRows = '';
+        let subtotal = 0;
         if (isSale) {
-            const subtotal = data.unitPrice * data.quantity;
+            subtotal = data.unitPrice * data.quantity;
             tableRows = `<tr><td style="border:1px solid #ddd; padding:8px;">${data.name}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${data.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${data.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${subtotal.toFixed(2)}</td></tr>`;
             if (data.discount) tableRows += `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Korting</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
             tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
         } else {
-            const subtotal = data.unitPrice * data.quantity;
-            tableRows = `<tr><td style="border:1px solid #ddd; padding:8px;">${data.product}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${data.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${data.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${subtotal.toFixed(2)}</td></tr>`;
+            // Order with multiple products
+            data.products.forEach(prod => {
+                subtotal += prod.total;
+                tableRows += `<tr><td style="border:1px solid #ddd; padding:8px;">${prod.name}</td><td style="border:1px solid #ddd; padding:8px; text-align:center;">${prod.quantity}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${prod.unitPrice.toFixed(2)}</td><td style="border:1px solid #ddd; padding:8px; text-align:right;">€${prod.total.toFixed(2)}</td></tr>`;
+            });
             if (data.discount) tableRows += `<tr><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Korting</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;">-€${data.discount.toFixed(2)}</td></tr>`;
             tableRows += `<tr style="background:#f0f0f0;"><td colspan="3" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Totaal te betalen</strong></td><td style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>€${data.totalAmount.toFixed(2)}</strong></td></tr>`;
         }
@@ -533,7 +583,7 @@
     }
     function updateUI() {
         const ordersDiv = document.getElementById('ordersList');
-        if (ordersDiv) ordersDiv.innerHTML = orders.map(o => `<div class="border-b border-gray-700 py-2"><b>${o.customer}</b> - ${o.product} (€${o.totalAmount})<br>Korting: €${o.discount||0}<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-gray-800 text-white text-xs ml-2"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="window.showReceipt('order','${o.id}')" class="text-cyan-400 ml-2">Bon</button> <button onclick="deleteOrder('${o.id}')" class="text-red-400">✖</button></div>`).join('');
+        if (ordersDiv) ordersDiv.innerHTML = orders.map(o => `<div class="border-b border-gray-700 py-2"><b>${o.customer}</b> - ${o.products ? o.products.map(p=>p.name).join(', ') : '-'} (€${o.totalAmount})<br>Korting: €${o.discount||0}<br>Status: ${o.status} <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-gray-800 text-white text-xs ml-2"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select> <button onclick="window.showReceipt('order','${o.id}')" class="text-cyan-400 ml-2">Bon</button> <button onclick="deleteOrder('${o.id}')" class="text-red-400">✖</button></div>`).join('');
         const salesDiv = document.getElementById('salesList');
         if (salesDiv) salesDiv.innerHTML = sales.map(s => `<div class="border-b border-gray-700 py-2"><b>${s.name}</b> - ${s.customerName} (${s.saleDate})<br>Aantal: ${s.quantity} | Totaal: €${s.totalAmount} | Winst: €${s.profit}<br><button onclick="window.showReceipt('sale','${s.id}')" class="text-cyan-400 ml-2">Bon</button> <button onclick="deleteSale('${s.id}')" class="text-red-400">✖</button></div>`).join('');
         const trackingDiv = document.getElementById('trackingList');
@@ -565,8 +615,8 @@
         generatePinpad('shipcost','shipPinpad');
         generatePinpad('other','otherPinpad');
         generatePinpad('pricecheck','pricePinpad');
-        const saleDateInput = document.getElementById('saleDate');
-        if (saleDateInput) saleDateInput.valueAsDate = new Date();
+        document.getElementById('saleDate').valueAsDate = new Date();
+        addOrderProductRow(); // start with one product row
     }, 100);
     showPublicPage('home');
     if (window.location.hash.startsWith('#track=')) {
@@ -577,4 +627,3 @@
 </script>
 </body>
 </html>
-```
