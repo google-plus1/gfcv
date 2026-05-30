@@ -70,13 +70,9 @@
         </div>
     </header>
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Home -->
         <div id="public-home" class="public-section text-center"><h1 class="text-5xl font-black text-gray-800">AOM Supplies</h1><p class="text-gray-500 mt-4">Webshop + Track & Trace voor resellers</p><div class="mt-10"><button onclick="showPublicPage('shop')" class="btn-primary">Shop nu</button></div></div>
-        <!-- Tracking -->
         <div id="public-tracking" class="public-section hidden"><div class="card p-8 max-w-3xl mx-auto"><h2 class="text-3xl font-bold text-gray-800 mb-2">Track & Trace</h2><p class="text-gray-500 mb-6">Voer uw AOM trackingcode in</p><div class="flex flex-col sm:flex-row gap-4"><input type="text" id="publicTrackingInput" class="input-light" placeholder="AOM..."><button onclick="publicTrack()" class="btn-primary">Zoeken</button></div><div id="trackingResult" class="mt-8"></div><div class="mt-8 text-center"><button onclick="showTermsAccept()" class="text-indigo-600 underline text-sm mr-4">Voorwaarden</button><button onclick="showPublicFeedback()" class="text-indigo-600 underline text-sm">Feedback</button></div></div></div>
-        <!-- Webshop -->
         <div id="public-shop" class="public-section hidden"><h2 class="text-3xl font-bold text-gray-800 mb-6">Onze producten</h2><div id="shopProductsContainer" class="grid md:grid-cols-3 gap-6"></div><div class="card p-6 mt-8"><h3 class="text-2xl font-bold text-gray-800 mb-4">Winkelwagen</h3><div id="cartItems" class="text-gray-600"></div><div id="cartTotal" class="text-gray-800 font-bold mt-2"></div><button onclick="checkout()" class="btn-primary mt-4">Bestelling plaatsen</button></div></div>
-        <!-- Diensten, About, Contact, Terms -->
         <div id="public-services" class="public-section hidden"><div class="card p-6"><h3 class="text-xl font-bold text-indigo-600">Resell platform</h3><p class="text-gray-600">Beheer verkopen, winst en klanten.</p></div><div class="card p-6 mt-4"><h3 class="text-xl font-bold text-indigo-600">Internationale tracking</h3><p class="text-gray-600">Luchtvracht, douane, eindbezorging.</p></div></div>
         <div id="public-about" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Over AOM Supplies</h2><p class="text-gray-600 mt-4">Wij zijn specialist in resell logistiek en tracking.</p></div></div>
         <div id="public-contact" class="public-section hidden"><div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Contact</h2><p class="text-gray-600">support@aomsupplies.com | +31 20 123 4567</p><textarea rows="3" class="input-light mt-4" placeholder="Uw bericht"></textarea><button class="btn-primary mt-3" onclick="submitContact()">Verstuur</button></div></div>
@@ -116,29 +112,19 @@
             <div class="p-4 absolute bottom-0 w-full"><button onclick="doLogout()" class="btn-outline w-full">Uitloggen</button></div>
         </div>
         <main class="flex-1 ml-72 p-6 pb-24">
-            <!-- Dashboard -->
             <div id="admin-dashboard" class="admin-section">
                 <div class="flex justify-between items-center mb-6"><h1 id="welcomeAdmin" class="text-3xl font-bold text-gray-800"></h1><span id="lastUpdateTime" class="text-sm text-gray-500"></span></div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="statsContainer"></div>
                 <div class="grid lg:grid-cols-2 gap-6"><div class="card p-5"><h3 class="text-gray-800 font-bold">Recente feedback</h3><div id="recentFeedbackListAdmin" class="text-gray-600 text-sm"></div></div><div class="card p-5"><h3 class="text-gray-800 font-bold">Snelle acties</h3><button onclick="navigateAdmin('sales')" class="btn-primary w-full mb-2">Nieuwe verkoop</button><button onclick="navigateAdmin('products')" class="btn-outline w-full">Product toevoegen</button></div></div>
             </div>
-            <!-- Resell Orders -->
             <div id="admin-orders" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Resell Orders</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="orderCustomer" class="input-light mb-2" placeholder="Klantnaam"><input id="orderEmail" class="input-light mb-2" placeholder="Email"><div id="orderProductsContainer"></div><button type="button" id="addProductBtn" class="btn-outline text-sm mb-2">+ Product</button><input id="orderDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="orderDate" type="date" class="input-light mb-2"><select id="orderPaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="orderPaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><select id="orderStatus" class="input-light mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button></div><div><div id="ordersList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
-            <!-- Sales & Winst (met verlies) -->
-            <div id="admin-sales" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Sales & Winst (incl. verlies)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-light mb-2" placeholder="Product"><input id="saleEmail" class="input-light mb-2" placeholder="Klant email"><input id="customerName" class="input-light mb-2" placeholder="Klantnaam"><input id="saleQuantity" type="number" class="input-light mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-light mb-2" placeholder="Prijs p/st"><input id="saleDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="saleDate" type="date" class="input-light mb-2"><select id="salePaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="salePaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><div class="text-gray-700">Inkoopkosten <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Overige kosten <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verlies (beschadigd/vermist) <span id="displayLoss">0</span><div id="lossPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-light mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-600 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
-            <!-- Tracking Admin -->
+            <div id="admin-sales" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Sales & Winst (incl. verlies)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="saleName" class="input-light mb-2" placeholder="Product"><input id="saleEmail" class="input-light mb-2" placeholder="Klant email"><input id="customerName" class="input-light mb-2" placeholder="Klantnaam"><input id="saleQuantity" type="number" class="input-light mb-2" placeholder="Aantal" value="1"><input id="saleUnitPrice" type="number" class="input-light mb-2" placeholder="Prijs p/st"><input id="saleDiscount" type="number" class="input-light mb-2" placeholder="Korting (€)"><input id="saleDate" type="date" class="input-light mb-2"><select id="salePaymentMethod" class="input-light mb-2"><option>Contant</option><option>Bank</option><option>PayPal</option></select><select id="salePaymentStatus" class="input-light mb-2"><option>Betaald</option><option>Nog te betalen</option></select><div class="text-gray-700">Inkoopkosten <span id="displayCost">0</span><div id="costPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verzendkosten <span id="displayShipCost">0</span><div id="shipPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Overige kosten <span id="displayOther">0</span><div id="otherPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><div class="text-gray-700">Verlies <span id="displayLoss">0</span><div id="lossPinpad" class="grid grid-cols-4 gap-1 my-2"></div></div><select id="saleSeller" class="input-light mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Toevoegen</button><div id="salePreview" class="hidden mt-2 text-green-600 text-sm"></div></div><div><div id="salesList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div></div></div>
             <div id="admin-tracking-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Tracking beheer</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="trackingCode" class="input-light mb-2" placeholder="AOM code"><input id="carrierTrackingNumber" class="input-light mb-2" placeholder="Carrier nr"><input id="carrierName" class="input-light mb-2" placeholder="Vervoerder"><input id="trackingCustomer" class="input-light mb-2" placeholder="Klant"><input id="trackingDestination" class="input-light mb-2" placeholder="Bestemming"><input type="date" id="trackingEstimatedDelivery" class="input-light mb-2"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div class="mt-4"><input id="searchTrackingInput" class="input-light mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div><button onclick="openEditTrackingModal()" class="btn-outline w-full mt-2">Bewerk</button></div><div><div id="trackingList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
-            <!-- Producten beheer -->
             <div id="admin-products" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Producten (Webshop)</h2><div class="grid md:grid-cols-2 gap-6"><div><input id="productName" class="input-light mb-2" placeholder="Productnaam"><input id="productPrice" type="number" class="input-light mb-2" placeholder="Prijs (€)"><input id="productStock" type="number" class="input-light mb-2" placeholder="Voorraad"><input id="productDelivery" class="input-light mb-2" placeholder="Levertijd"><textarea id="productDesc" rows="3" class="input-light mb-2" placeholder="Beschrijving"></textarea><div class="my-2"><label class="text-gray-700">Foto uploaden</label><input type="file" id="productImage" accept="image/png,image/jpeg" class="input-light"></div><button onclick="addProduct()" class="btn-primary w-full">Product toevoegen</button></div><div><div id="productsList" class="max-h-96 overflow-y-auto space-y-3 text-gray-600"></div></div></div></div></div>
-            <!-- Klantbestellingen -->
             <div id="admin-customer-orders" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Klantbestellingen (Webshop)</h2><div id="customerOrdersList" class="max-h-96 overflow-y-auto text-gray-600"></div></div></div>
-            <!-- Prijs Checker -->
             <div id="admin-pricecheck" class="admin-section hidden"><div class="card p-6 max-w-xl mx-auto"><h2 class="text-2xl font-bold text-gray-800 mb-4">Prijs Checker</h2><select id="priceCategory" class="input-light mb-3"><option value="schoenen">Schoenen +75</option><option value="shirt">Shirt +40</option><option value="airpods">AirPods +90</option><option value="other">Overig +60</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl text-gray-800" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-gray-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-bold text-indigo-600"></div><div id="priceBreakdown" class="text-gray-500 text-sm"></div></div></div></div>
-            <!-- Analytics -->
             <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold text-gray-800 mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-4 rounded-2xl"><canvas id="chartProfit"></canvas></div></div></div>
-            <!-- Feedback -->
             <div id="admin-feedback" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Klantfeedback</h2><div id="feedbackAdminList" class="text-gray-600"></div></div></div>
-            <!-- Instellingen -->
             <div id="admin-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Instellingen</h2><input id="companyNameSetting" class="input-light mb-3" placeholder="Bedrijfsnaam"><input id="companyEmailSetting" class="input-light mb-3" placeholder="Bedrijfs email"><button onclick="saveCompanySettings()" class="btn-outline w-full mb-2">Opslaan</button><button onclick="exportAllData()" class="btn-outline w-full my-2">Exporteer data</button><button onclick="clearAllData()" class="btn-outline border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-light my-2" placeholder="Plak JSON"></textarea><button onclick="importData()" class="btn-primary w-full">Importeer</button></div></div>
         </main>
     </div>
@@ -296,7 +282,7 @@
         document.getElementById('priceResult').classList.remove('hidden');
     };
 
-    // Sales (met verlies)
+    // Sales
     window.addSale = async () => {
         const name = document.getElementById('saleName').value;
         const qty = parseInt(document.getElementById('saleQuantity').value) || 1;
@@ -468,12 +454,19 @@
         if (file) {
             const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
             const uploadTask = uploadBytesResumable(storageRef, file);
+            // Show upload progress
+            document.getElementById('productImage').style.opacity = '0.5';
             await new Promise((resolve, reject) => {
-                uploadTask.on('state_changed', null, reject, async () => {
-                    photoUrl = await getDownloadURL(uploadTask.snapshot.ref);
-                    resolve();
-                });
+                uploadTask.on('state_changed', 
+                    (snapshot) => { /* progress */ },
+                    (error) => { console.error(error); reject(error); },
+                    async () => {
+                        photoUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                        resolve();
+                    }
+                );
             });
+            document.getElementById('productImage').style.opacity = '1';
         }
         await addDoc(collection(db, "products"), { name, price, stock, delivery, description, photoUrl, createdAt: new Date().toISOString() });
         alert('Product toegevoegd');
@@ -491,6 +484,10 @@
     function renderShopProducts() {
         const container = document.getElementById('shopProductsContainer');
         if (!container) return;
+        if (products.length === 0) {
+            container.innerHTML = '<div class="text-gray-500 col-span-3 text-center">Geen producten gevonden</div>';
+            return;
+        }
         container.innerHTML = products.map(p => `
             <div class="product-card p-4">
                 ${p.photoUrl ? `<img src="${p.photoUrl}" class="w-full h-40 object-cover rounded-xl mb-3">` : '<div class="w-full h-40 bg-gray-100 rounded-xl mb-3 flex items-center justify-center text-gray-400">Geen foto</div>'}
@@ -534,10 +531,9 @@
             customerName, customerEmail, address, items: orderItems, totalAmount,
             status: 'pending', createdAt: new Date().toISOString()
         });
-        alert('Bestelling geplaatst! U ontvangt een bevestiging.');
+        alert('Bestelling geplaatst!');
         cart = [];
         updateCartUI();
-        // Voorraad zou idealiter verlaagd worden, maar dat is een extra stap
     };
 
     // Statistieken en listeners
@@ -560,7 +556,7 @@
         onSnapshot(collection(db, "orders"), snap => { orders = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); });
         onSnapshot(collection(db, "tracking"), snap => { tracking = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); });
         onSnapshot(collection(db, "feedback"), snap => { feedback = snap.docs.map(d=> ({id:d.id, ...d.data()})); updateUI(); });
-        onSnapshot(collection(db, "products"), snap => { products = snap.docs.map(d=> ({id:d.id, ...d.data()})); if(!document.getElementById('publicPage').classList.contains('hidden')) renderShopProducts(); updateUI(); });
+        onSnapshot(collection(db, "products"), snap => { products = snap.docs.map(d=> ({id:d.id, ...d.data()})); renderShopProducts(); updateUI(); });
         onSnapshot(collection(db, "customerOrders"), snap => { customerOrders = snap.docs.map(d=> ({id:d.id, ...d.data()})); renderCustomerOrders(); updateUI(); });
     }
     function renderCustomerOrders() {
@@ -662,28 +658,29 @@
         if (document.getElementById('companyEmailSetting')) document.getElementById('companyEmailSetting').value = companyEmail;
     }
     window.exportAllData = async () => {
-        const s = await getDocs(collection(db, "sales"));
-        const o = await getDocs(collection(db, "orders"));
-        const t = await getDocs(collection(db, "tracking"));
-        const p = await getDocs(collection(db, "products"));
-        const c = await getDocs(collection(db, "customerOrders"));
-        const data = { sales: s.docs.map(d=>d.data()), orders: o.docs.map(d=>d.data()), tracking: t.docs.map(d=>d.data()), products: p.docs.map(d=>d.data()), customerOrders: c.docs.map(d=>d.data()) };
+        const collections = ['sales','orders','tracking','feedback','products','customerOrders'];
+        const data = {};
+        for (const col of collections) {
+            const snap = await getDocs(collection(db, col));
+            data[col] = snap.docs.map(d=>d.data());
+        }
         const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
         const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='aom_backup.json'; a.click();
     };
     window.clearAllData = async () => {
         if(!confirm('ALLES WISSEN? Dit is permanent.')) return;
-        for(const col of ['sales','orders','tracking','feedback','products','customerOrders']) { const snap = await getDocs(collection(db, col)); for(const d of snap.docs) await deleteDoc(doc(db, col, d.id)); }
+        const cols = ['sales','orders','tracking','feedback','products','customerOrders'];
+        for(const col of cols) { const snap = await getDocs(collection(db, col)); for(const d of snap.docs) await deleteDoc(doc(db, col, d.id)); }
         alert('Alle data gewist');
     };
     window.importData = async () => {
         try {
             const d = JSON.parse(document.getElementById('importDataArea').value);
-            if(d.sales) for(const s of d.sales) await addDoc(collection(db, "sales"), s);
-            if(d.orders) for(const o of d.orders) await addDoc(collection(db, "orders"), o);
-            if(d.tracking) for(const t of d.tracking) await addDoc(collection(db, "tracking"), t);
-            if(d.products) for(const p of d.products) await addDoc(collection(db, "products"), p);
-            if(d.customerOrders) for(const co of d.customerOrders) await addDoc(collection(db, "customerOrders"), co);
+            for (const [col, items] of Object.entries(d)) {
+                for (const item of items) {
+                    await addDoc(collection(db, col), item);
+                }
+            }
             alert('Import voltooid');
         } catch(e) { alert('Ongeldig JSON'); }
     };
