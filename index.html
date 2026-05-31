@@ -74,6 +74,9 @@
         .toast.error { border-left-color: #ef4444; }
         .hidden { display: none !important; }
         .upload-progress { font-size: 0.75rem; color: #4f46e5; margin-top: 4px; }
+        .product-image-container { position: relative; width: 100%; height: 160px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 12px; margin-bottom: 12px; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; }
+        .image-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9ca3af; font-size: 0.875rem; text-align: center; }
     </style>
 </head>
 <body>
@@ -146,48 +149,31 @@
         <div id="public-terms" class="public-section hidden">
             <div class="card p-8 document-content">
                 <h2 class="text-3xl font-bold text-gray-800 mb-4">Algemene Voorwaarden</h2>
-                <h3>Artikel 1 - Definities</h3>
-                <p>In deze voorwaarden wordt verstaan onder: AOM Supplies: de besloten vennootschap gevestigd te Amsterdam. Klant: de natuurlijke of rechtspersoon die gebruikmaakt van onze diensten.</p>
-                <h3>Artikel 2 - Toepasselijkheid</h3>
-                <p>Deze voorwaarden zijn van toepassing op alle aanbiedingen, overeenkomsten en leveringen van AOM Supplies.</p>
-                <h3>Artikel 3 - No-Refund Policy</h3>
-                <p>Alle verkopen van producten en diensten zijn definitief. Er wordt geen restitutie verleend, tenzij wettelijk verplicht. Klachten dienen schriftelijk te worden ingediend binnen 14 dagen na ontvangst.</p>
-                <h3>Artikel 4 - Aansprakelijkheid</h3>
-                <p>AOM Supplies is niet aansprakelijk voor indirecte schade, gevolgschade of gederfde winst. De maximale aansprakelijkheid is beperkt tot het factuurbedrag van de desbetreffende dienst.</p>
-                <h3>Artikel 5 - Privacy</h3>
-                <p>Persoonsgegevens worden verwerkt volgens de Algemene Verordening Gegevensbescherming (AVG). Gegevens worden niet aan derden verkocht.</p>
-                <h3>Artikel 6 - Wijzigingen</h3>
-                <p>AOM Supplies behoudt zich het recht voor deze voorwaarden eenzijdig te wijzigen. De meest recente versie staat altijd op de website.</p>
-                <h3>Artikel 7 - Toepasselijk recht</h3>
-                <p>Op alle overeenkomsten is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Amsterdam.</p>
+                <h3>Artikel 1 - Definities</h3><p>In deze voorwaarden wordt verstaan onder: AOM Supplies: de besloten vennootschap gevestigd te Amsterdam. Klant: de natuurlijke of rechtspersoon die gebruikmaakt van onze diensten.</p>
+                <h3>Artikel 2 - Toepasselijkheid</h3><p>Deze voorwaarden zijn van toepassing op alle aanbiedingen, overeenkomsten en leveringen van AOM Supplies.</p>
+                <h3>Artikel 3 - No-Refund Policy</h3><p>Alle verkopen van producten en diensten zijn definitief. Er wordt geen restitutie verleend, tenzij wettelijk verplicht. Klachten dienen schriftelijk te worden ingediend binnen 14 dagen na ontvangst.</p>
+                <h3>Artikel 4 - Aansprakelijkheid</h3><p>AOM Supplies is niet aansprakelijk voor indirecte schade, gevolgschade of gederfde winst. De maximale aansprakelijkheid is beperkt tot het factuurbedrag van de desbetreffende dienst.</p>
+                <h3>Artikel 5 - Privacy</h3><p>Persoonsgegevens worden verwerkt volgens de Algemene Verordening Gegevensbescherming (AVG). Gegevens worden niet aan derden verkocht.</p>
+                <h3>Artikel 6 - Wijzigingen</h3><p>AOM Supplies behoudt zich het recht voor deze voorwaarden eenzijdig te wijzigen. De meest recente versie staat altijd op de website.</p>
+                <h3>Artikel 7 - Toepasselijk recht</h3><p>Op alle overeenkomsten is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Amsterdam.</p>
                 <p class="text-sm text-gray-500 mt-6">Laatste update: 31 mei 2026</p>
             </div>
         </div>
         <div id="public-tax" class="public-section hidden">
             <div class="card p-8 document-content">
                 <h2 class="text-3xl font-bold text-gray-800 mb-4">Belastinginformatie voor resellers</h2>
-                <h3>BTW-verplichtingen</h3>
-                <p>Als reseller in Nederland bent u verplicht BTW te berekenen over uw verkopen, tenzij u gebruikmaakt van de kleineondernemersregeling (KOR). Het standaard BTW-tarief is 21% voor de meeste producten.</p>
-                <h3>Inkoopfacturen bewaren</h3>
-                <p>Voor elke inkoop dient u een factuur te bewaren waarop het BTW-bedrag staat vermeld. Bewaarplicht: 7 jaar.</p>
-                <h3>Winstberekening</h3>
-                <p>Uw winst wordt berekend als: totale omzet - inkoopkosten - verzendkosten - overige bedrijfskosten.</p>
-                <h3>KOR (Kleineondernemersregeling)</h3>
-                <p>Als uw omzet minder dan €20.000 per jaar is, kunt u vrijstelling aanvragen voor BTW.</p>
+                <h3>BTW-verplichtingen</h3><p>Als reseller in Nederland bent u verplicht BTW te berekenen over uw verkopen, tenzij u gebruikmaakt van de kleineondernemersregeling (KOR). Het standaard BTW-tarief is 21% voor de meeste producten.</p>
+                <h3>Inkoopfacturen bewaren</h3><p>Voor elke inkoop dient u een factuur te bewaren waarop het BTW-bedrag staat vermeld. Bewaarplicht: 7 jaar.</p>
+                <h3>Winstberekening</h3><p>Uw winst wordt berekend als: totale omzet - inkoopkosten - verzendkosten - overige bedrijfskosten.</p>
+                <h3>KOR (Kleineondernemersregeling)</h3><p>Als uw omzet minder dan €20.000 per jaar is, kunt u vrijstelling aanvragen voor BTW.</p>
                 <p class="text-sm text-gray-500 mt-6">Dit is geen professioneel fiscaal advies. Raadpleeg een belastingadviseur.</p>
             </div>
         </div>
     </main>
     <!-- Advertenties onderaan -->
     <div class="banner-responsive max-w-7xl mx-auto px-4">
-        <div class="inline-block">
-            <script>atOptions = {'key' : '5fb9d17d53350b420ca4912427c9a596','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};</script>
-            <script src="https://www.highperformanceformat.com/5fb9d17d53350b420ca4912427c9a596/invoke.js"></script>
-        </div>
-        <div class="inline-block">
-            <script>atOptions = {'key' : '576c8397ef01f36c6c92685f6a72d43e','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script>
-            <script src="https://www.highperformanceformat.com/576c8397ef01f36c6c92685f6a72d43e/invoke.js"></script>
-        </div>
+        <div class="inline-block"><script>atOptions = {'key' : '5fb9d17d53350b420ca4912427c9a596','format' : 'iframe','height' : 60,'width' : 468,'params' : {}};</script><script src="https://www.highperformanceformat.com/5fb9d17d53350b420ca4912427c9a596/invoke.js"></script></div>
+        <div class="inline-block"><script>atOptions = {'key' : '576c8397ef01f36c6c92685f6a72d43e','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script src="https://www.highperformanceformat.com/576c8397ef01f36c6c92685f6a72d43e/invoke.js"></script></div>
     </div>
 </div>
 
@@ -242,8 +228,15 @@
                             <input id="productStock" type="number" class="input-light mb-2" placeholder="Voorraad">
                             <input id="productDelivery" class="input-light mb-2" placeholder="Levertijd">
                             <textarea id="productDesc" rows="3" class="input-light mb-2" placeholder="Beschrijving"></textarea>
-                            <input id="productImageUrl" class="input-light mb-2" placeholder="Afbeelding URL">
-                            <button onclick="addProduct()" class="btn-primary w-full mt-2">Product toevoegen</button>
+                            <div class="mt-2">
+                                <input id="productImageUrl" class="input-light mb-2" placeholder="Afbeelding URL">
+                                <div class="mt-2 flex gap-2">
+                                    <input type="file" id="productImageFile" accept="image/*" class="input-light flex-1">
+                                    <button type="button" onclick="uploadProductImage()" class="btn-outline">Upload</button>
+                                </div>
+                                <div id="uploadProgress" class="upload-progress hidden"></div>
+                            </div>
+                            <button onclick="addProduct()" class="btn-primary w-full mt-3">Product toevoegen</button>
                         </div>
                         <div><div id="productsList" class="max-h-[500px] overflow-y-auto space-y-3 text-gray-600"></div></div>
                     </div>
@@ -253,13 +246,7 @@
             <div id="admin-pricecheck" class="admin-section hidden"><div class="card p-6 max-w-xl mx-auto"><h2 class="text-2xl font-bold text-gray-800 mb-4">Prijs Checker</h2><select id="priceCategory" class="input-light mb-3"><option value="schoenen">Schoenen +75</option><option value="shirt">Shirt +40</option><option value="airpods">AirPods +90</option><option value="other">Overig +60</option></select><div class="bg-gray-100 p-3 rounded-xl text-right text-2xl text-gray-800" id="displayPriceCheck">0</div><div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div><button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button><div id="priceResult" class="hidden mt-4 p-3 bg-gray-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-bold text-indigo-600"></div><div id="priceBreakdown" class="text-gray-500 text-sm"></div></div></div></div>
             <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold text-gray-800 mb-4">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl shadow-sm"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-4 rounded-2xl shadow-sm"><canvas id="chartProfit"></canvas></div></div></div>
             <div id="admin-feedback" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Klantfeedback</h2><div id="feedbackAdminList" class="text-gray-600"></div></div></div>
-            <div id="admin-tax-report" class="admin-section hidden">
-                <div class="card p-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Fiscaal Rapport</h2>
-                    <div id="taxReportContent"></div>
-                    <button onclick="printTaxReport()" class="btn-primary mt-4">Print rapport</button>
-                </div>
-            </div>
+            <div id="admin-tax-report" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Fiscaal Rapport</h2><div id="taxReportContent"></div><button onclick="printTaxReport()" class="btn-primary mt-4">Print rapport</button></div></div>
             <div id="admin-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Instellingen</h2><input id="companyNameSetting" class="input-light mb-3" placeholder="Bedrijfsnaam"><input id="companyEmailSetting" class="input-light mb-3" placeholder="Bedrijfs email"><button onclick="saveCompanySettings()" class="btn-outline w-full mb-2">Opslaan</button><button onclick="exportAllData()" class="btn-outline w-full my-2">Exporteer data</button><button onclick="clearAllData()" class="btn-outline border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full">Reset alles</button><textarea id="importDataArea" rows="3" class="input-light my-2" placeholder="Plak JSON"></textarea><button onclick="importData()" class="btn-primary w-full">Importeer</button></div></div>
         </main>
     </div>
@@ -297,6 +284,29 @@
     function saveProducts() { localStorage.setItem('aom_products', JSON.stringify(products)); }
     function loadProducts() { products = JSON.parse(localStorage.getItem('aom_products') || '[]'); renderShopProducts(); renderProductsList(); }
 
+    // ImgBB upload functie
+    window.uploadProductImage = async () => {
+        const fileInput = document.getElementById('productImageFile');
+        const file = fileInput.files[0];
+        if (!file) { showToast('Selecteer een afbeelding', true); return; }
+        const formData = new FormData();
+        formData.append('image', file);
+        const progressDiv = document.getElementById('uploadProgress');
+        progressDiv.classList.remove('hidden');
+        progressDiv.innerHTML = 'Uploaden...';
+        try {
+            const response = await fetch('https://api.imgbb.com/1/upload?key=6b0e8b7c9d4a3e2f1a0b9c8d7e6f5a4b3c2d1e0f', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (data.success) {
+                const url = data.data.url;
+                document.getElementById('productImageUrl').value = url;
+                progressDiv.innerHTML = 'Upload voltooid!';
+                setTimeout(() => progressDiv.classList.add('hidden'), 2000);
+                showToast('Afbeelding geüpload!');
+            } else { throw new Error('Upload mislukt'); }
+        } catch(e) { progressDiv.innerHTML = 'Upload mislukt'; setTimeout(() => progressDiv.classList.add('hidden'), 2000); showToast('Upload mislukt', true); }
+    };
+
     window.addProduct = () => {
         const name = document.getElementById('productName').value.trim();
         const price = parseFloat(document.getElementById('productPrice').value);
@@ -314,6 +324,7 @@
         document.getElementById('productDelivery').value = '';
         document.getElementById('productDesc').value = '';
         document.getElementById('productImageUrl').value = '';
+        document.getElementById('productImageFile').value = '';
         renderShopProducts();
         renderProductsList();
     };
@@ -330,8 +341,8 @@
         if (products.length === 0) { container.innerHTML = '<div class="text-gray-500 col-span-3 text-center py-10">Geen producten gevonden</div>'; return; }
         container.innerHTML = products.map(p => `
             <div class="product-card p-4">
-                <div class="w-full h-40 bg-gray-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
-                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Afbeelding+niet+gevonden'">` : '<div class="text-gray-400">Geen foto</div>'}
+                <div class="product-image-container">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="product-image" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Afbeelding+niet+gevonden';this.parentElement.innerHTML='<div class=\"image-placeholder\"><svg class=\"w-12 h-12 mb-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\"></path></svg><span>Geen afbeelding</span></div>'">` : '<div class="image-placeholder"><svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span>Geen afbeelding</span></div>'}
                 </div>
                 <h3 class="text-xl font-bold text-gray-800">${p.name}</h3>
                 <p class="text-indigo-600 font-bold">€${p.price.toFixed(2)}</p>
@@ -585,7 +596,7 @@
         if (type === 'sale') {
             content.innerHTML = `<div class="text-center mb-6"><h2 class="text-2xl font-bold">${companyName}</h2><p class="text-gray-500">${companyEmail}</p><p class="text-gray-400 text-sm">${new Date().toLocaleString('nl-NL')}</p></div><hr class="my-4"><p><strong>Klant:</strong> ${data.customer || '-'}</p><p><strong>Email:</strong> ${data.email || '-'}</p><p><strong>Product:</strong> ${data.name}</p><p><strong>Aantal:</strong> ${data.quantity}</p><p><strong>Prijs p/st:</strong> €${data.unitPrice?.toFixed(2)}</p><p><strong>Korting:</strong> €${data.discount?.toFixed(2)}</p><hr class="my-4"><p class="text-xl font-bold">Totaal: €${data.totalAmount?.toFixed(2)}</p><p class="text-green-600">Winst: €${data.profit?.toFixed(2)}</p><p class="text-sm text-gray-500 mt-2">Betaalmethode: ${data.paymentMethod} | Status: ${data.paymentStatus}</p><p class="text-sm text-gray-500">Verkoper: ${data.seller}</p>`;
         } else {
-            content.innerHTML = `<div class="text-center mb-6"><h2 class="text-2xl font-bold">${companyName}</h2><p class="text-gray-500">${companyEmail}</p><p class="text-gray-400 text-sm">${new Date().toLocaleString('nl-NL')}</p></div><hr class="my-4"><p><strong>Klant:</strong> ${data.customer}</p><p><strong>Email:</strong> ${data.email || '-'}</p><p><strong>Datum:</strong> ${data.date || '-'}</p><hr class="my-4"><table class="w-full text-left"><thead><tr><th>Product</th><th>Aantal</th><th>Prijs</th></tr></thead><tbody>${data.items?.map(i => `<tr><td>${i.name}</td><td>${i.quantity}</td><td>€${(i.price*i.quantity).toFixed(2)}</td>`).join('') || ''}</tbody></table><hr class="my-4"><p><strong>Korting:</strong> €${data.discount?.toFixed(2)}</p><p class="text-xl font-bold">Totaal: €${data.totalAmount?.toFixed(2)}</p><p class="text-sm text-gray-500 mt-2">Betaalmethode: ${data.paymentMethod} | Status: ${data.paymentStatus}</p>`;
+            content.innerHTML = `<div class="text-center mb-6"><h2 class="text-2xl font-bold">${companyName}</h2><p class="text-gray-500">${companyEmail}</p><p class="text-gray-400 text-sm">${new Date().toLocaleString('nl-NL')}</p></div><hr class="my-4"><p><strong>Klant:</strong> ${data.customer}</p><p><strong>Email:</strong> ${data.email || '-'}</p><p><strong>Datum:</strong> ${data.date || '-'}</p><hr class="my-4"><table class="w-full text-left"><thead><tr><th>Product</th><th>Aantal</th><th>Prijs</th></tr></thead><tbody>${data.items?.map(i => `<tr><td>${i.name}</td><td>${i.quantity}</td><td>€${(i.price*i.quantity).toFixed(2)}</td>`).join('') || ''}</tbody><table><hr class="my-4"><p><strong>Korting:</strong> €${data.discount?.toFixed(2)}</p><p class="text-xl font-bold">Totaal: €${data.totalAmount?.toFixed(2)}</p><p class="text-sm text-gray-500 mt-2">Betaalmethode: ${data.paymentMethod} | Status: ${data.paymentStatus}</p>`;
         }
         document.getElementById('receiptModal').classList.remove('hidden');
     };
