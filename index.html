@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>AOM Supplies - Webshop + Track & Trace</title>
+    <title>AOM Supplies - Advanced Business Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.puter.com/v2/"></script>
@@ -51,7 +51,6 @@
         .step-label { font-size: 0.7rem; color: #64748b; }
         .progress-bar { height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: #4f46e5; width: 0%; transition: width 0.3s; }
-        .banner-responsive { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 40px; padding: 20px 0; border-top: 1px solid #e2e8f0; }
         .list-item { border-bottom: 1px solid #e5e7eb; padding: 12px 0; }
         .list-item:last-child { border-bottom: none; }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
@@ -60,6 +59,10 @@
         .badge-delivered { background: #d1fae5; color: #065f46; }
         .badge-paid { background: #d1fae5; color: #065f46; }
         .badge-unpaid { background: #fee2e2; color: #991b1b; }
+        .document-content { max-height: 500px; overflow-y: auto; padding: 20px; line-height: 1.6; }
+        .document-content h3 { font-size: 1.25rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; color: #1e293b; }
+        .document-content p { margin-bottom: 0.75rem; color: #334155; }
+        .document-content ul { margin-left: 1.5rem; margin-bottom: 0.75rem; }
         @media print { body * { visibility: hidden; } .receipt-print, .receipt-print * { visibility: visible; } .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; } }
         @media (max-width: 768px) { .admin-sidebar { width: 100%; height: auto; position: relative; } main { margin-left: 0 !important; } .chatbot-window { width: calc(100% - 32px); right: 16px; height: 65vh; } }
         .product-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
@@ -89,6 +92,7 @@
                 <a onclick="showPublicPage('about')" class="nav-link">Over ons</a>
                 <a onclick="showPublicPage('contact')" class="nav-link">Contact</a>
                 <a onclick="showPublicPage('terms')" class="nav-link">Voorwaarden</a>
+                <a onclick="showPublicPage('tax')" class="nav-link">Belastinginfo</a>
                 <button onclick="showAdminLogin()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold">Admin</button>
             </nav>
         </div>
@@ -130,43 +134,55 @@
         <div id="public-services" class="public-section hidden">
             <div class="card p-6"><h3 class="text-xl font-bold text-indigo-600">Resell platform</h3><p class="text-gray-600">Beheer verkopen, winst en klanten.</p></div>
             <div class="card p-6 mt-4"><h3 class="text-xl font-bold text-indigo-600">Internationale tracking</h3><p class="text-gray-600">Luchtvracht, douane, eindbezorging.</p></div>
+            <div class="card p-6 mt-4"><h3 class="text-xl font-bold text-indigo-600">Fiscaal advies</h3><p class="text-gray-600">BTW-aangifte, inkoopverklaringen, winstberekening.</p></div>
         </div>
         <div id="public-about" class="public-section hidden">
-            <div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Over AOM Supplies</h2><p class="text-gray-600 mt-4">Wij zijn specialist in resell logistiek en tracking.</p></div>
+            <div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Over AOM Supplies</h2><p class="text-gray-600 mt-4">Wij zijn specialist in resell logistiek en tracking. Met jaren ervaring in e-commerce en verzendoplossingen bieden wij een compleet platform voor verkopers.</p></div>
         </div>
         <div id="public-contact" class="public-section hidden">
             <div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Contact</h2><p class="text-gray-600">support@aomsupplies.com | +31 20 123 4567</p><textarea id="contactMessage" rows="3" class="input-light mt-4" placeholder="Uw bericht"></textarea><button class="btn-primary mt-3" onclick="sendContact()">Verstuur</button></div>
         </div>
         <div id="public-terms" class="public-section hidden">
-            <div class="card p-8"><h2 class="text-3xl font-bold text-gray-800">Voorwaarden</h2><p class="text-gray-600">No-Refund Policy. Geen restitutie mogelijk.</p></div>
+            <div class="card p-8 document-content">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Algemene Voorwaarden</h2>
+                <h3>Artikel 1 - Definities</h3>
+                <p>In deze voorwaarden wordt verstaan onder: AOM Supplies: de besloten vennootschap gevestigd te Amsterdam. Klant: de natuurlijke of rechtspersoon die gebruikmaakt van onze diensten.</p>
+                <h3>Artikel 2 - Toepasselijkheid</h3>
+                <p>Deze voorwaarden zijn van toepassing op alle aanbiedingen, overeenkomsten en leveringen van AOM Supplies.</p>
+                <h3>Artikel 3 - No-Refund Policy</h3>
+                <p>Alle verkopen van producten en diensten zijn definitief. Er wordt geen restitutie verleend, tenzij wettelijk verplicht. Klachten dienen schriftelijk te worden ingediend binnen 14 dagen na ontvangst.</p>
+                <h3>Artikel 4 - Aansprakelijkheid</h3>
+                <p>AOM Supplies is niet aansprakelijk voor indirecte schade, gevolgschade of gederfde winst. De maximale aansprakelijkheid is beperkt tot het factuurbedrag van de desbetreffende dienst.</p>
+                <h3>Artikel 5 - Privacy</h3>
+                <p>Persoonsgegevens worden verwerkt volgens de Algemene Verordening Gegevensbescherming (AVG). Gegevens worden niet aan derden verkocht.</p>
+                <h3>Artikel 6 - Wijzigingen</h3>
+                <p>AOM Supplies behoudt zich het recht voor deze voorwaarden eenzijdig te wijzigen. De meest recente versie staat altijd op de website.</p>
+                <h3>Artikel 7 - Toepasselijk recht</h3>
+                <p>Op alle overeenkomsten is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Amsterdam.</p>
+                <p class="text-sm text-gray-500 mt-6">Laatste update: 31 mei 2026</p>
+            </div>
+        </div>
+        <div id="public-tax" class="public-section hidden">
+            <div class="card p-8 document-content">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Belastinginformatie voor resellers</h2>
+                <h3>BTW-verplichtingen</h3>
+                <p>Als reseller in Nederland bent u verplicht BTW te berekenen over uw verkopen, tenzij u gebruikmaakt van de kleineondernemersregeling (KOR). Het standaard BTW-tarief is 21% voor de meeste producten. Voor voeding en boeken geldt 9%.</p>
+                <h3>Inkoopfacturen bewaren</h3>
+                <p>Voor elke inkoop dient u een factuur te bewaren waarop het BTW-bedrag staat vermeld. Deze facturen zijn nodig voor uw BTW-aangifte. Bewaarplicht: 7 jaar.</p>
+                <h3>Winstberekening voor de inkomstenbelasting</h3>
+                <p>Uw winst wordt berekend als: totale omzet - inkoopkosten - verzendkosten - overige bedrijfskosten. Gebruik de cijfers uit uw administratie voor de jaarlijkse aangifte inkomstenbelasting.</p>
+                <h3>Voorbeeld BTW-berekening</h3>
+                <p>Verkoopprijs inclusief 21% BTW: €121 → BTW = €21. Inkoopprijs inclusief BTW: €60,50 → BTW = €10,50. Af te dragen BTW = €21 - €10,50 = €10,50.</p>
+                <h3>KOR (Kleineondernemersregeling)</h3>
+                <p>Als uw omzet minder dan €20.000 per jaar is, kunt u vrijstelling aanvragen voor BTW. U hoeft dan geen BTW in rekening te brengen, maar u kunt ook geen voorbelasting aftrekken.</p>
+                <h3>Belastingaangifte doen</h3>
+                <p>De BTW-aangifte doet u elke maand, elk kwartaal of per jaar via de Belastingdienst. De inkomstenbelasting doet u eenmaal per jaar vóór 1 mei.</p>
+                <h3>Let op: geen fiscaal advies</h3>
+                <p>Deze informatie is algemeen en vormt geen professioneel fiscaal advies. Raadpleeg een belastingadviseur voor uw specifieke situatie.</p>
+                <p class="text-sm text-gray-500 mt-6">Laatste update: 31 mei 2026</p>
+            </div>
         </div>
     </main>
-    <div class="banner-responsive max-w-7xl mx-auto px-4">
-        <div class="inline-block">
-            <script>
-                atOptions = {
-                    'key' : '5fb9d17d53350b420ca4912427c9a596',
-                    'format' : 'iframe',
-                    'height' : 60,
-                    'width' : 468,
-                    'params' : {}
-                };
-            </script>
-            <script src="https://www.highperformanceformat.com/5fb9d17d53350b420ca4912427c9a596/invoke.js"></script>
-        </div>
-        <div class="inline-block">
-            <script>
-                atOptions = {
-                    'key' : '576c8397ef01f36c6c92685f6a72d43e',
-                    'format' : 'iframe',
-                    'height' : 50,
-                    'width' : 320,
-                    'params' : {}
-                };
-            </script>
-            <script src="https://www.highperformanceformat.com/576c8397ef01f36c6c92685f6a72d43e/invoke.js"></script>
-        </div>
-    </div>
 </div>
 
 <!-- ADMIN LOGIN MODAL -->
@@ -196,6 +212,7 @@
                 <div onclick="navigateAdmin('pricecheck')" class="admin-nav-item" data-section="pricecheck">Prijs Checker</div>
                 <div onclick="navigateAdmin('analytics')" class="admin-nav-item" data-section="analytics">Analytics</div>
                 <div onclick="navigateAdmin('feedback')" class="admin-nav-item" data-section="feedback">Feedback</div>
+                <div onclick="navigateAdmin('tax-report')" class="admin-nav-item" data-section="tax-report">Fiscaal Rapport</div>
                 <div onclick="navigateAdmin('admin')" class="admin-nav-item" data-section="admin">Instellingen</div>
             </nav>
             <div class="p-4 absolute bottom-0 w-full"><button onclick="doLogout()" class="btn-outline w-full">Uitloggen</button></div>
@@ -225,9 +242,7 @@
                             <select id="orderStatus" class="input-light mb-4"><option value="pending">In afwachting</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select>
                             <button onclick="addOrder()" class="btn-primary w-full">Order toevoegen</button>
                         </div>
-                        <div>
-                            <div id="ordersList" class="max-h-[500px] overflow-y-auto text-gray-600"></div>
-                        </div>
+                        <div><div id="ordersList" class="max-h-[500px] overflow-y-auto text-gray-600"></div></div>
                     </div>
                 </div>
             </div>
@@ -255,11 +270,8 @@
                             <div id="lossPinpad" class="grid grid-cols-4 gap-1 my-2"></div>
                             <select id="saleSeller" class="input-light mb-4"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select>
                             <button onclick="addSale()" class="btn-primary w-full">Toevoegen</button>
-                            <div id="salePreview" class="hidden mt-2 text-green-600 text-sm"></div>
                         </div>
-                        <div>
-                            <div id="salesList" class="max-h-[500px] overflow-y-auto text-gray-600"></div>
-                        </div>
+                        <div><div id="salesList" class="max-h-[500px] overflow-y-auto text-gray-600"></div></div>
                     </div>
                 </div>
             </div>
@@ -275,14 +287,9 @@
                             <input id="trackingDestination" class="input-light mb-2" placeholder="Bestemming">
                             <input type="date" id="trackingEstimatedDelivery" class="input-light mb-2">
                             <button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button>
-                            <div class="mt-4">
-                                <input id="searchTrackingInput" class="input-light mb-2" placeholder="Zoek AOM code">
-                                <button onclick="searchTracking()" class="btn-outline w-full">Zoek</button>
-                            </div>
+                            <div class="mt-4"><input id="searchTrackingInput" class="input-light mb-2" placeholder="Zoek AOM code"><button onclick="searchTracking()" class="btn-outline w-full">Zoek</button></div>
                         </div>
-                        <div>
-                            <div id="trackingList" class="max-h-[500px] overflow-y-auto space-y-3 text-gray-600"></div>
-                        </div>
+                        <div><div id="trackingList" class="max-h-[500px] overflow-y-auto space-y-3 text-gray-600"></div></div>
                     </div>
                 </div>
             </div>
@@ -296,12 +303,10 @@
                             <input id="productStock" type="number" class="input-light mb-2" placeholder="Voorraad">
                             <input id="productDelivery" class="input-light mb-2" placeholder="Levertijd">
                             <textarea id="productDesc" rows="3" class="input-light mb-2" placeholder="Beschrijving"></textarea>
-                            <input id="productImageUrl" class="input-light mb-2" placeholder="Afbeelding URL">
+                            <input id="productImageUrl" class="input-light mb-2" placeholder="Afbeelding URL (Imgur, etc.)">
                             <button onclick="addProduct()" class="btn-primary w-full">Product toevoegen</button>
                         </div>
-                        <div>
-                            <div id="productsList" class="max-h-[500px] overflow-y-auto space-y-3 text-gray-600"></div>
-                        </div>
+                        <div><div id="productsList" class="max-h-[500px] overflow-y-auto space-y-3 text-gray-600"></div></div>
                     </div>
                 </div>
             </div>
@@ -318,23 +323,24 @@
                     <div class="bg-gray-100 p-3 rounded-xl text-right text-2xl text-gray-800" id="displayPriceCheck">0</div>
                     <div id="pricePinpad" class="grid grid-cols-4 gap-2 my-4"></div>
                     <button onclick="calculatePrice()" class="btn-primary w-full">Bereken</button>
-                    <div id="priceResult" class="hidden mt-4 p-3 bg-gray-100 rounded-xl text-center">
-                        <div id="priceFinal" class="text-2xl font-bold text-indigo-600"></div>
-                        <div id="priceBreakdown" class="text-gray-500 text-sm"></div>
-                    </div>
+                    <div id="priceResult" class="hidden mt-4 p-3 bg-gray-100 rounded-xl text-center"><div id="priceFinal" class="text-2xl font-bold text-indigo-600"></div><div id="priceBreakdown" class="text-gray-500 text-sm"></div></div>
                 </div>
             </div>
             <div id="admin-analytics" class="admin-section hidden">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Analytics</h2>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm"><canvas id="chartRevenue"></canvas></div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm"><canvas id="chartProfit"></canvas></div>
-                </div>
+                <div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-4 rounded-2xl shadow-sm"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-4 rounded-2xl shadow-sm"><canvas id="chartProfit"></canvas></div></div>
             </div>
             <div id="admin-feedback" class="admin-section hidden">
                 <div class="card p-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Klantfeedback</h2>
                     <div id="feedbackAdminList" class="text-gray-600"></div>
+                </div>
+            </div>
+            <div id="admin-tax-report" class="admin-section hidden">
+                <div class="card p-6 document-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Fiscaal Rapport</h2>
+                    <div id="taxReportContent"></div>
+                    <button onclick="printTaxReport()" class="btn-primary mt-4">Print rapport</button>
                 </div>
             </div>
             <div id="admin-admin" class="admin-section hidden">
@@ -373,13 +379,9 @@
             <option value="bezig_met_bezorgen">Bezig met bezorgen</option>
             <option value="geleverd">Geleverd</option>
         </select>
-        <div class="flex gap-3">
-            <button onclick="addUpdateToTracking()" class="btn-primary flex-1">Toevoegen</button>
-            <button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button>
-        </div>
+        <div class="flex gap-3"><button onclick="addUpdateToTracking()" class="btn-primary flex-1">Toevoegen</button><button onclick="closeModal('updateModal')" class="btn-outline flex-1">Annuleren</button></div>
     </div>
 </div>
-
 <div id="editTrackingModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="card p-6 w-full max-w-md">
         <h3 class="text-xl font-bold text-gray-800 mb-3">Bewerk tracking</h3>
@@ -387,41 +389,23 @@
         <input id="editCarrierTrackingNumber" class="input-light my-3" placeholder="Carrier nr">
         <input id="editCarrierName" class="input-light my-3" placeholder="Vervoerder">
         <select id="editCurrentStep" class="input-light my-3">
-            <option value="bestelling_ontvangen">Bestelling ontvangen</option>
-            <option value="onderweg_naar_vliegveld">Naar vliegveld</option>
-            <option value="in_vliegtuig">In vliegtuig</option>
-            <option value="geland">Geland</option>
-            <option value="in_douane">In douane</option>
-            <option value="in_sorteercentrum">Sorteercentrum</option>
-            <option value="onderweg">Onderweg</option>
-            <option value="bezig_met_bezorgen">Bezig met bezorgen</option>
-            <option value="geleverd">Geleverd</option>
+            <option value="bestelling_ontvangen">Bestelling ontvangen</option><option value="onderweg_naar_vliegveld">Naar vliegveld</option>
+            <option value="in_vliegtuig">In vliegtuig</option><option value="geland">Geland</option><option value="in_douane">In douane</option>
+            <option value="in_sorteercentrum">Sorteercentrum</option><option value="onderweg">Onderweg</option>
+            <option value="bezig_met_bezorgen">Bezig met bezorgen</option><option value="geleverd">Geleverd</option>
         </select>
-        <div class="flex gap-3">
-            <button onclick="saveTrackingEdits()" class="btn-primary flex-1">Opslaan</button>
-            <button onclick="closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button>
-        </div>
+        <div class="flex gap-3"><button onclick="saveTrackingEdits()" class="btn-primary flex-1">Opslaan</button><button onclick="closeModal('editTrackingModal')" class="btn-outline flex-1">Annuleren</button></div>
     </div>
 </div>
-
 <div id="receiptModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div id="receiptContent" class="p-6 receipt-print"></div>
-        <div class="flex gap-3 p-4">
-            <button onclick="printReceipt()" class="btn-primary flex-1">Print / PDF</button>
-            <button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button>
-        </div>
+        <div class="flex gap-3 p-4"><button onclick="printReceipt()" class="btn-primary flex-1">Print / PDF</button><button onclick="closeModal('receiptModal')" class="btn-outline flex-1">Sluiten</button></div>
     </div>
 </div>
-
 <div id="termsAcceptModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="card p-6 w-full max-w-md">
-        <h2 class="text-2xl font-bold text-gray-800">Accepteer voorwaarden</h2>
-        <div class="my-4 text-gray-600">No-Refund Policy. Geen restitutie.</div>
-        <button onclick="acceptTerms()" class="btn-primary w-full">Ik accepteer</button>
-    </div>
+    <div class="card p-6 w-full max-w-md"><h2 class="text-2xl font-bold text-gray-800">Accepteer voorwaarden</h2><div class="my-4 text-gray-600">No-Refund Policy. Geen restitutie.</div><button onclick="acceptTerms()" class="btn-primary w-full">Ik accepteer</button></div>
 </div>
-
 <div id="publicFeedbackModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="card p-6 w-full max-w-md">
         <h2 class="text-2xl font-bold text-gray-800">Feedback</h2>
@@ -438,13 +422,8 @@
 <div id="chatbotButton" class="chatbot-button" onclick="toggleChatbot()">💬</div>
 <div id="chatbotWindow" class="chatbot-window hidden">
     <div class="chatbot-header"><span>AOM Assistant</span><button onclick="toggleChatbot()" class="text-gray-500 text-xl">&times;</button></div>
-    <div id="chatMessages" class="chatbot-messages">
-        <div class="message bot"><div class="bubble">Hallo! Ik ben de AI-assistent. Hoe kan ik u helpen?</div></div>
-    </div>
-    <div class="chatbot-input">
-        <input id="chatInput" placeholder="Typ uw bericht..." onkeypress="if(event.key==='Enter') sendChatMessage()">
-        <button onclick="sendChatMessage()">Verstuur</button>
-    </div>
+    <div id="chatMessages" class="chatbot-messages"><div class="message bot"><div class="bubble">Hallo! Ik ben de AI-assistent. Hoe kan ik u helpen?</div></div></div>
+    <div class="chatbot-input"><input id="chatInput" placeholder="Typ uw bericht..." onkeypress="if(event.key==='Enter') sendChatMessage()"><button onclick="sendChatMessage()">Verstuur</button></div>
 </div>
 
 <script type="module">
@@ -464,12 +443,10 @@
     let sales = [], orders = [], tracking = [], feedback = [], customerOrders = [];
     let products = JSON.parse(localStorage.getItem('aom_products') || '[]');
     let pinValues = { cost: '0', shipcost: '0', other: '0', loss: '0', pricecheck: '0' };
-    let currentTrackingId = null;
-    let currentEditTrackingId = null;
+    let currentTrackingId = null, currentEditTrackingId = null;
     let companyName = "AOM Supplies", companyEmail = "support@aomsupplies.com";
     let conversationHistory = [];
     let cart = [];
-    let unsubSales, unsubOrders, unsubTracking, unsubFeedback, unsubCustomerOrders;
     let chartRevenueInstance = null, chartProfitInstance = null;
 
     function showToast(msg, isError = false) {
@@ -488,7 +465,7 @@
         const stock = parseInt(document.getElementById('productStock').value) || 0;
         const delivery = document.getElementById('productDelivery').value;
         const description = document.getElementById('productDesc').value;
-        const imageUrl = document.getElementById('productImageUrl').value.trim();
+        let imageUrl = document.getElementById('productImageUrl').value.trim();
         if (!name || isNaN(price)) { showToast('Vul naam en prijs in', true); return; }
         products.push({ id: Date.now(), name, price, stock, delivery, description, imageUrl });
         saveProducts();
@@ -502,30 +479,12 @@
         renderShopProducts();
         renderProductsList();
     };
-    window.deleteProduct = (id) => {
-        if(confirm('Verwijder product?')) {
-            products = products.filter(p => p.id != id);
-            saveProducts();
-            renderShopProducts();
-            renderProductsList();
-            showToast('Product verwijderd');
-        }
-    };
+    window.deleteProduct = (id) => { if(confirm('Verwijder product?')) { products = products.filter(p => p.id != id); saveProducts(); renderShopProducts(); renderProductsList(); showToast('Product verwijderd'); } };
     function renderProductsList() {
         const container = document.getElementById('productsList');
         if (!container) return;
         if (products.length === 0) { container.innerHTML = '<div class="text-gray-400 p-2">Geen producten</div>'; return; }
-        container.innerHTML = products.map(p => `
-            <div class="list-item">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <strong>${p.name}</strong> - €${p.price.toFixed(2)}<br>
-                        <span class="text-sm text-gray-500">Voorraad: ${p.stock} | Levertijd: ${p.delivery || '-'}</span>
-                    </div>
-                    <button onclick="deleteProduct(${p.id})" class="text-red-600 text-sm font-semibold hover:underline">Verwijder</button>
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = products.map(p => `<div class="list-item"><div class="flex justify-between items-start"><div><strong>${p.name}</strong> - €${p.price.toFixed(2)}<br><span class="text-sm text-gray-500">Voorraad: ${p.stock} | Levertijd: ${p.delivery || '-'}</span></div><button onclick="deleteProduct(${p.id})" class="text-red-600 text-sm font-semibold hover:underline">Verwijder</button></div></div>`).join('');
     }
     function renderShopProducts() {
         const container = document.getElementById('shopProductsContainer');
@@ -533,7 +492,9 @@
         if (products.length === 0) { container.innerHTML = '<div class="text-gray-500 col-span-3 text-center py-10">Geen producten gevonden</div>'; return; }
         container.innerHTML = products.map(p => `
             <div class="product-card p-4">
-                ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-40 object-cover rounded-xl mb-3" onerror="this.src='https://placehold.co/400x300?text=Geen+foto'">` : '<div class="w-full h-40 bg-gray-100 rounded-xl mb-3 flex items-center justify-center text-gray-400">Geen foto</div>'}
+                <div class="w-full h-40 bg-gray-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300?text=Afbeelding+niet+gevonden';this.parentElement.innerHTML='<div class=\"w-full h-full flex items-center justify-center text-gray-400\">Geen foto</div>'">` : '<div class="text-gray-400">Geen foto</div>'}
+                </div>
                 <h3 class="text-xl font-bold text-gray-800">${p.name}</h3>
                 <p class="text-indigo-600 font-bold">€${p.price.toFixed(2)}</p>
                 <p class="text-gray-500 text-sm">Voorraad: ${p.stock}</p>
@@ -552,35 +513,22 @@
         updateCartUI();
         showToast(`${product.name} toegevoegd`);
     };
-    window.removeFromCart = (productId) => {
-        cart = cart.filter(i => i.id != productId);
-        updateCartUI();
-    };
+    window.removeFromCart = (productId) => { cart = cart.filter(i => i.id != productId); updateCartUI(); };
     function updateCartUI() {
         const cartDiv = document.getElementById('cartItems');
         const totalDiv = document.getElementById('cartTotal');
         if (!cartDiv) return;
         if (cart.length === 0) { cartDiv.innerHTML = '<div class="text-gray-500">Winkelwagen is leeg</div>'; totalDiv.innerHTML = ''; return; }
         let total = 0;
-        cartDiv.innerHTML = cart.map(item => `
-            <div class="flex justify-between items-center py-1">
-                <span>${item.name} x${item.quantity}</span>
-                <div class="flex items-center gap-3">
-                    <span>€${(item.price * item.quantity).toFixed(2)}</span>
-                    <button onclick="removeFromCart('${item.id}')" class="text-red-500 text-xs hover:underline">Verwijder</button>
-                </div>
-            </div>
-        `).join('');
+        cartDiv.innerHTML = cart.map(item => `<div class="flex justify-between items-center py-1"><span>${item.name} x${item.quantity}</span><div class="flex items-center gap-3"><span>€${(item.price * item.quantity).toFixed(2)}</span><button onclick="removeFromCart('${item.id}')" class="text-red-500 text-xs hover:underline">Verwijder</button></div></div>`).join('');
         total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         totalDiv.innerHTML = `Totaal: €${total.toFixed(2)}`;
     }
     window.checkout = async () => {
         if (cart.length === 0) { showToast('Winkelwagen is leeg', true); return; }
-        const customerName = prompt("Uw naam:");
-        if (!customerName) return;
+        const customerName = prompt("Uw naam:"); if (!customerName) return;
         const customerEmail = prompt("Uw email (optioneel):") || '';
-        const address = prompt("Leveradres:");
-        if (!address) return;
+        const address = prompt("Leveradres:"); if (!address) return;
         const orderItems = cart.map(item => ({ productId: item.id, name: item.name, quantity: item.quantity, price: item.price }));
         const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         try {
@@ -602,12 +550,7 @@
     window.showTermsAccept = () => document.getElementById('termsAcceptModal').classList.remove('hidden');
     window.acceptTerms = () => { showToast('Voorwaarden geaccepteerd'); closeModal('termsAcceptModal'); };
     window.showPublicFeedback = () => document.getElementById('publicFeedbackModal').classList.remove('hidden');
-    window.sendContact = () => {
-        const msg = document.getElementById('contactMessage').value;
-        if (!msg.trim()) { showToast('Vul een bericht in', true); return; }
-        showToast('Bericht verzonden (demo)');
-        document.getElementById('contactMessage').value = '';
-    };
+    window.sendContact = () => { const msg = document.getElementById('contactMessage').value; if (!msg.trim()) { showToast('Vul een bericht in', true); return; } showToast('Bericht verzonden (demo)'); document.getElementById('contactMessage').value = ''; };
 
     window.sendChatMessage = async () => {
         const input = document.getElementById('chatInput');
@@ -618,7 +561,7 @@
         input.value = '';
         conversationHistory.push({ role: "user", content: msg });
         if (conversationHistory.length > 10) conversationHistory = conversationHistory.slice(-10);
-        const sys = "Je bent AI-assistent van AOM Supplies. Beantwoord vragen over producten, bestellingen, tracking, no-refund. Antwoord in het Nederlands, kort en bondig.";
+        const sys = "Je bent AI-assistent van AOM Supplies. Beantwoord vragen over producten, bestellingen, tracking, no-refund, belastingen. Antwoord in het Nederlands, kort en bondig.";
         const prompt = sys + "\\n" + conversationHistory.map(m => `${m.role === 'user' ? 'Gebruiker' : 'Assistent'}: ${m.content}`).join("\\n") + "\\nAssistent:";
         messagesDiv.innerHTML += `<div class="message bot" id="chatLoading"><div class="bubble"><div class="loading"></div></div></div>`;
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -628,15 +571,9 @@
             messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">${escapeHtml(reply)}</div></div>`;
             conversationHistory.push({ role: "assistant", content: reply });
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        } catch(e) {
-            document.getElementById('chatLoading')?.remove();
-            messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">Fout bij ophalen antwoord. Probeer opnieuw.</div></div>`;
-        }
+        } catch(e) { document.getElementById('chatLoading')?.remove(); messagesDiv.innerHTML += `<div class="message bot"><div class="bubble">Fout bij ophalen antwoord. Probeer opnieuw.</div></div>`; }
     };
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-    }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
     window.publicTrack = async () => {
         const code = document.getElementById('publicTrackingInput').value.trim();
@@ -646,49 +583,16 @@
         try {
             const q = query(collection(db, "tracking"), where("trackingCode", "==", code));
             const snap = await getDocs(q);
-            if (snap.empty) {
-                res.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm"><p>Geen AOM tracking gevonden voor <strong>${code}</strong>.</p><div class="flex flex-wrap gap-3 mt-3"><a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">DHL</a><a href="https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">PostNL</a><a href="https://www.ups.com/track?tracknum=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">UPS</a></div></div>`;
-                return;
-            }
+            if (snap.empty) { res.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm"><p>Geen AOM tracking gevonden voor <strong>${code}</strong>.</p><div class="flex flex-wrap gap-3 mt-3"><a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">DHL</a><a href="https://jouw.postnl.nl/track-and-trace/${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">PostNL</a><a href="https://www.ups.com/track?tracknum=${encodeURIComponent(code)}" target="_blank" class="btn-outline text-sm py-2 px-4">UPS</a></div></div>`; return; }
             const tr = snap.docs[0].data();
             const updates = tr.updates || [];
             const steps = ['bestelling_ontvangen', 'onderweg_naar_vliegveld', 'in_vliegtuig', 'geland', 'in_douane', 'in_sorteercentrum', 'onderweg', 'bezig_met_bezorgen', 'geleverd'];
-            const stepLabels = {
-                'bestelling_ontvangen': 'Bestelling', 'onderweg_naar_vliegveld': 'Naar vliegveld', 'in_vliegtuig': 'Vliegtuig',
-                'geland': 'Geland', 'in_douane': 'Douane', 'in_sorteercentrum': 'Sorteercentrum',
-                'onderweg': 'Onderweg', 'bezig_met_bezorgen': 'Bezorgen', 'geleverd': 'Geleverd'
-            };
+            const stepLabels = { 'bestelling_ontvangen':'Bestelling','onderweg_naar_vliegveld':'Naar vliegveld','in_vliegtuig':'Vliegtuig','geland':'Geland','in_douane':'Douane','in_sorteercentrum':'Sorteercentrum','onderweg':'Onderweg','bezig_met_bezorgen':'Bezorgen','geleverd':'Geleverd' };
             const currentIdx = steps.indexOf(tr.currentStep) + 1;
             const progressPercent = Math.max(5, (currentIdx / steps.length) * 100);
-            let stepsHtml = `<div class="step-indicator">${steps.map((step, i) => {
-                let isActive = i+1 === currentIdx;
-                let isCompleted = i+1 < currentIdx;
-                return `<div class="step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}"><div class="step-icon">${isCompleted ? '✓' : (i+1)}</div><div class="step-label">${stepLabels[step]}</div></div>`;
-            }).join('')}</div>`;
-            let updatesHtml = updates.slice().reverse().map(u => `
-                <div class="border-b border-gray-200 py-3">
-                    <div class="text-xs text-gray-500">${u.timestamp ? new Date(u.timestamp).toLocaleString('nl-NL') : '-'}</div>
-                    <div class="font-medium">${u.text}</div>
-                    ${u.location ? `<div class="text-sm">📍 ${u.location}</div>` : ''}
-                    ${u.photoUrl ? `<img src="${u.photoUrl}" class="mt-2 max-h-36 rounded-lg cursor-pointer" onclick="window.open(this.src)">` : ''}
-                </div>
-            `).join('');
-            res.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-sm space-y-4">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="font-bold text-2xl">${tr.trackingCode}</h3>
-                            <p class="text-gray-500">Vervoerder: ${tr.carrierName || 'AOM'}</p>
-                        </div>
-                        <button onclick="copyShareLink('${code}')" class="btn-outline text-sm py-1 px-3">Link kopiëren</button>
-                    </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: ${progressPercent}%;"></div></div>
-                    <div class="text-sm"><strong>Bestemming:</strong> ${tr.destination || '-'} | <strong>Verwachte levering:</strong> ${tr.estimatedDelivery || 'onbekend'}</div>
-                    ${stepsHtml}
-                    <div class="bg-gray-50 p-3 rounded-xl"><strong>Huidige status:</strong> ${tr.currentStep ? tr.currentStep.replace(/_/g, ' ') : '-'}</div>
-                    <div><strong>Updates & foto's</strong><div class="max-h-80 overflow-y-auto mt-2">${updatesHtml || 'Geen updates'}</div></div>
-                </div>
-            `;
+            let stepsHtml = `<div class="step-indicator">${steps.map((step, i) => { let isActive = i+1 === currentIdx; let isCompleted = i+1 < currentIdx; return `<div class="step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}"><div class="step-icon">${isCompleted ? '✓' : (i+1)}</div><div class="step-label">${stepLabels[step]}</div></div>`; }).join('')}</div>`;
+            let updatesHtml = updates.slice().reverse().map(u => `<div class="border-b border-gray-200 py-3"><div class="text-xs text-gray-500">${u.timestamp ? new Date(u.timestamp).toLocaleString('nl-NL') : '-'}</div><div class="font-medium">${u.text}</div>${u.location ? `<div class="text-sm">📍 ${u.location}</div>` : ''}${u.photoUrl ? `<img src="${u.photoUrl}" class="mt-2 max-h-36 rounded-lg cursor-pointer" onclick="window.open(this.src)" onerror="this.style.display='none'">` : ''}</div>`).join('');
+            res.innerHTML = `<div class="bg-white p-6 rounded-2xl shadow-sm space-y-4"><div class="flex justify-between items-center"><div><h3 class="font-bold text-2xl">${tr.trackingCode}</h3><p class="text-gray-500">Vervoerder: ${tr.carrierName || 'AOM'}</p></div><button onclick="copyShareLink('${code}')" class="btn-outline text-sm py-1 px-3">Link kopiëren</button></div><div class="progress-bar"><div class="progress-fill" style="width: ${progressPercent}%;"></div></div><div class="text-sm"><strong>Bestemming:</strong> ${tr.destination || '-'} | <strong>Verwachte levering:</strong> ${tr.estimatedDelivery || 'onbekend'}</div>${stepsHtml}<div class="bg-gray-50 p-3 rounded-xl"><strong>Huidige status:</strong> ${tr.currentStep ? tr.currentStep.replace(/_/g, ' ') : '-'}</div><div><strong>Updates & foto's</strong><div class="max-h-80 overflow-y-auto mt-2">${updatesHtml || 'Geen updates'}</div></div></div>`;
         } catch(e) { res.innerHTML = '<div class="bg-red-100 p-4 rounded-xl text-red-700">Fout bij ophalen tracking</div>'; console.error(e); }
     };
     window.submitPublicFeedback = async () => {
@@ -696,16 +600,9 @@
         const trackingCode = document.getElementById('feedbackTrackingCode').value.trim();
         const message = document.getElementById('feedbackMessage').value.trim();
         if (!message) { document.getElementById('feedbackResult').innerHTML = '<div class="text-red-500">Bericht verplicht</div>'; return; }
-        try {
-            await addDoc(collection(db, "feedback"), { name: name || 'Anoniem', trackingCode: trackingCode || null, message, createdAt: new Date().toISOString() });
-            document.getElementById('feedbackResult').innerHTML = '<div class="text-green-600">Bedankt voor uw feedback!</div>';
-            setTimeout(() => { closeModal('publicFeedbackModal'); document.getElementById('feedbackName').value=''; document.getElementById('feedbackTrackingCode').value=''; document.getElementById('feedbackMessage').value=''; document.getElementById('feedbackResult').innerHTML=''; }, 1500);
-        } catch(e) { document.getElementById('feedbackResult').innerHTML = '<div class="text-red-500">Fout bij versturen</div>'; }
+        try { await addDoc(collection(db, "feedback"), { name: name || 'Anoniem', trackingCode: trackingCode || null, message, createdAt: new Date().toISOString() }); document.getElementById('feedbackResult').innerHTML = '<div class="text-green-600">Bedankt voor uw feedback!</div>'; setTimeout(() => { closeModal('publicFeedbackModal'); document.getElementById('feedbackName').value=''; document.getElementById('feedbackTrackingCode').value=''; document.getElementById('feedbackMessage').value=''; document.getElementById('feedbackResult').innerHTML=''; }, 1500); } catch(e) { document.getElementById('feedbackResult').innerHTML = '<div class="text-red-500">Fout bij versturen</div>'; }
     };
-    window.copyShareLink = (code) => {
-        const url = `${window.location.origin}${window.location.pathname}#track=${code}`;
-        navigator.clipboard.writeText(url).then(() => showToast('Link gekopieerd')).catch(() => showToast('Kopiëren mislukt', true));
-    };
+    window.copyShareLink = (code) => { navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#track=${code}`).then(() => showToast('Link gekopieerd')).catch(() => showToast('Kopiëren mislukt', true)); };
 
     window.doLogin = () => {
         const pass = document.getElementById('loginPass').value;
@@ -721,16 +618,9 @@
         loadCompanySettings();
         loadProducts();
     };
-    window.doLogout = () => {
-        document.getElementById('adminDashboard').classList.add('hidden');
-        document.getElementById('publicPage').classList.remove('hidden');
-        showPublicPage('home');
-        if (unsubSales) unsubSales();
-        if (unsubOrders) unsubOrders();
-        if (unsubTracking) unsubTracking();
-        if (unsubFeedback) unsubFeedback();
-        if (unsubCustomerOrders) unsubCustomerOrders();
-    };
+    window.doLogout = () => { document.getElementById('adminDashboard').classList.add('hidden'); document.getElementById('publicPage').classList.remove('hidden'); showPublicPage('home'); if (unsubSales) unsubSales(); if (unsubOrders) unsubOrders(); if (unsubTracking) unsubTracking(); if (unsubFeedback) unsubFeedback(); if (unsubCustomerOrders) unsubCustomerOrders(); };
+
+    let unsubSales, unsubOrders, unsubTracking, unsubFeedback, unsubCustomerOrders;
 
     window.navigateAdmin = (section) => {
         document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
@@ -746,6 +636,7 @@
         if (section === 'feedback') renderFeedbackList();
         if (section === 'customer-orders') renderCustomerOrders();
         if (section === 'analytics') initCharts();
+        if (section === 'tax-report') renderTaxReport();
         if (section === 'dashboard') { updateDashboardStats(); renderRecentFeedback(); }
     };
 
@@ -798,50 +689,14 @@
         if (!name) { showToast('Vul productnaam in', true); return; }
         const totalAmount = (quantity * unitPrice) - discount;
         const profit = totalAmount - cost - shipCost - other - loss;
-        try {
-            await addDoc(collection(db, "sales"), {
-                name, email, customer, quantity, unitPrice, discount, totalAmount, cost, shipCost, other, loss, profit,
-                date, paymentMethod, paymentStatus, seller, createdAt: new Date().toISOString()
-            });
-            showToast('Verkoop toegevoegd!');
-            document.getElementById('saleName').value = '';
-            document.getElementById('saleEmail').value = '';
-            document.getElementById('customerName').value = '';
-            document.getElementById('saleQuantity').value = 1;
-            document.getElementById('saleUnitPrice').value = '';
-            document.getElementById('saleDiscount').value = 0;
-            pinValues.cost='0'; pinValues.shipcost='0'; pinValues.other='0'; pinValues.loss='0';
-            document.getElementById('displayCost').innerText='0';
-            document.getElementById('displayShipCost').innerText='0';
-            document.getElementById('displayOther').innerText='0';
-            document.getElementById('displayLoss').innerText='0';
-        } catch(e) { showToast('Fout bij toevoegen verkoop', true); console.error(e); }
+        try { await addDoc(collection(db, "sales"), { name, email, customer, quantity, unitPrice, discount, totalAmount, cost, shipCost, other, loss, profit, date, paymentMethod, paymentStatus, seller, createdAt: new Date().toISOString() }); showToast('Verkoop toegevoegd!'); document.getElementById('saleName').value = ''; document.getElementById('saleEmail').value = ''; document.getElementById('customerName').value = ''; document.getElementById('saleQuantity').value = 1; document.getElementById('saleUnitPrice').value = ''; document.getElementById('saleDiscount').value = 0; pinValues.cost='0'; pinValues.shipcost='0'; pinValues.other='0'; pinValues.loss='0'; document.getElementById('displayCost').innerText='0'; document.getElementById('displayShipCost').innerText='0'; document.getElementById('displayOther').innerText='0'; document.getElementById('displayLoss').innerText='0'; } catch(e) { showToast('Fout bij toevoegen verkoop', true); console.error(e); }
     };
-    window.deleteSale = async (id) => {
-        if (!confirm('Verkoop verwijderen?')) return;
-        try { await deleteDoc(doc(db, "sales", id)); showToast('Verkoop verwijderd'); }
-        catch(e) { showToast('Fout bij verwijderen', true); }
-    };
+    window.deleteSale = async (id) => { if (!confirm('Verkoop verwijderen?')) return; try { await deleteDoc(doc(db, "sales", id)); showToast('Verkoop verwijderd'); } catch(e) { showToast('Fout bij verwijderen', true); } };
     function renderSalesList() {
         const container = document.getElementById('salesList');
         if (!container) return;
         if (sales.length === 0) { container.innerHTML = '<div class="text-gray-400 p-2">Geen sales</div>'; return; }
-        container.innerHTML = sales.map(s => `
-            <div class="list-item">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <strong>${s.name}</strong> - ${s.customer || '-'}<br>
-                        <span class="text-sm">€${s.totalAmount?.toFixed(2) || '0.00'} | Winst: €${s.profit?.toFixed(2) || '0.00'} | ${s.seller}</span><br>
-                        <span class="badge ${s.paymentStatus==='Betaald'?'badge-paid':'badge-unpaid'}">${s.paymentStatus}</span>
-                        <span class="badge badge-shipped">${s.paymentMethod}</span>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="showReceipt('sale','${s.id}')" class="text-indigo-600 text-sm hover:underline">Bon</button>
-                        <button onclick="deleteSale('${s.id}')" class="text-red-600 text-sm hover:underline">Verwijder</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = sales.map(s => `<div class="list-item"><div class="flex justify-between items-start"><div><strong>${s.name}</strong> - ${s.customer || '-'}<br><span class="text-sm">€${s.totalAmount?.toFixed(2) || '0.00'} | Winst: €${s.profit?.toFixed(2) || '0.00'} | ${s.seller}</span><br><span class="badge ${s.paymentStatus==='Betaald'?'badge-paid':'badge-unpaid'}">${s.paymentStatus}</span><span class="badge badge-shipped">${s.paymentMethod}</span></div><div class="flex gap-2"><button onclick="showReceipt('sale','${s.id}')" class="text-indigo-600 text-sm hover:underline">Bon</button><button onclick="deleteSale('${s.id}')" class="text-red-600 text-sm hover:underline">Verwijder</button></div></div></div>`).join('');
     }
 
     window.addOrder = async () => {
@@ -856,60 +711,18 @@
         const rows = document.querySelectorAll('#orderProductsContainer .product-row');
         const items = [];
         let total = 0;
-        rows.forEach(row => {
-            const name = row.querySelector('.product-name')?.value.trim();
-            const qty = parseInt(row.querySelector('.product-qty')?.value) || 1;
-            const price = parseFloat(row.querySelector('.product-price')?.value) || 0;
-            if (name && qty > 0 && price > 0) { items.push({ name, quantity: qty, price: price }); total += qty * price; }
-        });
+        rows.forEach(row => { const name = row.querySelector('.product-name')?.value.trim(); const qty = parseInt(row.querySelector('.product-qty')?.value) || 1; const price = parseFloat(row.querySelector('.product-price')?.value) || 0; if (name && qty > 0 && price > 0) { items.push({ name, quantity: qty, price }); total += qty * price; } });
         if (items.length === 0) { showToast('Voeg minimaal 1 product toe', true); return; }
         total = Math.max(0, total - discount);
-        try {
-            await addDoc(collection(db, "orders"), { customer, email, items, discount, totalAmount: total, date, paymentMethod, paymentStatus, status, createdAt: new Date().toISOString() });
-            showToast('Order toegevoegd!');
-            document.getElementById('orderCustomer').value = '';
-            document.getElementById('orderEmail').value = '';
-            document.getElementById('orderDiscount').value = 0;
-            document.getElementById('orderProductsContainer').innerHTML = '';
-            addOrderProductRow();
-        } catch(e) { showToast('Fout bij toevoegen order', true); console.error(e); }
+        try { await addDoc(collection(db, "orders"), { customer, email, items, discount, totalAmount: total, date, paymentMethod, paymentStatus, status, createdAt: new Date().toISOString() }); showToast('Order toegevoegd!'); document.getElementById('orderCustomer').value = ''; document.getElementById('orderEmail').value = ''; document.getElementById('orderDiscount').value = 0; document.getElementById('orderProductsContainer').innerHTML = ''; addOrderProductRow(); } catch(e) { showToast('Fout bij toevoegen order', true); console.error(e); }
     };
-    window.deleteOrder = async (id) => {
-        if (!confirm('Order verwijderen?')) return;
-        try { await deleteDoc(doc(db, "orders", id)); showToast('Order verwijderd'); }
-        catch(e) { showToast('Fout bij verwijderen', true); }
-    };
-    window.updateOrderStatus = async (id, newStatus) => {
-        try { await updateDoc(doc(db, "orders", id), { status: newStatus }); showToast('Status bijgewerkt'); }
-        catch(e) { showToast('Fout bij updaten', true); }
-    };
+    window.deleteOrder = async (id) => { if (!confirm('Order verwijderen?')) return; try { await deleteDoc(doc(db, "orders", id)); showToast('Order verwijderd'); } catch(e) { showToast('Fout bij verwijderen', true); } };
+    window.updateOrderStatus = async (id, newStatus) => { try { await updateDoc(doc(db, "orders", id), { status: newStatus }); showToast('Status bijgewerkt'); } catch(e) { showToast('Fout bij updaten', true); } };
     function renderOrdersList() {
         const container = document.getElementById('ordersList');
         if (!container) return;
         if (orders.length === 0) { container.innerHTML = '<div class="text-gray-400 p-2">Geen orders</div>'; return; }
-        container.innerHTML = orders.map(o => `
-            <div class="list-item">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <strong>${o.customer}</strong> - €${o.totalAmount?.toFixed(2) || '0.00'}<br>
-                        <span class="text-sm text-gray-500">${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || ''}</span><br>
-                        <span class="badge ${o.status==='pending'?'badge-pending':o.status==='shipped'?'badge-shipped':'badge-delivered'}">${o.status}</span>
-                        <span class="badge ${o.paymentStatus==='Betaald'?'badge-paid':'badge-unpaid'}">${o.paymentStatus}</span>
-                    </div>
-                    <div class="flex flex-col gap-1 items-end">
-                        <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs border rounded px-1 py-0.5">
-                            <option value="pending" ${o.status==='pending'?'selected':''}>In afwachting</option>
-                            <option value="shipped" ${o.status==='shipped'?'selected':''}>Verzonden</option>
-                            <option value="delivered" ${o.status==='delivered'?'selected':''}>Geleverd</option>
-                        </select>
-                        <div class="flex gap-2">
-                            <button onclick="showReceipt('order','${o.id}')" class="text-indigo-600 text-sm hover:underline">Bon</button>
-                            <button onclick="deleteOrder('${o.id}')" class="text-red-600 text-sm hover:underline">Verwijder</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = orders.map(o => `<div class="list-item"><div class="flex justify-between items-start"><div><strong>${o.customer}</strong> - €${o.totalAmount?.toFixed(2) || '0.00'}<br><span class="text-sm text-gray-500">${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || ''}</span><br><span class="badge ${o.status==='pending'?'badge-pending':o.status==='shipped'?'badge-shipped':'badge-delivered'}">${o.status}</span><span class="badge ${o.paymentStatus==='Betaald'?'badge-paid':'badge-unpaid'}">${o.paymentStatus}</span></div><div class="flex flex-col gap-1 items-end"><select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs border rounded px-1 py-0.5"><option value="pending" ${o.status==='pending'?'selected':''}>In afwachting</option><option value="shipped" ${o.status==='shipped'?'selected':''}>Verzonden</option><option value="delivered" ${o.status==='delivered'?'selected':''}>Geleverd</option></select><div class="flex gap-2"><button onclick="showReceipt('order','${o.id}')" class="text-indigo-600 text-sm hover:underline">Bon</button><button onclick="deleteOrder('${o.id}')" class="text-red-600 text-sm hover:underline">Verwijder</button></div></div></div></div>`).join('');
     }
 
     window.addTracking = async () => {
@@ -920,61 +733,19 @@
         const destination = document.getElementById('trackingDestination').value.trim();
         const estimatedDelivery = document.getElementById('trackingEstimatedDelivery').value;
         if (!code) code = 'AOM' + Date.now().toString().slice(-6);
-        try {
-            await addDoc(collection(db, "tracking"), {
-                trackingCode: code, carrierTrackingNumber: carrierNumber, carrierName, customer, destination,
-                estimatedDelivery, currentStep: 'bestelling_ontvangen', updates: [], createdAt: new Date().toISOString()
-            });
-            showToast(`Tracking ${code} aangemaakt!`);
-            document.getElementById('trackingCode').value = '';
-            document.getElementById('carrierTrackingNumber').value = '';
-            document.getElementById('carrierName').value = '';
-            document.getElementById('trackingCustomer').value = '';
-            document.getElementById('trackingDestination').value = '';
-            document.getElementById('trackingEstimatedDelivery').value = '';
-        } catch(e) { showToast('Fout bij aanmaken tracking', true); console.error(e); }
+        try { await addDoc(collection(db, "tracking"), { trackingCode: code, carrierTrackingNumber: carrierNumber, carrierName, customer, destination, estimatedDelivery, currentStep: 'bestelling_ontvangen', updates: [], createdAt: new Date().toISOString() }); showToast(`Tracking ${code} aangemaakt!`); document.getElementById('trackingCode').value = ''; document.getElementById('carrierTrackingNumber').value = ''; document.getElementById('carrierName').value = ''; document.getElementById('trackingCustomer').value = ''; document.getElementById('trackingDestination').value = ''; document.getElementById('trackingEstimatedDelivery').value = ''; } catch(e) { showToast('Fout bij aanmaken tracking', true); console.error(e); }
     };
-    window.deleteTracking = async (id) => {
-        if (!confirm('Tracking verwijderen?')) return;
-        try { await deleteDoc(doc(db, "tracking", id)); showToast('Tracking verwijderd'); }
-        catch(e) { showToast('Fout bij verwijderen', true); }
-    };
-    window.searchTracking = () => {
-        const query = document.getElementById('searchTrackingInput').value.trim().toLowerCase();
-        renderTrackingList(query);
-    };
+    window.deleteTracking = async (id) => { if (!confirm('Tracking verwijderen?')) return; try { await deleteDoc(doc(db, "tracking", id)); showToast('Tracking verwijderd'); } catch(e) { showToast('Fout bij verwijderen', true); } };
+    window.searchTracking = () => { const query = document.getElementById('searchTrackingInput').value.trim().toLowerCase(); renderTrackingList(query); };
     function renderTrackingList(filter = '') {
         const container = document.getElementById('trackingList');
         if (!container) return;
         let list = tracking;
         if (filter) list = list.filter(t => t.trackingCode?.toLowerCase().includes(filter) || t.customer?.toLowerCase().includes(filter));
         if (list.length === 0) { container.innerHTML = '<div class="text-gray-400 p-2">Geen tracking gevonden</div>'; return; }
-        container.innerHTML = list.map(t => `
-            <div class="list-item">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <strong>${t.trackingCode}</strong> - ${t.customer || '-'}<br>
-                        <span class="text-sm text-gray-500">${t.carrierName || 'AOM'} | ${t.destination || '-'} | ${t.currentStep?.replace(/_/g,' ') || '-'}</span><br>
-                        <span class="text-xs text-gray-400">Updates: ${t.updates?.length || 0}</span>
-                    </div>
-                    <div class="flex flex-col gap-1 items-end">
-                        <button onclick="openUpdateModal('${t.id}')" class="text-indigo-600 text-sm hover:underline">Update</button>
-                        <button onclick="openEditTrackingModal('${t.id}')" class="text-gray-600 text-sm hover:underline">Bewerk</button>
-                        <button onclick="deleteTracking('${t.id}')" class="text-red-600 text-sm hover:underline">Verwijder</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = list.map(t => `<div class="list-item"><div class="flex justify-between items-start"><div><strong>${t.trackingCode}</strong> - ${t.customer || '-'}<br><span class="text-sm text-gray-500">${t.carrierName || 'AOM'} | ${t.destination || '-'} | ${t.currentStep?.replace(/_/g,' ') || '-'}</span><br><span class="text-xs text-gray-400">Updates: ${t.updates?.length || 0}</span></div><div class="flex flex-col gap-1 items-end"><button onclick="openUpdateModal('${t.id}')" class="text-indigo-600 text-sm hover:underline">Update</button><button onclick="openEditTrackingModal('${t.id}')" class="text-gray-600 text-sm hover:underline">Bewerk</button><button onclick="deleteTracking('${t.id}')" class="text-red-600 text-sm hover:underline">Verwijder</button></div></div></div>`).join('');
     }
-    window.openUpdateModal = (id) => {
-        currentTrackingId = id;
-        document.getElementById('updateText').value = '';
-        document.getElementById('updateLocation').value = '';
-        document.getElementById('updateTimestamp').value = new Date().toISOString().slice(0,16);
-        document.getElementById('updatePhotoUrl').value = '';
-        document.getElementById('updateStep').value = '';
-        document.getElementById('updateModal').classList.remove('hidden');
-    };
+    window.openUpdateModal = (id) => { currentTrackingId = id; document.getElementById('updateText').value = ''; document.getElementById('updateLocation').value = ''; document.getElementById('updateTimestamp').value = new Date().toISOString().slice(0,16); document.getElementById('updatePhotoUrl').value = ''; document.getElementById('updateStep').value = ''; document.getElementById('updateModal').classList.remove('hidden'); };
     window.addUpdateToTracking = async () => {
         if (!currentTrackingId) return;
         const text = document.getElementById('updateText').value.trim();
@@ -1013,68 +784,17 @@
     };
     window.saveTrackingEdits = async () => {
         if (!currentEditTrackingId) return;
-        try {
-            await updateDoc(doc(db, "tracking", currentEditTrackingId), {
-                estimatedDelivery: document.getElementById('editEstimatedDelivery').value,
-                carrierTrackingNumber: document.getElementById('editCarrierTrackingNumber').value.trim(),
-                carrierName: document.getElementById('editCarrierName').value.trim(),
-                currentStep: document.getElementById('editCurrentStep').value
-            });
-            showToast('Tracking bijgewerkt!');
-            closeModal('editTrackingModal');
-            currentEditTrackingId = null;
-        } catch(e) { showToast('Fout bij opslaan', true); }
+        try { await updateDoc(doc(db, "tracking", currentEditTrackingId), { estimatedDelivery: document.getElementById('editEstimatedDelivery').value, carrierTrackingNumber: document.getElementById('editCarrierTrackingNumber').value.trim(), carrierName: document.getElementById('editCarrierName').value.trim(), currentStep: document.getElementById('editCurrentStep').value }); showToast('Tracking bijgewerkt!'); closeModal('editTrackingModal'); currentEditTrackingId = null; } catch(e) { showToast('Fout bij opslaan', true); }
     };
 
     window.showReceipt = (type, id) => {
-        let data;
-        if (type === 'sale') data = sales.find(s => s.id === id);
-        else data = orders.find(o => o.id === id);
+        let data = type === 'sale' ? sales.find(s => s.id === id) : orders.find(o => o.id === id);
         if (!data) { showToast('Bon data niet gevonden', true); return; }
         const content = document.getElementById('receiptContent');
         if (type === 'sale') {
-            content.innerHTML = `
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold">${companyName}</h2>
-                    <p class="text-gray-500">${companyEmail}</p>
-                    <p class="text-gray-400 text-sm">${new Date().toLocaleString('nl-NL')}</p>
-                </div>
-                <hr class="my-4">
-                <p><strong>Klant:</strong> ${data.customer || '-'}</p>
-                <p><strong>Email:</strong> ${data.email || '-'}</p>
-                <p><strong>Product:</strong> ${data.name}</p>
-                <p><strong>Aantal:</strong> ${data.quantity}</p>
-                <p><strong>Prijs p/st:</strong> €${data.unitPrice?.toFixed(2)}</p>
-                <p><strong>Korting:</strong> €${data.discount?.toFixed(2)}</p>
-                <hr class="my-4">
-                <p class="text-xl font-bold">Totaal: €${data.totalAmount?.toFixed(2)}</p>
-                <p class="text-green-600">Winst: €${data.profit?.toFixed(2)}</p>
-                <p class="text-sm text-gray-500 mt-2">Betaalmethode: ${data.paymentMethod} | Status: ${data.paymentStatus}</p>
-                <p class="text-sm text-gray-500">Verkoper: ${data.seller}</p>
-            `;
+            content.innerHTML = `<div class="text-center mb-6"><h2 class="text-2xl font-bold">${companyName}</h2><p class="text-gray-500">${companyEmail}</p><p class="text-gray-400 text-sm">${new Date().toLocaleString('nl-NL')}</p></div><hr class="my-4"><p><strong>Klant:</strong> ${data.customer || '-'}</p><p><strong>Email:</strong> ${data.email || '-'}</p><p><strong>Product:</strong> ${data.name}</p><p><strong>Aantal:</strong> ${data.quantity}</p><p><strong>Prijs p/st:</strong> €${data.unitPrice?.toFixed(2)}</p><p><strong>Korting:</strong> €${data.discount?.toFixed(2)}</p><hr class="my-4"><p class="text-xl font-bold">Totaal: €${data.totalAmount?.toFixed(2)}</p><p class="text-green-600">Winst: €${data.profit?.toFixed(2)}</p><p class="text-sm text-gray-500 mt-2">Betaalmethode: ${data.paymentMethod} | Status: ${data.paymentStatus}</p><p class="text-sm text-gray-500">Verkoper: ${data.seller}</p>`;
         } else {
-            content.innerHTML = `
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold">${companyName}</h2>
-                    <p class="text-gray-500">${companyEmail}</p>
-                    <p class="text-gray-400 text-sm">${new Date().toLocaleString('nl-NL')}</p>
-                </div>
-                <hr class="my-4">
-                <p><strong>Klant:</strong> ${data.customer}</p>
-                <p><strong>Email:</strong> ${data.email || '-'}</p>
-                <p><strong>Datum:</strong> ${data.date || '-'}</p>
-                <hr class="my-4">
-                <table class="w-full text-left">
-                    <thead><tr><th>Product</th><th>Aantal</th><th>Prijs</th></tr></thead>
-                    <tbody>
-                        ${data.items?.map(i => `<tr><td>${i.name}</td><td>${i.quantity}</td><td>€${(i.price*i.quantity).toFixed(2)}</td></tr>`).join('') || ''}
-                    </tbody>
-                </table>
-                <hr class="my-4">
-                <p><strong>Korting:</strong> €${data.discount?.toFixed(2)}</p>
-                <p class="text-xl font-bold">Totaal: €${data.totalAmount?.toFixed(2)}</p>
-                <p class="text-sm text-gray-500 mt-2">Betaalmethode: ${data.paymentMethod} | Status: ${data.paymentStatus}</p>
-            `;
+            content.innerHTML = `<div class="text-center mb-6"><h2 class="text-2xl font-bold">${companyName}</h2><p class="text-gray-500">${companyEmail}</p><p class="text-gray-400 text-sm">${new Date().toLocaleString('nl-NL')}</p></div><hr class="my-4"><p><strong>Klant:</strong> ${data.customer}</p><p><strong>Email:</strong> ${data.email || '-'}</p><p><strong>Datum:</strong> ${data.date || '-'}</p><hr class="my-4"><table class="w-full text-left"><thead><tr><th>Product</th><th>Aantal</th><th>Prijs</th></tr></thead><tbody>${data.items?.map(i => `<tr><td>${i.name}</td><td>${i.quantity}</td><td>€${(i.price*i.quantity).toFixed(2)}</td></tr>`).join('') || ''}</tbody></table><hr class="my-4"><p><strong>Korting:</strong> €${data.discount?.toFixed(2)}</p><p class="text-xl font-bold">Totaal: €${data.totalAmount?.toFixed(2)}</p><p class="text-sm text-gray-500 mt-2">Betaalmethode: ${data.paymentMethod} | Status: ${data.paymentStatus}</p>`;
         }
         document.getElementById('receiptModal').classList.remove('hidden');
     };
@@ -1084,53 +804,51 @@
         const container = document.getElementById('customerOrdersList');
         if(!container) return;
         if (customerOrders.length === 0) { container.innerHTML = '<div class="text-gray-400 p-2">Geen klantbestellingen</div>'; return; }
-        container.innerHTML = customerOrders.map(order => `
-            <div class="list-item">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <strong>${order.customerName}</strong> (${order.customerEmail||'-'})<br>
-                        <span class="text-sm text-gray-500">Adres: ${order.address}</span><br>
-                        <span class="text-sm">Totaal: €${order.totalAmount?.toFixed(2)}</span><br>
-                        <span class="badge ${order.status==='pending'?'badge-pending':order.status==='shipped'?'badge-shipped':'badge-delivered'}">${order.status}</span>
-                        <div class="text-sm mt-1">${order.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || ''}</div>
-                    </div>
-                    <select onchange="updateCustomerOrderStatus('${order.id}', this.value)" class="text-xs border rounded px-1 py-0.5">
-                        <option value="pending" ${order.status==='pending'?'selected':''}>In afwachting</option>
-                        <option value="shipped" ${order.status==='shipped'?'selected':''}>Verzonden</option>
-                        <option value="delivered" ${order.status==='delivered'?'selected':''}>Geleverd</option>
-                    </select>
-                </div>
-            </div>
-        `).join('');
+        container.innerHTML = customerOrders.map(order => `<div class="list-item"><div class="flex justify-between items-start"><div><strong>${order.customerName}</strong> (${order.customerEmail||'-'})<br><span class="text-sm text-gray-500">Adres: ${order.address}</span><br><span class="text-sm">Totaal: €${order.totalAmount?.toFixed(2)}</span><br><span class="badge ${order.status==='pending'?'badge-pending':order.status==='shipped'?'badge-shipped':'badge-delivered'}">${order.status}</span><div class="text-sm mt-1">${order.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || ''}</div></div><select onchange="updateCustomerOrderStatus('${order.id}', this.value)" class="text-xs border rounded px-1 py-0.5"><option value="pending" ${order.status==='pending'?'selected':''}>In afwachting</option><option value="shipped" ${order.status==='shipped'?'selected':''}>Verzonden</option><option value="delivered" ${order.status==='delivered'?'selected':''}>Geleverd</option></select></div></div>`).join('');
     }
-    window.updateCustomerOrderStatus = async (id, newStatus) => {
-        try { await updateDoc(doc(db, "customerOrders", id), { status: newStatus }); showToast('Status bijgewerkt'); }
-        catch(e) { showToast('Fout bij updaten', true); }
-    };
+    window.updateCustomerOrderStatus = async (id, newStatus) => { try { await updateDoc(doc(db, "customerOrders", id), { status: newStatus }); showToast('Status bijgewerkt'); } catch(e) { showToast('Fout bij updaten', true); } };
 
     function renderFeedbackList() {
         const container = document.getElementById('feedbackAdminList');
         if (!container) return;
         if (feedback.length === 0) { container.innerHTML = '<div class="text-gray-400 p-2">Geen feedback</div>'; return; }
-        container.innerHTML = feedback.map(f => `
-            <div class="list-item">
-                <strong>${f.name}</strong> ${f.trackingCode ? `(${f.trackingCode})` : ''}<br>
-                <span class="text-sm">${f.message}</span><br>
-                <span class="text-xs text-gray-400">${new Date(f.createdAt).toLocaleString('nl-NL')}</span>
-            </div>
-        `).join('');
+        container.innerHTML = feedback.map(f => `<div class="list-item"><strong>${f.name}</strong> ${f.trackingCode ? `(${f.trackingCode})` : ''}<br><span class="text-sm">${f.message}</span><br><span class="text-xs text-gray-400">${new Date(f.createdAt).toLocaleString('nl-NL')}</span></div>`).join('');
     }
     function renderRecentFeedback() {
         const container = document.getElementById('recentFeedbackListAdmin');
         if (!container) return;
         const recent = feedback.slice(-3).reverse();
         if (recent.length === 0) { container.innerHTML = '<div class="text-gray-400">Geen feedback</div>'; return; }
-        container.innerHTML = recent.map(f => `
-            <div class="border-b border-gray-200 py-2">
-                <strong>${f.name}</strong>: ${f.message.substring(0,60)}${f.message.length>60?'...':''}
-            </div>
-        `).join('');
+        container.innerHTML = recent.map(f => `<div class="border-b border-gray-200 py-2"><strong>${f.name}</strong>: ${f.message.substring(0,60)}${f.message.length>60?'...':''}</div>`).join('');
     }
+
+    function renderTaxReport() {
+        const container = document.getElementById('taxReportContent');
+        if (!container) return;
+        const totalRevenue = sales.reduce((a,s)=>a+(s.totalAmount||0),0);
+        const totalCost = sales.reduce((a,s)=>a+(s.cost||0)+(s.shipCost||0)+(s.other||0)+(s.loss||0),0);
+        const totalProfit = sales.reduce((a,s)=>a+(s.profit||0),0);
+        const estimatedVat = totalRevenue * 0.21;
+        const vatDeductible = totalCost * 0.21;
+        const vatToPay = estimatedVat - vatDeductible;
+        container.innerHTML = `
+            <h3 class="text-xl font-bold mt-2">Fiscaal overzicht</h3>
+            <p><strong>Periode:</strong> Gehele administratie</p>
+            <p><strong>Totale omzet (excl. BTW):</strong> €${totalRevenue.toFixed(2)}</p>
+            <p><strong>Totale kosten (incl. verlies):</strong> €${totalCost.toFixed(2)}</p>
+            <p><strong>Totale winst:</strong> €${totalProfit.toFixed(2)}</p>
+            <hr class="my-4">
+            <h3 class="text-xl font-bold">BTW-berekening (21% tarief)</h3>
+            <p><strong>BTW over omzet:</strong> €${estimatedVat.toFixed(2)}</p>
+            <p><strong>Voorbelasting (BTW over kosten):</strong> €${vatDeductible.toFixed(2)}</p>
+            <p><strong>Af te dragen BTW:</strong> €${Math.max(0, vatToPay).toFixed(2)}</p>
+            <hr class="my-4">
+            <h3 class="text-xl font-bold">Belastingadvies</h3>
+            <p>• Bewaar al uw inkoopfactoren minimaal 7 jaar.<br>• Doe tijdig aangifte om boetes te voorkomen.<br>• Raadpleeg een belastingadviseur voor maatwerk.</p>
+            <p class="text-sm text-gray-500 mt-4">Dit rapport is een indicatie en geen officiële belastingaangifte.</p>
+        `;
+    }
+    function printTaxReport() { window.print(); }
 
     function initCharts() {
         const revCtx = document.getElementById('chartRevenue')?.getContext('2d');
@@ -1141,16 +859,8 @@
         const labels = sales.map((s,i) => s.date || `Verkoop ${i+1}`).slice(-10);
         const revenues = sales.map(s => s.totalAmount || 0).slice(-10);
         const profits = sales.map(s => s.profit || 0).slice(-10);
-        chartRevenueInstance = new Chart(revCtx, {
-            type: 'bar',
-            data: { labels, datasets: [{ label: 'Omzet (€)', data: revenues, backgroundColor: '#4f46e5', borderRadius: 6 }] },
-            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-        });
-        chartProfitInstance = new Chart(profCtx, {
-            type: 'line',
-            data: { labels, datasets: [{ label: 'Winst (€)', data: profits, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 }] },
-            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-        });
+        chartRevenueInstance = new Chart(revCtx, { type: 'bar', data: { labels, datasets: [{ label: 'Omzet (€)', data: revenues, backgroundColor: '#4f46e5', borderRadius: 6 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
+        chartProfitInstance = new Chart(profCtx, { type: 'line', data: { labels, datasets: [{ label: 'Winst (€)', data: profits, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } });
     }
 
     window.saveCompanySettings = () => {
@@ -1172,16 +882,7 @@
     }
     window.exportAllData = async () => {
         try {
-            const data = {
-                sales: sales.map(s => ({...s})),
-                orders: orders.map(o => ({...o})),
-                tracking: tracking.map(t => ({...t})),
-                feedback: feedback.map(f => ({...f})),
-                customerOrders: customerOrders.map(c => ({...c})),
-                products: products,
-                companyName, companyEmail,
-                exportedAt: new Date().toISOString()
-            };
+            const data = { sales: sales.map(s => ({...s})), orders: orders.map(o => ({...o})), tracking: tracking.map(t => ({...t})), feedback: feedback.map(f => ({...f})), customerOrders: customerOrders.map(c => ({...c})), products: products, companyName, companyEmail, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1196,12 +897,7 @@
         if(!confirm('WAARSCHUWING: Dit wist ALLE data uit Firebase. Doorgaan?')) return;
         try {
             const collections = ['sales', 'orders', 'tracking', 'feedback', 'customerOrders'];
-            for (const col of collections) {
-                const snap = await getDocs(collection(db, col));
-                const batch = writeBatch(db);
-                snap.docs.forEach(d => batch.delete(d.ref));
-                await batch.commit();
-            }
+            for (const col of collections) { const snap = await getDocs(collection(db, col)); const batch = writeBatch(db); snap.docs.forEach(d => batch.delete(d.ref)); await batch.commit(); }
             localStorage.removeItem('aom_products');
             localStorage.removeItem('aom_company_name');
             localStorage.removeItem('aom_company_email');
@@ -1228,53 +924,20 @@
     };
 
     function startListeners() {
-        unsubSales = onSnapshot(collection(db, "sales"), snap => {
-            sales = snap.docs.map(d=> ({id:d.id, ...d.data()}));
-            if (!document.getElementById('admin-sales').classList.contains('hidden')) renderSalesList();
-            if (!document.getElementById('admin-dashboard').classList.contains('hidden')) updateDashboardStats();
-            if (!document.getElementById('admin-analytics').classList.contains('hidden')) initCharts();
-            updateUI();
-        }, e => console.error('Sales listener error:', e));
-        unsubOrders = onSnapshot(collection(db, "orders"), snap => {
-            orders = snap.docs.map(d=> ({id:d.id, ...d.data()}));
-            if (!document.getElementById('admin-orders').classList.contains('hidden')) renderOrdersList();
-            updateUI();
-        }, e => console.error('Orders listener error:', e));
-        unsubTracking = onSnapshot(collection(db, "tracking"), snap => {
-            tracking = snap.docs.map(d=> ({id:d.id, ...d.data()}));
-            if (!document.getElementById('admin-tracking-admin').classList.contains('hidden')) renderTrackingList();
-            updateUI();
-        }, e => console.error('Tracking listener error:', e));
-        unsubFeedback = onSnapshot(collection(db, "feedback"), snap => {
-            feedback = snap.docs.map(d=> ({id:d.id, ...d.data()}));
-            if (!document.getElementById('admin-feedback').classList.contains('hidden')) renderFeedbackList();
-            if (!document.getElementById('admin-dashboard').classList.contains('hidden')) renderRecentFeedback();
-            updateUI();
-        }, e => console.error('Feedback listener error:', e));
-        unsubCustomerOrders = onSnapshot(collection(db, "customerOrders"), snap => {
-            customerOrders = snap.docs.map(d=> ({id:d.id, ...d.data()}));
-            if (!document.getElementById('admin-customer-orders').classList.contains('hidden')) renderCustomerOrders();
-            updateUI();
-        }, e => console.error('CustomerOrders listener error:', e));
+        unsubSales = onSnapshot(collection(db, "sales"), snap => { sales = snap.docs.map(d=> ({id:d.id, ...d.data()})); if (!document.getElementById('admin-sales').classList.contains('hidden')) renderSalesList(); if (!document.getElementById('admin-dashboard').classList.contains('hidden')) updateDashboardStats(); if (!document.getElementById('admin-analytics').classList.contains('hidden')) initCharts(); updateUI(); }, e => console.error('Sales listener error:', e));
+        unsubOrders = onSnapshot(collection(db, "orders"), snap => { orders = snap.docs.map(d=> ({id:d.id, ...d.data()})); if (!document.getElementById('admin-orders').classList.contains('hidden')) renderOrdersList(); updateUI(); }, e => console.error('Orders listener error:', e));
+        unsubTracking = onSnapshot(collection(db, "tracking"), snap => { tracking = snap.docs.map(d=> ({id:d.id, ...d.data()})); if (!document.getElementById('admin-tracking-admin').classList.contains('hidden')) renderTrackingList(); updateUI(); }, e => console.error('Tracking listener error:', e));
+        unsubFeedback = onSnapshot(collection(db, "feedback"), snap => { feedback = snap.docs.map(d=> ({id:d.id, ...d.data()})); if (!document.getElementById('admin-feedback').classList.contains('hidden')) renderFeedbackList(); if (!document.getElementById('admin-dashboard').classList.contains('hidden')) renderRecentFeedback(); updateUI(); }, e => console.error('Feedback listener error:', e));
+        unsubCustomerOrders = onSnapshot(collection(db, "customerOrders"), snap => { customerOrders = snap.docs.map(d=> ({id:d.id, ...d.data()})); if (!document.getElementById('admin-customer-orders').classList.contains('hidden')) renderCustomerOrders(); updateUI(); }, e => console.error('CustomerOrders listener error:', e));
     }
-    function updateUI() {
-        const el = document.getElementById('lastUpdateTime');
-        if (el) el.innerText = `Laatste update: ${new Date().toLocaleTimeString('nl-NL')}`;
-    }
+    function updateUI() { const el = document.getElementById('lastUpdateTime'); if (el) el.innerText = `Laatste update: ${new Date().toLocaleTimeString('nl-NL')}`; }
     function updateDashboardStats() {
         const totalSales = sales.length;
         const totalRevenue = sales.reduce((a,s)=>a+(s.totalAmount||0),0);
         const totalProfit = sales.reduce((a,s)=>a+(s.profit||0),0);
         const totalLoss = sales.reduce((a,s)=>a+(s.loss||0),0);
         const statsDiv = document.getElementById('statsContainer');
-        if(statsDiv) {
-            statsDiv.innerHTML = `
-                <div class="stat-card"><div class="text-2xl font-bold text-gray-800">${totalSales}</div><div class="text-gray-500">Sales</div></div>
-                <div class="stat-card"><div class="text-2xl font-bold text-gray-800">€${totalRevenue.toFixed(0)}</div><div class="text-gray-500">Omzet</div></div>
-                <div class="stat-card"><div class="text-2xl font-bold text-green-600">€${totalProfit.toFixed(0)}</div><div class="text-gray-500">Winst</div></div>
-                <div class="stat-card"><div class="text-2xl font-bold text-red-600">€${totalLoss.toFixed(0)}</div><div class="text-gray-500">Verlies</div></div>
-            `;
-        }
+        if(statsDiv) { statsDiv.innerHTML = `<div class="stat-card"><div class="text-2xl font-bold text-gray-800">${totalSales}</div><div class="text-gray-500">Sales</div></div><div class="stat-card"><div class="text-2xl font-bold text-gray-800">€${totalRevenue.toFixed(0)}</div><div class="text-gray-500">Omzet</div></div><div class="stat-card"><div class="text-2xl font-bold text-green-600">€${totalProfit.toFixed(0)}</div><div class="text-gray-500">Winst</div></div><div class="stat-card"><div class="text-2xl font-bold text-red-600">€${totalLoss.toFixed(0)}</div><div class="text-gray-500">Verlies</div></div>`; }
     }
 
     function addOrderProductRow() {
@@ -1290,26 +953,15 @@
     window.removeOrderProductRow = (id) => { document.getElementById(`orderProductRow_${id}`)?.remove(); };
 
     setTimeout(() => {
-        generatePinpad('cost','costPinpad');
-        generatePinpad('shipcost','shipPinpad');
-        generatePinpad('other','otherPinpad');
-        generatePinpad('loss','lossPinpad');
-        generatePinpad('pricecheck','pricePinpad');
-        const saleDate = document.getElementById('saleDate');
-        if (saleDate) saleDate.valueAsDate = new Date();
-        const orderDate = document.getElementById('orderDate');
-        if (orderDate) orderDate.valueAsDate = new Date();
-        const addBtn = document.getElementById('addProductBtn');
-        if (addBtn) addBtn.onclick = addOrderProductRow;
+        generatePinpad('cost','costPinpad'); generatePinpad('shipcost','shipPinpad'); generatePinpad('other','otherPinpad'); generatePinpad('loss','lossPinpad'); generatePinpad('pricecheck','pricePinpad');
+        const saleDate = document.getElementById('saleDate'); if (saleDate) saleDate.valueAsDate = new Date();
+        const orderDate = document.getElementById('orderDate'); if (orderDate) orderDate.valueAsDate = new Date();
+        const addBtn = document.getElementById('addProductBtn'); if (addBtn) addBtn.onclick = addOrderProductRow;
         addOrderProductRow();
     }, 100);
 
     showPublicPage('home');
-    if (window.location.hash.startsWith('#track=')) {
-        const code = window.location.hash.substring(7);
-        showPublicPage('tracking');
-        setTimeout(() => { document.getElementById('publicTrackingInput').value = code; publicTrack(); }, 300);
-    }
+    if (window.location.hash.startsWith('#track=')) { const code = window.location.hash.substring(7); showPublicPage('tracking'); setTimeout(() => { document.getElementById('publicTrackingInput').value = code; publicTrack(); }, 300); }
 </script>
 </body>
 </html>
