@@ -10,126 +10,100 @@
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
-        body { background: #f3f4f6; overflow-x: hidden; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes scanLine { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
-        
-        .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-        
-        .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; transition: all 0.3s; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border-color: #c7d2fe; }
-        
-        .btn-primary { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: white; font-weight: 600; border-radius: 60px; padding: 0.6rem 1.5rem; transition: all 0.2s; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(79,70,229,0.2); }
-        .btn-primary:hover { box-shadow: 0 8px 12px rgba(79,70,229,0.3); transform: translateY(-1px); }
-        .btn-primary:active { transform: scale(0.96); }
-        
-        .btn-outline { background: transparent; border: 2px solid #e0e7ff; color: #4f46e5; border-radius: 60px; padding: 0.5rem 1.2rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-outline:hover { background: #eff6ff; border-color: #6366f1; color: #4338ca; }
-        
-        .btn-danger { background: #ef4444; color: white; font-weight: 600; border-radius: 60px; padding: 0.5rem 1.2rem; border: none; cursor: pointer; }
-        .btn-success { background: #10b981; color: white; font-weight: 600; border-radius: 60px; padding: 0.6rem 1.5rem; border: none; cursor: pointer; }
-        
-        .input-light { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 60px; padding: 0.7rem 1.2rem; width: 100%; outline: none; transition: all 0.2s; }
-        .input-light:focus { background: white; border-color: #818cf8; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
-        .input-textarea { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 0.7rem 1.2rem; width: 100%; outline: none; resize: vertical; }
-        
-        .nav-link { color: #4b5563; transition: 0.2s; cursor: pointer; font-weight: 500; position: relative; }
-        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background: #4f46e5; transition: width 0.3s; }
-        .nav-link:hover { color: #4f46e5; }
-        .nav-link:hover::after { width: 100%; }
-        
-        .admin-btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; font-weight: 700; border-radius: 60px; padding: 0.6rem 1.5rem; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(79,70,229,0.3); display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-        
-        .cart-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; font-size: 0.7rem; font-weight: 700; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        
-        .toast { position: fixed; top: 24px; right: 24px; background: white; border-left: 4px solid #10b981; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 9999; display: flex; align-items: center; gap: 12px; transform: translateX(150%); transition: transform 0.4s; font-weight: 500; }
-        .toast.show { transform: translateX(0); }
-        .toast.error { border-left-color: #ef4444; }
-        
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-        .badge-pending { background: #fef3c7; color: #92400e; }
-        .badge-shipped { background: #dbeafe; color: #1e40af; }
-        .badge-delivered { background: #d1fae5; color: #065f46; }
-        .badge-paid { background: #d1fae5; color: #065f46; }
-        .badge-unpaid { background: #fee2e2; color: #991b1b; }
-        .badge-info { background: #e0e7ff; color: #4f46e5; }
-        
-        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #e5e7eb; border-top-color: #4f46e5; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        
-        .scanner-container { position: relative; width: 100%; max-width: 400px; margin: 0 auto; border-radius: 1rem; overflow: hidden; border: 3px solid #4f46e5; background: #000; }
-        .scanner-container video { width: 100%; display: block; }
-        .scanner-line { position: absolute; left: 10%; width: 80%; height: 2px; background: #ef4444; animation: scanLine 2s ease-in-out infinite; z-index: 1; }
-        
-        .product-card { background: white; border-radius: 1.5rem; overflow: hidden; border: 1px solid #e5e7eb; transition: all 0.3s; }
-        .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .product-image-container { position: relative; width: 100%; height: 200px; background: #f3f4f6; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .product-image { width: 100%; height: 100%; object-fit: cover; }
-        
-        .admin-sidebar { background: white; border-right: 1px solid #e5e7eb; width: 280px; position: fixed; height: 100%; z-index: 30; overflow-y: auto; }
-        .admin-nav-item { padding: 12px 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s; color: #374151; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
-        .admin-nav-item:hover { background: #f3f4f6; color: #4f46e5; }
-        .admin-nav-item.active { background: #e0e7ff; color: #4f46e5; font-weight: 600; }
-        
-        .chatbot-button { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 30px; background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 24px rgba(79,70,229,0.3); z-index: 1000; transition: all 0.3s; }
-        .chatbot-window { position: fixed; bottom: 90px; right: 24px; width: 380px; height: 550px; background: white; border-radius: 28px; display: flex; flex-direction: column; overflow: hidden; z-index: 999; border: 1px solid #e5e7eb; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); opacity: 0; transform: scale(0.9); pointer-events: none; transition: all 0.3s; transform-origin: bottom right; }
-        .chatbot-window.open { opacity: 1; transform: scale(1); pointer-events: all; }
-        
-        .device-option { border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .device-option:hover { border-color: #818cf8; background: #f8fafc; }
-        .device-option.selected { border-color: #4f46e5; background: #eef2ff; }
-        
-        .barcode-box { background: white; padding: 20px; text-align: center; border: 2px dashed #cbd5e1; border-radius: 12px; margin: 16px 0; }
-        .barcode-text { font-family: 'Courier New', monospace; font-size: 1.5rem; font-weight: 700; letter-spacing: 4px; color: #1e293b; }
-        
-        @media print { body * { visibility: hidden; } .receipt-print, .receipt-print * { visibility: visible; } .receipt-print { position: absolute; top: 0; left: 0; width: 100%; padding: 30px; background: white; font-size: 11px; } }
-        @media (max-width: 768px) { .admin-sidebar { transform: translateX(-100%); } .admin-sidebar.mobile-open { transform: translateX(0); } .chatbot-window { width: calc(100% - 32px); right: 16px; } }
-        
-        .hidden { display: none !important; }
-        .product-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
-        .pin-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 16px; padding: 10px; text-align: center; cursor: pointer; font-weight: 600; user-select: none; }
-        .pin-btn:active { transform: scale(0.94); }
-        .banner-responsive { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 40px; padding: 20px 0; border-top: 1px solid #e2e8f0; background: #f8fafc; }
+        *{font-family:'Inter',sans-serif;box-sizing:border-box}
+        body{background:#f3f4f6;overflow-x:hidden}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes scanLine{0%{top:0}50%{top:100%}100%{top:0}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        .animate-fade-in{animation:fadeIn .4s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
+        .card{background:#fff;border-radius:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,.05);border:1px solid #e5e7eb;transition:all .3s}
+        .card:hover{transform:translateY(-4px);box-shadow:0 20px 25px -5px rgba(0,0,0,.1);border-color:#c7d2fe}
+        .btn-primary{background:linear-gradient(135deg,#4f46e5,#6366f1);color:#fff;font-weight:600;border-radius:60px;padding:.6rem 1.5rem;border:none;cursor:pointer;box-shadow:0 4px 6px rgba(79,70,229,.2);transition:all .2s}
+        .btn-primary:hover{box-shadow:0 8px 12px rgba(79,70,229,.3);transform:translateY(-1px)}
+        .btn-outline{background:0 0;border:2px solid #e0e7ff;color:#4f46e5;border-radius:60px;padding:.5rem 1.2rem;font-weight:600;cursor:pointer;transition:all .2s}
+        .btn-outline:hover{background:#eff6ff;border-color:#6366f1;color:#4338ca}
+        .btn-danger{background:#ef4444;color:#fff;font-weight:600;border-radius:60px;padding:.5rem 1.2rem;border:none;cursor:pointer}
+        .btn-success{background:#10b981;color:#fff;font-weight:600;border-radius:60px;padding:.6rem 1.5rem;border:none;cursor:pointer}
+        .input-light{background:#f9fafb;border:1px solid #e5e7eb;border-radius:60px;padding:.7rem 1.2rem;width:100%;outline:none;transition:all .2s}
+        .input-light:focus{background:#fff;border-color:#818cf8;box-shadow:0 0 0 4px rgba(99,102,241,.1)}
+        .input-textarea{background:#f9fafb;border:1px solid #e5e7eb;border-radius:1rem;padding:.7rem 1.2rem;width:100%;outline:none;resize:vertical}
+        .nav-link{color:#4b5563;cursor:pointer;font-weight:500;position:relative;transition:.2s}
+        .nav-link:hover{color:#4f46e5}
+        .admin-btn{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:700;border-radius:60px;padding:.6rem 1.5rem;border:none;cursor:pointer;box-shadow:0 4px 15px rgba(79,70,229,.3);display:flex;align-items:center;gap:8px;font-size:.9rem}
+        .cart-badge{position:absolute;top:-8px;right:-8px;background:#ef4444;color:#fff;font-size:.7rem;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+        .toast{position:fixed;top:24px;right:24px;background:#fff;border-left:4px solid #10b981;padding:16px 24px;border-radius:12px;box-shadow:0 10px 15px -3px rgba(0,0,0,.1);z-index:9999;display:flex;align-items:center;gap:12px;transform:translateX(150%);transition:transform .4s;font-weight:500}
+        .toast.show{transform:translateX(0)}
+        .toast.error{border-left-color:#ef4444}
+        .badge{display:inline-block;padding:4px 10px;border-radius:12px;font-size:.75rem;font-weight:600}
+        .badge-pending{background:#fef3c7;color:#92400e}
+        .badge-shipped{background:#dbeafe;color:#1e40af}
+        .badge-delivered{background:#d1fae5;color:#065f46}
+        .badge-paid{background:#d1fae5;color:#065f46}
+        .badge-unpaid{background:#fee2e2;color:#991b1b}
+        .loading{display:inline-block;width:20px;height:20px;border:2px solid #e5e7eb;border-top-color:#4f46e5;border-radius:50%;animation:spin .8s linear infinite}
+        .scanner-container{position:relative;width:100%;max-width:400px;margin:0 auto;border-radius:1rem;overflow:hidden;border:3px solid #4f46e5;background:#000}
+        .scanner-container video{width:100%;display:block}
+        .scanner-line{position:absolute;left:10%;width:80%;height:2px;background:#ef4444;animation:scanLine 2s ease-in-out infinite;z-index:1;box-shadow:0 0 10px rgba(239,68,68,.5)}
+        .product-card{background:#fff;border-radius:1.5rem;overflow:hidden;border:1px solid #e5e7eb;transition:all .3s}
+        .product-card:hover{transform:translateY(-6px);box-shadow:0 20px 25px -5px rgba(0,0,0,.1)}
+        .product-image-container{position:relative;width:100%;height:200px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .product-image{width:100%;height:100%;object-fit:cover}
+        .admin-sidebar{background:#fff;border-right:1px solid #e5e7eb;width:280px;position:fixed;height:100%;z-index:30;overflow-y:auto;transition:transform .3s}
+        .admin-nav-item{padding:12px 20px;border-radius:12px;cursor:pointer;transition:all .2s;color:#374151;display:flex;align-items:center;gap:12px;margin-bottom:4px}
+        .admin-nav-item:hover{background:#f3f4f6;color:#4f46e5}
+        .admin-nav-item.active{background:#e0e7ff;color:#4f46e5;font-weight:600}
+        .chatbot-button{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:30px;background:#4f46e5;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px rgba(79,70,229,.3);z-index:1000;transition:all .3s}
+        .chatbot-window{position:fixed;bottom:90px;right:24px;width:380px;height:550px;background:#fff;border-radius:28px;display:flex;flex-direction:column;overflow:hidden;z-index:999;border:1px solid #e5e7eb;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);opacity:0;transform:scale(.9);pointer-events:none;transition:all .3s;transform-origin:bottom right}
+        .chatbot-window.open{opacity:1;transform:scale(1);pointer-events:all}
+        .device-option{border:2px solid #e5e7eb;border-radius:1rem;padding:1rem;cursor:pointer;transition:all .2s;text-align:center}
+        .device-option:hover{border-color:#818cf8;background:#f8fafc}
+        .device-option.selected{border-color:#4f46e5;background:#eef2ff}
+        .barcode-box{background:#fff;padding:20px;text-align:center;border:2px dashed #cbd5e1;border-radius:12px;margin:16px 0}
+        .barcode-text{font-family:'Courier New',monospace;font-size:1.5rem;font-weight:700;letter-spacing:4px;color:#1e293b}
+        .step{flex:1;text-align:center;min-width:60px}
+        .step .step-icon{width:32px;height:32px;background:#e2e8f0;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;transition:all .4s}
+        .step.active .step-icon{background:#4f46e5;color:#fff}
+        .step.completed .step-icon{background:#10b981;color:#fff}
+        .step-label{font-size:.6rem;color:#64748b}
+        .progress-bar{height:6px;background:#e2e8f0;border-radius:10px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,#4f46e5,#818cf8);width:0;transition:width 1s}
+        .product-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+        .product-row input{flex:1;min-width:80px}
+        .pin-btn{background:#f3f4f6;border:1px solid #d1d5db;border-radius:16px;padding:10px;text-align:center;cursor:pointer;font-weight:600;user-select:none}
+        .pin-btn:active{transform:scale(.94)}
+        @media print{body *{visibility:hidden}.receipt-print,.receipt-print *{visibility:visible}.receipt-print{position:absolute;top:0;left:0;width:100%;padding:30px;background:#fff;font-size:11px}}
+        @media(max-width:768px){.admin-sidebar{transform:translateX(-100%)}.admin-sidebar.mobile-open{transform:translateX(0)}main{margin-left:0!important;width:100%!important}.chatbot-window{width:calc(100% - 32px);right:16px;bottom:90px;height:60vh}}
+        .hidden{display:none!important}
+        .banner-responsive{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:40px;padding:20px 0;border-top:1px solid #e2e8f0;background:#f8fafc}
     </style>
 </head>
 <body>
 
-<!-- TOAST -->
 <div id="toast" class="toast"><span id="toastIcon">✅</span><span id="toastMessage">Bericht</span></div>
 
 <!-- PUBLIEKE PAGINA -->
 <div id="publicPage" class="min-h-screen">
     <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="showPublicPage('home')">
-                <span class="text-2xl font-black text-indigo-600">AOM</span>
-                <span class="text-gray-500 text-sm hidden sm:inline">Supplies</span>
-            </div>
+            <div class="flex items-center gap-2 cursor-pointer" onclick="showPublicPage('home')"><span class="text-2xl font-black text-indigo-600">AOM</span><span class="text-gray-500 text-sm hidden sm:inline">Supplies</span></div>
             <div class="flex items-center gap-4">
-                <button onclick="openPublicScanner()" class="relative p-2 hover:bg-gray-100 rounded-full" title="Scan">
-                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2m4-3v1m-6-7h2m-2 4h2m-2 4h2m4-8v1M4 7h2m0 0h2M4 7v1m0 4h2m0 4H4m0-4v1m16-5h-2m0 0h-2m2 0v1"/></svg>
-                </button>
-                <div class="relative cursor-pointer" onclick="showPublicPage('cart')">
-                    <svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path></svg>
-                    <span id="headerCartCount" class="cart-badge">0</span>
-                </div>
+                <button onclick="openPublicScanner()" class="p-2 hover:bg-gray-100 rounded-full"><svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2m4-3v1m-6-7h2m-2 4h2m-2 4h2m4-8v1M4 7h2m0 0h2M4 7v1m0 4h2m0 4H4m0-4v1m16-5h-2m0 0h-2m2 0v1"/></svg></button>
+                <div class="relative cursor-pointer" onclick="showPublicPage('cart')"><svg class="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg><span id="headerCartCount" class="cart-badge">0</span></div>
                 <button onclick="showAdminLogin()" class="admin-btn">🔐 <span class="hidden sm:inline">Admin</span></button>
             </div>
         </div>
         <nav class="max-w-7xl mx-auto px-4 pb-3 flex flex-wrap gap-5 text-sm font-medium">
-            <a onclick="showPublicPage('home')" class="nav-link cursor-pointer">Home</a>
-            <a onclick="showPublicPage('shop')" class="nav-link cursor-pointer">Webshop</a>
-            <a onclick="showPublicPage('cart')" class="nav-link cursor-pointer">🛒 Winkelwagen</a>
-            <a onclick="showPublicPage('tracking')" class="nav-link cursor-pointer">Track & Trace</a>
-            <a onclick="showPublicPage('services')" class="nav-link cursor-pointer">Diensten</a>
-            <a onclick="showPublicPage('contact')" class="nav-link cursor-pointer">Contact</a>
+            <a onclick="showPublicPage('home')" class="nav-link">Home</a>
+            <a onclick="showPublicPage('shop')" class="nav-link">Webshop</a>
+            <a onclick="showPublicPage('cart')" class="nav-link">🛒 Winkelwagen</a>
+            <a onclick="showPublicPage('tracking')" class="nav-link">Track & Trace</a>
+            <a onclick="showPublicPage('services')" class="nav-link">Diensten</a>
+            <a onclick="showPublicPage('contact')" class="nav-link">Contact</a>
         </nav>
     </header>
-    
     <main class="max-w-7xl mx-auto px-4 py-8 pb-24">
-        <div id="public-home" class="public-section text-center py-10"><h1 class="text-5xl font-black">AOM Supplies</h1><button onclick="openPublicScanner()" class="btn-primary text-lg px-10 py-4 mt-6">📱 Scan Product</button></div>
+        <div id="public-home" class="public-section text-center py-10"><h1 class="text-5xl font-black">AOM Supplies</h1><p class="text-gray-500 mt-4">Scan, track & manage uw producten</p><button onclick="openPublicScanner()" class="btn-primary text-lg px-10 py-4 mt-6">📱 Scan Product</button></div>
         <div id="public-shop" class="public-section hidden"><h2 class="text-3xl font-bold mb-8">Webshop</h2><div id="shopProductsContainer" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6"></div></div>
         <div id="public-cart" class="public-section hidden"><div class="max-w-4xl mx-auto"><h2 class="text-3xl font-bold mb-8">🛒 Winkelwagen</h2><div id="cartPageContent"></div></div></div>
         <div id="public-tracking" class="public-section hidden"><div class="card p-8 max-w-3xl mx-auto"><h2 class="text-3xl font-bold mb-4">Track & Trace</h2><div class="flex gap-4"><input id="publicTrackingInput" class="input-light" placeholder="AOM..."><button onclick="publicTrack()" class="btn-primary">Zoeken</button></div><div id="trackingResult" class="mt-4"></div></div></div>
@@ -138,15 +112,12 @@
     </main>
 </div>
 
-<!-- PUBLIEKE SCANNER MODAL -->
+<!-- PUBLIEKE SCANNER -->
 <div id="publicScannerModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl w-full max-w-lg p-6"><div class="flex justify-between mb-4"><h3 class="text-xl font-bold">📱 Scan Product</h3><button onclick="stopPublicScanner()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="device-option selected" id="deviceCamera" onclick="selectDevice('camera')"><div class="text-3xl">📸</div><div class="font-bold text-sm">Camera</div></div>
-            <div class="device-option" id="deviceScanner" onclick="selectDevice('scanner')"><div class="text-3xl">🔫</div><div class="font-bold text-sm">Scanner</div></div>
-        </div>
+    <div class="bg-white rounded-2xl w-full max-w-lg p-6"><div class="flex justify-between mb-4"><h3 class="text-xl font-bold">📱 Scan</h3><button onclick="stopPublicScanner()" class="text-gray-400 text-2xl">&times;</button></div>
+        <div class="grid grid-cols-2 gap-3 mb-4"><div class="device-option selected" id="deviceCamera" onclick="selectDevice('camera')"><div class="text-3xl">📸</div><div class="font-bold text-sm">Camera</div></div><div class="device-option" id="deviceScanner" onclick="selectDevice('scanner')"><div class="text-3xl">🔫</div><div class="font-bold text-sm">Scanner</div></div></div>
         <div id="scannerView" class="scanner-container mb-4"><video id="scannerVideo"></video><div class="scanner-line"></div></div>
-        <div id="scannerInputView" class="hidden mb-4"><div class="bg-blue-50 p-4 rounded-xl text-center"><p class="text-blue-700 font-bold">🔫 Scan met extern apparaat...</p></div><input type="text" id="scannerInput" class="input-light mt-3" placeholder="Of typ barcode..." autofocus></div>
+        <div id="scannerInputView" class="hidden mb-4"><div class="bg-blue-50 p-4 rounded-xl text-center"><p class="text-blue-700">🔫 Wacht op scanner...</p></div><input type="text" id="scannerInput" class="input-light mt-3" placeholder="Of typ barcode..." autofocus></div>
         <div id="scanResult" class="hidden bg-green-50 p-4 rounded-xl mb-4"><p class="text-green-700 font-bold">✅ Gevonden!</p><div id="scanProductInfo" class="mt-2"></div></div>
         <div id="scanNotFound" class="hidden bg-yellow-50 p-4 rounded-xl mb-4"><p class="text-yellow-700">❌ Niet gevonden</p></div>
         <button onclick="stopPublicScanner()" class="btn-outline w-full">Sluiten</button></div>
@@ -166,10 +137,9 @@
             <nav class="p-4 space-y-1">
                 <div onclick="navigateAdmin('dashboard')" class="admin-nav-item" data-section="dashboard"><span>📊</span> Dashboard</div>
                 <div onclick="navigateAdmin('register')" class="admin-nav-item" data-section="register"><span>🏷️</span> Product Registratie</div>
-                <div onclick="navigateAdmin('scan')" class="admin-nav-item" data-section="scan"><span>📱</span> Scan & Zoek</div>
                 <div onclick="navigateAdmin('orders')" class="admin-nav-item" data-section="orders"><span>📋</span> Orders</div>
-                <div onclick="navigateAdmin('sales')" class="admin-nav-item" data-section="sales"><span>💰</span> Sales & Winst</div>
                 <div onclick="navigateAdmin('tracking-admin')" class="admin-nav-item" data-section="tracking-admin"><span>✈️</span> Tracking</div>
+                <div onclick="navigateAdmin('sales')" class="admin-nav-item" data-section="sales"><span>💰</span> Sales</div>
                 <div onclick="navigateAdmin('products')" class="admin-nav-item" data-section="products"><span>📦</span> Webshop</div>
                 <div onclick="navigateAdmin('analytics')" class="admin-nav-item" data-section="analytics"><span>📈</span> Analytics</div>
                 <div onclick="navigateAdmin('admin')" class="admin-nav-item" data-section="admin"><span>⚙️</span> Instellingen</div>
@@ -177,426 +147,177 @@
             <div class="p-4 absolute bottom-0 w-full bg-white border-t"><button onclick="doLogout()" class="btn-outline w-full border-red-200 text-red-500">Uitloggen</button></div>
         </div>
         <main class="flex-1 ml-72 p-6 pb-24">
-            <!-- DASHBOARD -->
-            <div id="admin-dashboard" class="admin-section animate-fade-in">
-                <div class="flex justify-between mb-8"><div><h1 id="welcomeAdmin" class="text-3xl font-black"></h1><span id="lastUpdateTime" class="text-sm text-gray-400"></span></div></div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8" id="statsContainer"></div>
-            </div>
-
-            <!-- ORDERS MET PRODUCTEN EN BARCODE -->
-            <div id="admin-orders" class="admin-section hidden">
-                <div class="card p-6">
-                    <h2 class="text-2xl font-bold mb-6">📋 Orders Beheren</h2>
-                    <div class="grid lg:grid-cols-2 gap-8">
-                        <!-- Nieuwe Order -->
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-3">Nieuwe Order Aanmaken</h3>
-                            <div class="bg-indigo-50 p-3 rounded-xl mb-3">
-                                <p class="text-sm font-bold text-indigo-700 mb-2">🔢 Order Barcode:</p>
-                                <div class="flex gap-2">
-                                    <input type="text" id="orderBarcode" class="input-light" placeholder="Barcode / Ordernummer">
-                                    <button onclick="generateOrderBarcode()" class="btn-outline flex-shrink-0">🎲 Genereer</button>
-                                </div>
-                            </div>
-                            <input id="orderCustomer" class="input-light mb-3" placeholder="Klantnaam *">
-                            <input id="orderEmail" class="input-light mb-3" placeholder="Email">
-                            <input id="orderPhone" class="input-light mb-3" placeholder="Telefoon">
-                            <input id="orderAddress" class="input-light mb-3" placeholder="Adres">
-                            
-                            <!-- Producten toevoegen aan order -->
-                            <div class="bg-gray-50 p-3 rounded-xl mb-3">
-                                <p class="text-sm font-bold text-gray-700 mb-2">📦 Producten in order:</p>
-                                <div id="orderProductsContainer"></div>
-                                <button type="button" onclick="addOrderProductRow()" class="btn-outline text-sm w-full mt-2">+ Product toevoegen</button>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <input id="orderDiscount" type="number" class="input-light" placeholder="Korting (€)" value="0">
-                                <input id="orderDate" type="date" class="input-light">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3 mb-3">
-                                <select id="orderPaymentMethod" class="input-light"><option>Contant</option><option>Bank</option><option>iDEAL</option><option>PayPal</option></select>
-                                <select id="orderPaymentStatus" class="input-light"><option>Betaald</option><option>Nog te betalen</option></select>
-                            </div>
-                            <select id="orderStatus" class="input-light mb-4"><option value="pending">In afwachting</option><option value="processing">In behandeling</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select>
-                            <textarea id="orderNotes" rows="2" class="input-textarea mb-4" placeholder="Notities bij order..."></textarea>
-                            <button onclick="addOrder()" class="btn-primary w-full py-3">📋 Order Aanmaken</button>
-                        </div>
-                        
-                        <!-- Order Lijst -->
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-3">Bestaande Orders</h3>
-                            <input id="orderSearchInput" class="input-light mb-3" placeholder="Zoek op barcode of klant..." oninput="filterOrders()">
-                            <div id="ordersList" class="max-h-[600px] overflow-y-auto space-y-3"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ORDER DETAIL MODAL -->
-            <div id="orderDetailModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto p-6">
-                    <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">📋 Order Details</h3><button onclick="closeModal('orderDetailModal')" class="text-gray-400 text-2xl">&times;</button></div>
-                    <div id="orderDetailContent"></div>
-                </div>
-            </div>
-
-            <!-- ANDERE ADMIN SECTIES -->
-            <div id="admin-register" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">🏷️ Product Registratie</h2><div class="grid lg:grid-cols-2 gap-8"><div class="space-y-3"><div class="bg-indigo-50 p-3 rounded-xl"><div class="flex gap-2 mb-2"><input type="text" id="regBarcode" class="input-light" placeholder="Barcode"><button onclick="openAdminScanner()" class="btn-outline">📷</button></div><button onclick="generateBarcode()" class="btn-outline w-full text-sm">🎲 Genereer</button></div><input id="regProductName" class="input-light" placeholder="Productnaam *"><textarea id="regDescription" rows="2" class="input-textarea" placeholder="Beschrijving"></textarea><div class="grid grid-cols-2 gap-3"><input id="regPrice" type="number" class="input-light" placeholder="Prijs"><input id="regWeight" class="input-light" placeholder="Gewicht"></div><select id="regStatus" class="input-light"><option value="in_stock">Op voorraad</option><option value="reserved">Gereserveerd</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><input id="regLocation" class="input-light" placeholder="Locatie"><input id="regImageUrl" class="input-light" placeholder="Afbeelding URL"><button onclick="registerProduct()" class="btn-success w-full">✅ Registreer</button></div><div><input id="regSearchInput" class="input-light mb-3" placeholder="Zoek..." oninput="filterRegisteredProducts()"><div id="registeredProductsList" class="max-h-[600px] overflow-y-auto space-y-3"></div></div></div></div></div>
-            <div id="admin-scan" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">📱 Scan & Zoek</h2><div class="grid md:grid-cols-2 gap-6"><div><button onclick="openAdminScannerForSearch()" class="btn-primary w-full py-4 mb-4">📷 Scan</button><div class="flex gap-2 mb-4"><input id="scanSearchBarcode" class="input-light" placeholder="Barcode..."><button onclick="searchRegisteredProduct()" class="btn-primary">Zoek</button></div></div><div id="scanSearchResult" class="bg-gray-50 rounded-xl p-4"><p class="text-gray-400 text-center">Scan of zoek</p></div></div></div></div>
-            <div id="admin-sales" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">Sales & Winst</h2><div class="grid lg:grid-cols-2 gap-8"><div class="space-y-3"><input id="saleName" class="input-light" placeholder="Product"><input id="customerName" class="input-light" placeholder="Klant"><div class="grid grid-cols-2 gap-3"><input id="saleUnitPrice" type="number" class="input-light" placeholder="Prijs"><input id="saleDiscount" type="number" class="input-light" placeholder="Korting" value="0"></div><input id="saleDate" type="date" class="input-light"><select id="saleSeller" class="input-light"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Registreren</button></div><div class="bg-gray-50 rounded-xl p-4 h-[500px] overflow-y-auto"><div id="salesList" class="space-y-2"></div></div></div></div></div>
-            <div id="admin-tracking-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">Tracking</h2><input id="trackingCode" class="input-light mb-3" placeholder="AOM Code"><input id="trackingCustomer" class="input-light mb-3" placeholder="Klant"><input id="trackingDestination" class="input-light mb-3" placeholder="Bestemming"><button onclick="addTracking()" class="btn-primary w-full">Aanmaken</button><div id="trackingList" class="mt-6 space-y-3"></div></div></div>
-            <div id="admin-products" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">Webshop Producten</h2><input id="productName" class="input-light mb-3" placeholder="Naam"><div class="grid grid-cols-2 gap-3 mb-3"><input id="productPrice" type="number" class="input-light" placeholder="Prijs"><input id="productStock" type="number" class="input-light" placeholder="Voorraad"></div><input id="productImageUrl" class="input-light mb-3" placeholder="Afbeelding URL"><button onclick="addProduct()" class="btn-primary w-full">Toevoegen</button><div id="productsList" class="mt-6 space-y-3"></div></div></div>
+            <div id="admin-dashboard" class="admin-section animate-fade-in"><div class="flex justify-between mb-8"><div><h1 id="welcomeAdmin" class="text-3xl font-black"></h1><span id="lastUpdateTime" class="text-sm text-gray-400"></span></div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8" id="statsContainer"></div></div>
+            <div id="admin-register" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">🏷️ Product Registratie</h2><div class="grid lg:grid-cols-2 gap-8"><div class="space-y-3"><div class="bg-indigo-50 p-3 rounded-xl"><div class="flex gap-2 mb-2"><input id="regBarcode" class="input-light" placeholder="Barcode"><button onclick="openAdminScanner()" class="btn-outline">📷</button></div><button onclick="generateBarcode()" class="btn-outline w-full text-sm">🎲 Genereer</button></div><input id="regProductName" class="input-light" placeholder="Productnaam *"><textarea id="regDescription" rows="2" class="input-textarea" placeholder="Beschrijving"></textarea><div class="grid grid-cols-2 gap-3"><input id="regPrice" type="number" class="input-light" placeholder="Prijs"><input id="regWeight" class="input-light" placeholder="Gewicht"></div><select id="regStatus" class="input-light"><option value="in_stock">Op voorraad</option><option value="reserved">Gereserveerd</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><input id="regLocation" class="input-light" placeholder="Locatie"><input id="regImageUrl" class="input-light" placeholder="Afbeelding URL"><button onclick="registerProduct()" class="btn-success w-full">✅ Registreer</button></div><div><input id="regSearchInput" class="input-light mb-3" placeholder="Zoek..." oninput="filterRegisteredProducts()"><div id="registeredProductsList" class="max-h-[600px] overflow-y-auto space-y-3"></div></div></div></div></div>
+            <div id="admin-orders" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">📋 Orders</h2><div class="grid lg:grid-cols-2 gap-8"><div><div class="bg-indigo-50 p-3 rounded-xl mb-3"><div class="flex gap-2"><input id="orderBarcode" class="input-light" placeholder="Barcode"><button onclick="generateOrderBarcode()" class="btn-outline">🎲</button></div></div><input id="orderCustomer" class="input-light mb-3" placeholder="Klantnaam *"><input id="orderEmail" class="input-light mb-3" placeholder="Email"><input id="orderPhone" class="input-light mb-3" placeholder="Telefoon"><input id="orderAddress" class="input-light mb-3" placeholder="Adres"><div class="bg-gray-50 p-3 rounded-xl mb-3"><p class="text-sm font-bold mb-2">📦 Producten:</p><div id="orderProductsContainer"></div><button onclick="addOrderProductRow()" class="btn-outline text-sm w-full mt-2">+ Product</button></div><div class="grid grid-cols-2 gap-3 mb-3"><input id="orderDiscount" type="number" class="input-light" placeholder="Korting" value="0"><input id="orderDate" type="date" class="input-light"></div><div class="grid grid-cols-2 gap-3 mb-3"><select id="orderPaymentMethod" class="input-light"><option>Contant</option><option>Bank</option><option>iDEAL</option></select><select id="orderPaymentStatus" class="input-light"><option>Betaald</option><option>Nog te betalen</option></select></div><select id="orderStatus" class="input-light mb-4"><option value="pending">In afwachting</option><option value="processing">In behandeling</option><option value="shipped">Verzonden</option><option value="delivered">Geleverd</option></select><textarea id="orderNotes" rows="2" class="input-textarea mb-4" placeholder="Notities..."></textarea><button onclick="addOrder()" class="btn-primary w-full py-3">📋 Order Aanmaken</button></div><div><input id="orderSearchInput" class="input-light mb-3" placeholder="Zoek..." oninput="filterOrders()"><div id="ordersList" class="max-h-[600px] overflow-y-auto space-y-3"></div></div></div></div></div>
+            <div id="admin-tracking-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">✈️ Tracking</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="trackingStats"></div><div class="grid lg:grid-cols-2 gap-8"><div><div class="bg-indigo-50 p-3 rounded-xl mb-3"><div class="flex gap-2"><input id="trackingCode" class="input-light" placeholder="AOM Code"><button onclick="generateTrackingCode()" class="btn-outline">🎲</button></div></div><div class="grid grid-cols-2 gap-3 mb-3"><input id="carrierTrackingNumber" class="input-light" placeholder="Carrier Nr"><input id="carrierName" class="input-light" placeholder="Vervoerder"></div><input id="trackingCustomer" class="input-light mb-3" placeholder="Klantnaam *"><input id="trackingEmail" class="input-light mb-3" placeholder="Email"><input id="trackingDestination" class="input-light mb-3" placeholder="Bestemming *"><input id="trackingAddress" class="input-light mb-3" placeholder="Adres"><div class="grid grid-cols-2 gap-3 mb-3"><input type="date" id="trackingEstimatedDelivery" class="input-light"><select id="trackingPriority" class="input-light"><option value="normal">Normaal</option><option value="express">Express</option><option value="priority">Prioriteit</option></select></div><div class="grid grid-cols-2 gap-2 mb-3"><input id="trackingWeight" class="input-light" placeholder="Gewicht (kg)"><input id="trackingPieces" type="number" class="input-light" placeholder="Aantal" value="1"></div><textarea id="trackingContents" rows="2" class="input-textarea mb-3" placeholder="Inhoud..."></textarea><select id="trackingCurrentStep" class="input-light mb-3"><option value="bestelling_ontvangen">📥 Ontvangen</option><option value="onderweg_naar_vliegveld">🚚 Naar vliegveld</option><option value="in_vliegtuig">✈️ In vliegtuig</option><option value="geland">🛬 Geland</option><option value="in_douane">🏛️ Douane</option><option value="in_sorteercentrum">📦 Sorteren</option><option value="onderweg">🚛 Onderweg</option><option value="bezig_met_bezorgen">📬 Bezorgen</option><option value="geleverd">✅ Geleverd</option></select><textarea id="trackingNotes" rows="2" class="input-textarea mb-4" placeholder="Notities..."></textarea><button onclick="addTracking()" class="btn-primary w-full py-3">📦 Aanmaken</button></div><div><div class="flex gap-2 mb-3"><input id="searchTrackingInput" class="input-light" placeholder="Zoek..." oninput="filterTracking()"><select id="trackingFilterStatus" class="input-light" style="max-width:140px" onchange="filterTracking()"><option value="all">Alle</option><option value="actief">Actief</option><option value="geleverd">Geleverd</option></select></div><div id="trackingList" class="max-h-[600px] overflow-y-auto space-y-3"></div></div></div></div></div>
+            <div id="admin-sales" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">💰 Sales</h2><div class="grid lg:grid-cols-2 gap-8"><div class="space-y-3"><input id="saleName" class="input-light" placeholder="Product"><input id="customerName" class="input-light" placeholder="Klant"><div class="grid grid-cols-2 gap-3"><input id="saleUnitPrice" type="number" class="input-light" placeholder="Prijs"><input id="saleDiscount" type="number" class="input-light" placeholder="Korting" value="0"></div><input id="saleDate" type="date" class="input-light"><select id="saleSeller" class="input-light"><option>MiroT</option><option>AppieT</option><option>ObaiT</option></select><button onclick="addSale()" class="btn-primary w-full">Registreren</button></div><div class="bg-gray-50 rounded-xl p-4 h-[500px] overflow-y-auto"><div id="salesList" class="space-y-2"></div></div></div></div></div>
+            <div id="admin-products" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-6">📦 Webshop</h2><div class="grid lg:grid-cols-2 gap-8"><div class="space-y-3"><input id="productName" class="input-light" placeholder="Naam"><div class="grid grid-cols-2 gap-3"><input id="productPrice" type="number" class="input-light" placeholder="Prijs"><input id="productStock" type="number" class="input-light" placeholder="Voorraad"></div><input id="productImageUrl" class="input-light" placeholder="Afbeelding URL"><button onclick="addProduct()" class="btn-primary w-full">Toevoegen</button></div><div class="bg-gray-50 rounded-xl p-4 h-[500px] overflow-y-auto"><div id="productsList" class="space-y-3"></div></div></div></div></div>
             <div id="admin-analytics" class="admin-section hidden"><h2 class="text-2xl font-bold mb-6">Analytics</h2><div class="grid md:grid-cols-2 gap-6"><div class="bg-white p-6 rounded-2xl h-80"><canvas id="chartRevenue"></canvas></div><div class="bg-white p-6 rounded-2xl h-80"><canvas id="chartProfit"></canvas></div></div></div>
             <div id="admin-admin" class="admin-section hidden"><div class="card p-6"><h2 class="text-2xl font-bold mb-4">Instellingen</h2><input id="companyNameSetting" class="input-light mb-3" placeholder="Bedrijfsnaam"><input id="companyEmailSetting" class="input-light mb-3" placeholder="Email"><button onclick="saveCompanySettings()" class="btn-primary w-full">Opslaan</button></div></div>
         </main>
     </div>
 </div>
 
-<!-- ADMIN SCANNER MODAL -->
-<div id="adminScannerModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl w-full max-w-lg p-6"><div class="flex justify-between mb-4"><h3 class="text-xl font-bold">📱 Scan</h3><button onclick="stopAdminScanner()" class="text-gray-400 text-2xl">&times;</button></div>
-        <div class="grid grid-cols-2 gap-3 mb-4"><div class="device-option selected" id="adminDeviceCamera" onclick="selectAdminDevice('camera')"><div class="text-3xl">📸</div><div class="font-bold text-sm">Camera</div></div><div class="device-option" id="adminDeviceScanner" onclick="selectAdminDevice('scanner')"><div class="text-3xl">🔫</div><div class="font-bold text-sm">Scanner</div></div></div>
-        <div id="adminScannerView" class="scanner-container mb-4"><video id="adminScannerVideo"></video><div class="scanner-line"></div></div>
-        <div id="adminScannerInputView" class="hidden mb-4"><div class="bg-blue-50 p-4 rounded-xl text-center"><p class="text-blue-700">🔫 Scan met apparaat...</p></div><input type="text" id="adminScannerInput" class="input-light mt-3" placeholder="Of typ..." autofocus></div>
-        <button onclick="stopAdminScanner()" class="btn-outline w-full">Stop</button></div>
-</div>
-
-<!-- BON MODAL -->
-<div id="receiptModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-8 receipt-print"></div><div class="bg-gray-50 p-4 flex gap-3 justify-end sticky bottom-0"><button onclick="printReceipt()" class="btn-primary">🖨️ Print Bon</button><button onclick="closeModal('receiptModal')" class="btn-outline">Sluiten</button></div></div>
-</div>
+<!-- MODALS -->
+<div id="adminScannerModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl w-full max-w-lg p-6"><div class="flex justify-between mb-4"><h3 class="text-xl font-bold">📱 Scan</h3><button onclick="stopAdminScanner()" class="text-gray-400 text-2xl">&times;</button></div><div class="grid grid-cols-2 gap-3 mb-4"><div class="device-option selected" id="adminDeviceCamera" onclick="selectAdminDevice('camera')"><div class="text-3xl">📸</div><div class="font-bold text-sm">Camera</div></div><div class="device-option" id="adminDeviceScanner" onclick="selectAdminDevice('scanner')"><div class="text-3xl">🔫</div><div class="font-bold text-sm">Scanner</div></div></div><div id="adminScannerView" class="scanner-container mb-4"><video id="adminScannerVideo"></video><div class="scanner-line"></div></div><div id="adminScannerInputView" class="hidden mb-4"><div class="bg-blue-50 p-4 rounded-xl"><p class="text-blue-700">🔫 Wacht op scanner...</p></div><input type="text" id="adminScannerInput" class="input-light mt-3" placeholder="Of typ..." autofocus></div><button onclick="stopAdminScanner()" class="btn-outline w-full">Stop</button></div></div>
+<div id="orderDetailModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto p-6"><div class="flex justify-between mb-4"><h3 class="text-xl font-bold">📋 Order</h3><button onclick="closeModal('orderDetailModal')" class="text-gray-400 text-2xl">&times;</button></div><div id="orderDetailContent"></div></div></div>
+<div id="trackingDetailModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto p-6"><div class="flex justify-between mb-4"><h3 class="text-xl font-bold">📦 Tracking</h3><button onclick="closeModal('trackingDetailModal')" class="text-gray-400 text-2xl">&times;</button></div><div id="trackingDetailContent"></div></div></div>
+<div id="trackingUpdateModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="card p-6 w-full max-w-md"><h3 class="text-xl font-bold mb-4">📝 Update</h3><input id="updateText" class="input-light mb-3" placeholder="Status *"><input id="updateLocation" class="input-light mb-3" placeholder="Locatie"><input id="updateTimestamp" class="input-light mb-3" type="datetime-local"><input id="updatePhotoUrl" class="input-light mb-3" placeholder="Foto URL"><select id="updateStep" class="input-light mb-4"><option value="">Geen wijziging</option><option value="bestelling_ontvangen">📥 Ontvangen</option><option value="onderweg_naar_vliegveld">🚚 Naar vliegveld</option><option value="in_vliegtuig">✈️ In vliegtuig</option><option value="geland">🛬 Geland</option><option value="in_douane">🏛️ Douane</option><option value="in_sorteercentrum">📦 Sorteren</option><option value="onderweg">🚛 Onderweg</option><option value="bezig_met_bezorgen">📬 Bezorgen</option><option value="geleverd">✅ Geleverd</option></select><div class="flex gap-3"><button onclick="addTrackingUpdate()" class="btn-primary flex-1">✅ Toevoegen</button><button onclick="closeModal('trackingUpdateModal')" class="btn-outline flex-1">Annuleren</button></div></div></div>
+<div id="receiptModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"><div id="receiptContent" class="p-8 receipt-print"></div><div class="bg-gray-50 p-4 flex gap-3 justify-end sticky bottom-0"><button onclick="printReceipt()" class="btn-primary">🖨️ Print</button><button onclick="closeModal('receiptModal')" class="btn-outline">Sluiten</button></div></div></div>
 
 <!-- CHATBOT -->
 <div id="chatbotButton" class="chatbot-button" onclick="toggleChatbot()">💬</div>
 <div id="chatbotWindow" class="chatbot-window"><div class="bg-gray-50 p-4 border-b flex justify-between"><span class="font-bold">AOM Assistant</span><button onclick="toggleChatbot()" class="text-gray-400 text-xl">&times;</button></div><div id="chatMessages" class="flex-1 overflow-y-auto p-4"><div class="flex justify-start"><div class="bg-gray-100 px-4 py-2 rounded-2xl">Hallo! Hoe kan ik helpen?</div></div></div><div class="p-3 border-t"><div class="flex gap-2"><input id="chatInput" class="flex-1 bg-white border rounded-full px-4 py-2 text-sm" placeholder="Typ bericht..."><button onclick="sendChatMessage()" class="bg-indigo-600 text-white rounded-full w-10 h-10">↑</button></div></div></div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyDXoY8KxIihvi35RCAMKVFlYlntHOPdiZk", authDomain: "fatbike-reparatie.firebaseapp.com", projectId: "fatbike-reparatie", storageBucket: "fatbike-reparatie.firebasestorage.app", messagingSenderId: "597149730054", appId: "1:597149730054:web:4ec5219f39e95ec30e0a87" };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const firebaseConfig = { apiKey: "AIzaSyDXoY8KxIihvi35RCAMKVFlYlntHOPdiZk", authDomain: "fatbike-reparatie.firebaseapp.com", projectId: "fatbike-reparatie", storageBucket: "fatbike-reparatie.firebasestorage.app", messagingSenderId: "597149730054", appId: "1:597149730054:web:4ec5219f39e95ec30e0a87" };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    let sales = [], orders = [], tracking = [], registeredProducts = [];
-    let products = JSON.parse(localStorage.getItem('aom_products') || '[]');
-    let cart = JSON.parse(localStorage.getItem('aom_cart') || '[]');
-    let companyName = localStorage.getItem('aom_company_name') || "AOM Supplies";
-    let companyEmail = localStorage.getItem('aom_company_email') || "support@aomsupplies.com";
-    let currentAdminUser = '';
-    let selectedScanDevice = 'camera', adminSelectedDevice = 'camera';
-    let publicScanner = null, adminScanner = null;
-    let scannerInputListener = null, adminScannerInputListener = null;
-    let chartRevenueInstance = null, chartProfitInstance = null;
-    let unsubSales, unsubOrders, unsubTracking, unsubRegistered;
+// STATE
+let sales = [], orders = [], trackingData = [], registeredProducts = [];
+let products = JSON.parse(localStorage.getItem('aom_products') || '[]');
+let cart = JSON.parse(localStorage.getItem('aom_cart') || '[]');
+let companyName = localStorage.getItem('aom_company_name') || "AOM Supplies";
+let companyEmail = localStorage.getItem('aom_company_email') || "support@aomsupplies.com";
+let currentAdminUser = '';
+let selectedScanDevice = 'camera', adminSelectedDevice = 'camera';
+let publicScanner = null, adminScanner = null;
+let scannerInputListener = null, adminScannerInputListener = null;
+let currentTrackingId = null;
+let chartRevenueInstance = null, chartProfitInstance = null;
+let unsubSales = null, unsubOrders = null, unsubTracking = null, unsubRegistered = null;
 
-    const getPasswords = () => JSON.parse(localStorage.getItem('aom_passwords') || '{"MiroT":"ResellTrivium","AppieT":"ResellTrivium","ObaiT":"ResellTrivium"}');
-    const savePasswords = (pw) => localStorage.setItem('aom_passwords', JSON.stringify(pw));
+const getPasswords = () => JSON.parse(localStorage.getItem('aom_passwords') || '{"MiroT":"ResellTrivium","AppieT":"ResellTrivium","ObaiT":"ResellTrivium"}');
+const savePasswords = (pw) => localStorage.setItem('aom_passwords', JSON.stringify(pw));
 
-    function showToast(msg, isError = false) { const t = document.getElementById('toast'); const m = document.getElementById('toastMessage'); const i = document.getElementById('toastIcon'); m.innerText = msg; i.innerText = isError ? '⚠️' : '✅'; t.className = `toast show ${isError ? 'error' : ''}`; setTimeout(() => t.classList.remove('show'), 3000); }
-    function saveCart() { localStorage.setItem('aom_cart', JSON.stringify(cart)); updateCartCount(); }
-    function updateCartCount() { const c = cart.reduce((s, i) => s + i.quantity, 0); document.querySelectorAll('#headerCartCount').forEach(b => b.innerText = c); }
-    function saveProducts() { localStorage.setItem('aom_products', JSON.stringify(products)); }
+function showToast(msg, isError = false) { const t = document.getElementById('toast'); const m = document.getElementById('toastMessage'); const i = document.getElementById('toastIcon'); m.innerText = msg; i.innerText = isError ? '⚠️' : '✅'; t.className = `toast show ${isError ? 'error' : ''}`; setTimeout(() => t.classList.remove('show'), 3000); }
+function saveCart() { localStorage.setItem('aom_cart', JSON.stringify(cart)); updateCartCount(); }
+function updateCartCount() { const c = cart.reduce((s, i) => s + i.quantity, 0); document.querySelectorAll('#headerCartCount').forEach(b => b.innerText = c); }
+function saveProducts() { localStorage.setItem('aom_products', JSON.stringify(products)); }
 
-    window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-    window.toggleChatbot = () => { const w = document.getElementById('chatbotWindow'); const b = document.getElementById('chatbotButton'); if (w.classList.contains('open')) { w.classList.remove('open'); b.style.transform = 'scale(1)'; } else { w.classList.add('open'); b.style.transform = 'scale(0)'; } };
-    window.showAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
-    window.showPublicPage = (page) => { document.querySelectorAll('.public-section').forEach(s => s.classList.add('hidden')); const el = document.getElementById(`public-${page}`); if (el) el.classList.remove('hidden'); if (page === 'shop') renderShopProducts(); if (page === 'cart') renderCartPage(); };
+window.closeModal = (id) => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); };
+window.toggleChatbot = () => { const w = document.getElementById('chatbotWindow'); const b = document.getElementById('chatbotButton'); if (w.classList.contains('open')) { w.classList.remove('open'); b.style.transform = 'scale(1)'; } else { w.classList.add('open'); b.style.transform = 'scale(0)'; } };
+window.showAdminLogin = () => document.getElementById('adminLoginModal').classList.remove('hidden');
+window.showPublicPage = (page) => { document.querySelectorAll('.public-section').forEach(s => s.classList.add('hidden')); const el = document.getElementById(`public-${page}`); if (el) el.classList.remove('hidden'); if (page === 'shop') renderShopProducts(); if (page === 'cart') renderCartPage(); };
 
-    window.doLogin = () => {
-        const user = document.getElementById('loginUser').value, pass = document.getElementById('loginPass').value;
-        if (pass !== getPasswords()[user]) { document.getElementById('loginError').innerText = 'Wachtwoord onjuist'; document.getElementById('loginError').classList.remove('hidden'); return; }
-        currentAdminUser = user;
-        document.getElementById('adminLoginModal').classList.add('hidden');
-        document.getElementById('publicPage').classList.add('hidden');
-        document.getElementById('adminDashboard').classList.remove('hidden');
-        document.getElementById('adminUserBadge').innerHTML = user + ' <span class="bg-indigo-100 text-indigo-800 text-xs px-2 rounded-full ml-1">ADMIN</span>';
-        document.getElementById('welcomeAdmin').innerText = `Hallo ${user.replace('T', '')}!`;
-        navigateAdmin('dashboard');
-        startListeners();
-    };
+// LOGIN
+window.doLogin = () => {
+    const user = document.getElementById('loginUser').value, pass = document.getElementById('loginPass').value;
+    if (pass !== getPasswords()[user]) { document.getElementById('loginError').innerText = 'Wachtwoord onjuist'; document.getElementById('loginError').classList.remove('hidden'); return; }
+    currentAdminUser = user;
+    document.getElementById('adminLoginModal').classList.add('hidden');
+    document.getElementById('publicPage').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.remove('hidden');
+    document.getElementById('adminUserBadge').innerHTML = user + ' <span class="bg-indigo-100 text-indigo-800 text-xs px-2 rounded-full ml-1">ADMIN</span>';
+    document.getElementById('welcomeAdmin').innerText = `Hallo ${user.replace('T', '')}!`;
+    navigateAdmin('dashboard');
+    startListeners();
+};
 
-    window.doLogout = () => { document.getElementById('adminDashboard').classList.add('hidden'); document.getElementById('publicPage').classList.remove('hidden'); showPublicPage('home'); if(unsubSales)unsubSales(); if(unsubOrders)unsubOrders(); if(unsubTracking)unsubTracking(); if(unsubRegistered)unsubRegistered(); };
+window.doLogout = () => { document.getElementById('adminDashboard').classList.add('hidden'); document.getElementById('publicPage').classList.remove('hidden'); showPublicPage('home'); if (unsubSales) unsubSales(); if (unsubOrders) unsubOrders(); if (unsubTracking) unsubTracking(); if (unsubRegistered) unsubRegistered(); };
 
-    window.navigateAdmin = (section) => {
-        document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
-        const el = document.getElementById(`admin-${section}`);
-        if (el) el.classList.remove('hidden');
-        document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
-        const nav = document.querySelector(`.admin-nav-item[data-section="${section}"]`);
-        if (nav) nav.classList.add('active');
-        document.querySelector('.admin-sidebar')?.classList.remove('mobile-open');
-        if (section === 'register') renderRegisteredProducts();
-        if (section === 'orders') renderOrdersList();
-        if (section === 'sales') renderSalesList();
-        if (section === 'tracking-admin') renderTrackingList();
-        if (section === 'products') renderProductsList();
-        if (section === 'analytics') initCharts();
-        if (section === 'dashboard') updateDashboardStats();
-    };
+window.navigateAdmin = (section) => {
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+    const el = document.getElementById(`admin-${section}`);
+    if (el) el.classList.remove('hidden');
+    document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
+    const nav = document.querySelector(`.admin-nav-item[data-section="${section}"]`);
+    if (nav) nav.classList.add('active');
+    document.querySelector('.admin-sidebar')?.classList.remove('mobile-open');
+    if (section === 'register') renderRegisteredProducts();
+    if (section === 'orders') renderOrdersList();
+    if (section === 'tracking-admin') renderTrackingList();
+    if (section === 'sales') renderSalesList();
+    if (section === 'products') renderProductsList();
+    if (section === 'analytics') initCharts();
+    if (section === 'dashboard') updateDashboardStats();
+};
 
-    // ==================== ORDER FUNCTIES ====================
-    window.generateOrderBarcode = () => {
-        const barcode = 'ORD-' + Date.now().toString(36).toUpperCase();
-        document.getElementById('orderBarcode').value = barcode;
-        showToast('Order barcode: ' + barcode);
-    };
+// SCANNER FUNCTIES
+window.selectDevice = (device) => { selectedScanDevice = device; document.getElementById('deviceCamera').classList.toggle('selected', device === 'camera'); document.getElementById('deviceScanner').classList.toggle('selected', device === 'scanner'); document.getElementById('scannerView').classList.toggle('hidden', device !== 'camera'); document.getElementById('scannerInputView').classList.toggle('hidden', device !== 'scanner'); if (device === 'scanner') { stopPublicScannerCamera(); setupScannerInput('public'); } else { removeScannerInput('public'); startPublicScannerCamera(); } };
+window.selectAdminDevice = (device) => { adminSelectedDevice = device; document.getElementById('adminDeviceCamera').classList.toggle('selected', device === 'camera'); document.getElementById('adminDeviceScanner').classList.toggle('selected', device === 'scanner'); document.getElementById('adminScannerView').classList.toggle('hidden', device !== 'camera'); document.getElementById('adminScannerInputView').classList.toggle('hidden', device !== 'scanner'); if (device === 'scanner') { stopAdminScannerCamera(); setupScannerInput('admin'); } else { removeScannerInput('admin'); startAdminScannerCamera(); } };
 
-    window.addOrderProductRow = () => {
-        const container = document.getElementById('orderProductsContainer');
-        if (!container) return;
-        const div = document.createElement('div');
-        div.className = 'product-row';
-        div.innerHTML = `
-            <input type="text" class="input-light product-name" placeholder="Productnaam" style="flex:2;min-width:100px;">
-            <input type="number" class="input-light product-qty" placeholder="Aantal" value="1" style="flex:1;min-width:60px;">
-            <input type="number" class="input-light product-price" placeholder="Prijs (€)" style="flex:1;min-width:80px;">
-            <button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2">✖</button>`;
-        container.appendChild(div);
-    };
+function setupScannerInput(type) { const id = type === 'public' ? 'scannerInput' : 'adminScannerInput'; const input = document.getElementById(id); if (!input) return; input.value = ''; input.focus(); const listener = (e) => { if (e.key === 'Enter') { const bc = input.value.trim(); if (bc) { if (type === 'public') searchProductByBarcode(bc); else { document.getElementById('regBarcode').value = bc; stopAdminScanner(); showToast('Gescan: ' + bc); } } input.value = ''; } }; input.addEventListener('keydown', listener); if (type === 'public') scannerInputListener = { input, listener }; else adminScannerInputListener = { input, listener }; }
+function removeScannerInput(type) { const d = type === 'public' ? scannerInputListener : adminScannerInputListener; if (d) { d.input.removeEventListener('keydown', d.listener); if (type === 'public') scannerInputListener = null; else adminScannerInputListener = null; } }
 
-    window.addOrder = async () => {
-        const barcode = document.getElementById('orderBarcode').value.trim();
-        const customer = document.getElementById('orderCustomer').value.trim();
-        if (!customer) { showToast('Vul klantnaam in', true); return; }
-        
-        const rows = document.querySelectorAll('#orderProductsContainer .product-row');
-        const items = [];
-        let total = 0;
-        rows.forEach(row => {
-            const name = row.querySelector('.product-name')?.value.trim();
-            const qty = parseInt(row.querySelector('.product-qty')?.value) || 1;
-            const price = parseFloat(row.querySelector('.product-price')?.value) || 0;
-            if (name && qty > 0 && price > 0) { items.push({ name, quantity: qty, price, total: qty * price }); total += qty * price; }
-        });
-        
-        const discount = parseFloat(document.getElementById('orderDiscount').value) || 0;
-        total = Math.max(0, total - discount);
-        
-        const orderData = {
-            barcode: barcode || 'ORD-' + Date.now().toString(36).toUpperCase(),
-            customer,
-            email: document.getElementById('orderEmail').value.trim(),
-            phone: document.getElementById('orderPhone').value.trim(),
-            address: document.getElementById('orderAddress').value.trim(),
-            items,
-            discount,
-            totalAmount: total,
-            date: document.getElementById('orderDate').value || new Date().toISOString().slice(0, 10),
-            paymentMethod: document.getElementById('orderPaymentMethod').value,
-            paymentStatus: document.getElementById('orderPaymentStatus').value,
-            status: document.getElementById('orderStatus').value,
-            notes: document.getElementById('orderNotes').value.trim(),
-            createdBy: currentAdminUser,
-            createdAt: new Date().toISOString()
-        };
-        
-        try {
-            await addDoc(collection(db, "orders"), orderData);
-            showToast('Order aangemaakt!');
-            // Reset form
-            document.getElementById('orderCustomer').value = '';
-            document.getElementById('orderEmail').value = '';
-            document.getElementById('orderPhone').value = '';
-            document.getElementById('orderAddress').value = '';
-            document.getElementById('orderDiscount').value = 0;
-            document.getElementById('orderProductsContainer').innerHTML = '';
-            addOrderProductRow();
-        } catch (e) { showToast('Fout bij aanmaken', true); console.error(e); }
-    };
+window.openPublicScanner = () => { document.getElementById('publicScannerModal').classList.remove('hidden'); document.getElementById('scanResult').classList.add('hidden'); document.getElementById('scanNotFound').classList.add('hidden'); if (selectedScanDevice === 'camera') { document.getElementById('scannerView').classList.remove('hidden'); document.getElementById('scannerInputView').classList.add('hidden'); startPublicScannerCamera(); } else { document.getElementById('scannerView').classList.add('hidden'); document.getElementById('scannerInputView').classList.remove('hidden'); setupScannerInput('public'); } };
+async function startPublicScannerCamera() { try { const cr = new ZXing.BrowserMultiFormatReader(); publicScanner = cr; const ve = document.getElementById('scannerVideo'); const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); ve.srcObject = stream; ve.play(); cr.decodeFromVideoDevice(null, ve, (r) => { if (r) searchProductByBarcode(r.text); }); } catch (e) { showToast('Camera niet beschikbaar', true); } }
+function stopPublicScannerCamera() { if (publicScanner) { publicScanner.reset(); const v = document.getElementById('scannerVideo'); if (v && v.srcObject) { v.srcObject.getTracks().forEach(t => t.stop()); } publicScanner = null; } }
+window.stopPublicScanner = () => { stopPublicScannerCamera(); removeScannerInput('public'); document.getElementById('publicScannerModal').classList.add('hidden'); };
 
-    window.deleteOrder = async (id) => {
-        if (!confirm('Order verwijderen?')) return;
-        try { await deleteDoc(doc(db, "orders", id)); showToast('Verwijderd'); } catch (e) { showToast('Fout', true); }
-    };
+function searchProductByBarcode(bc) { const p = registeredProducts.find(x => x.barcode === bc); if (p) { document.getElementById('scanResult').classList.remove('hidden'); document.getElementById('scanNotFound').classList.add('hidden'); document.getElementById('scanProductInfo').innerHTML = `<p class="font-bold">${p.name}</p><p class="text-sm">Status: ${(p.status || 'in_stock').replace(/_/g, ' ')}</p>`; } else { document.getElementById('scanResult').classList.add('hidden'); document.getElementById('scanNotFound').classList.remove('hidden'); } }
 
-    window.updateOrderStatus = async (id, status) => {
-        try { await updateDoc(doc(db, "orders", id), { status }); showToast('Status bijgewerkt'); } catch (e) { showToast('Fout', true); }
-    };
+window.openAdminScanner = () => { document.getElementById('adminScannerModal').classList.remove('hidden'); if (adminSelectedDevice === 'camera') { document.getElementById('adminScannerView').classList.remove('hidden'); document.getElementById('adminScannerInputView').classList.add('hidden'); startAdminScannerCamera(); } else { document.getElementById('adminScannerView').classList.add('hidden'); document.getElementById('adminScannerInputView').classList.remove('hidden'); setupScannerInput('admin'); } };
+async function startAdminScannerCamera() { try { const cr = new ZXing.BrowserMultiFormatReader(); adminScanner = cr; const ve = document.getElementById('adminScannerVideo'); const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); ve.srcObject = stream; ve.play(); cr.decodeFromVideoDevice(null, ve, (r) => { if (r) { document.getElementById('regBarcode').value = r.text; stopAdminScanner(); showToast('Gescan: ' + r.text); } }); } catch (e) { showToast('Camera fout', true); } }
+function stopAdminScannerCamera() { if (adminScanner) { adminScanner.reset(); const v = document.getElementById('adminScannerVideo'); if (v && v.srcObject) { v.srcObject.getTracks().forEach(t => t.stop()); } adminScanner = null; } }
+window.stopAdminScanner = () => { stopAdminScannerCamera(); removeScannerInput('admin'); document.getElementById('adminScannerModal').classList.add('hidden'); };
+window.generateBarcode = () => { const bc = 'AOM' + Date.now().toString(36).toUpperCase(); document.getElementById('regBarcode').value = bc; showToast('Barcode: ' + bc); };
 
-    window.viewOrderDetails = (order) => {
-        const content = document.getElementById('orderDetailContent');
-        content.innerHTML = `
-            <div class="barcode-box mb-4">
-                <p class="text-xs text-gray-500 mb-1">ORDER BARCODE</p>
-                <p class="barcode-text">${order.barcode}</p>
-                <p class="text-xs text-gray-400 mt-1">Scan deze barcode voor order info</p>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div><strong>Klant:</strong> ${order.customer}</div>
-                <div><strong>Datum:</strong> ${order.date || '-'}</div>
-                <div><strong>Email:</strong> ${order.email || '-'}</div>
-                <div><strong>Telefoon:</strong> ${order.phone || '-'}</div>
-                <div><strong>Adres:</strong> ${order.address || '-'}</div>
-                <div><strong>Status:</strong> <span class="badge ${order.status==='delivered'?'badge-delivered':order.status==='shipped'?'badge-shipped':'badge-pending'}">${order.status}</span></div>
-            </div>
-            <h4 class="font-bold mb-2">📦 Producten:</h4>
-            <table class="w-full text-left mb-4"><thead><tr class="bg-gray-100"><th class="p-2">Product</th><th class="p-2 text-center">Aantal</th><th class="p-2 text-right">Prijs</th><th class="p-2 text-right">Totaal</th></tr></thead>
-            <tbody>${(order.items || []).map(i => `<tr class="border-b"><td class="p-2">${i.name}</td><td class="p-2 text-center">${i.quantity}</td><td class="p-2 text-right">€${i.price.toFixed(2)}</td><td class="p-2 text-right font-bold">€${(i.total || i.price * i.quantity).toFixed(2)}</td></tr>`).join('')}</tbody></table>
-            <div class="flex justify-between"><span>Subtotaal:</span><span>€${((order.totalAmount || 0) + (order.discount || 0)).toFixed(2)}</span></div>
-            <div class="flex justify-between text-green-600"><span>Korting:</span><span>-€${(order.discount || 0).toFixed(2)}</span></div>
-            <div class="flex justify-between font-bold text-xl mt-2"><span>TOTAAL:</span><span class="text-indigo-600">€${(order.totalAmount || 0).toFixed(2)}</span></div>
-            <div class="flex justify-between mt-2"><span>Betaalmethode:</span><span>${order.paymentMethod || '-'}</span></div>
-            <div class="flex justify-between"><span>Betaalstatus:</span><span class="font-bold ${order.paymentStatus==='Betaald'?'text-green-600':'text-red-600'}">${order.paymentStatus || '-'}</span></div>
-            ${order.notes ? `<div class="mt-3 bg-gray-50 p-3 rounded-xl"><strong>📝 Notities:</strong> ${order.notes}</div>` : ''}
-            <button onclick="showReceipt('${order.id}')" class="btn-primary w-full mt-4">🖨️ Print Bon</button>`;
-        document.getElementById('orderDetailModal').classList.remove('hidden');
-    };
+// PRODUCT REGISTRATIE
+window.registerProduct = async () => { const bc = document.getElementById('regBarcode').value.trim(), nm = document.getElementById('regProductName').value.trim(); if (!bc || !nm) { showToast('Vul barcode en naam in', true); return; } try { await addDoc(collection(db, "registeredProducts"), { barcode: bc, name: nm, description: document.getElementById('regDescription').value, price: parseFloat(document.getElementById('regPrice').value) || 0, weight: document.getElementById('regWeight').value, status: document.getElementById('regStatus').value, location: document.getElementById('regLocation').value, imageUrl: document.getElementById('regImageUrl').value, registeredBy: currentAdminUser, registeredAt: new Date().toISOString() }); showToast('✅ Geregistreerd!'); ['regBarcode', 'regProductName', 'regDescription', 'regPrice', 'regWeight', 'regLocation', 'regImageUrl'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); } catch (e) { showToast('Fout', true); } };
+window.deleteRegisteredProduct = async (id) => { if (!confirm('Verwijderen?')) return; try { await deleteDoc(doc(db, "registeredProducts", id)); showToast('Verwijderd'); } catch (e) { showToast('Fout', true); } };
+function renderRegisteredProducts(f = '') { const c = document.getElementById('registeredProductsList'); if (!c) return; let l = registeredProducts; if (f) { const fl = f.toLowerCase(); l = l.filter(p => p.barcode?.toLowerCase().includes(fl) || p.name?.toLowerCase().includes(fl)); } if (l.length === 0) { c.innerHTML = '<div class="text-gray-400 p-4">Geen producten</div>'; return; } c.innerHTML = l.map(p => `<div class="bg-white p-3 rounded-lg border flex justify-between"><div><div class="font-bold">${p.name}</div><div class="text-xs font-mono">${p.barcode}</div></div><button onclick="deleteRegisteredProduct('${p.id}')" class="text-red-500">🗑️</button></div>`).join(''); }
+window.filterRegisteredProducts = () => renderRegisteredProducts(document.getElementById('regSearchInput')?.value || '');
 
-    window.filterOrders = () => {
-        const filter = document.getElementById('orderSearchInput')?.value.toLowerCase() || '';
-        renderOrdersList(filter);
-    };
+// ORDERS
+window.generateOrderBarcode = () => { document.getElementById('orderBarcode').value = 'ORD-' + Date.now().toString(36).toUpperCase(); showToast('Barcode gegenereerd'); };
+window.addOrderProductRow = () => { const c = document.getElementById('orderProductsContainer'); if (!c) return; const d = document.createElement('div'); d.className = 'product-row'; d.innerHTML = `<input class="input-light product-name" placeholder="Product" style="flex:2"><input type="number" class="input-light product-qty" placeholder="Aantal" value="1" style="flex:1"><input type="number" class="input-light product-price" placeholder="Prijs" style="flex:1"><button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2">✖</button>`; c.appendChild(d); };
+window.addOrder = async () => { const bc = document.getElementById('orderBarcode').value.trim() || 'ORD-' + Date.now().toString(36).toUpperCase(); const cu = document.getElementById('orderCustomer').value.trim(); if (!cu) { showToast('Vul klantnaam in', true); return; } const rows = document.querySelectorAll('#orderProductsContainer .product-row'); const items = []; let t = 0; rows.forEach(r => { const n = r.querySelector('.product-name')?.value.trim(), q = parseInt(r.querySelector('.product-qty')?.value) || 1, p = parseFloat(r.querySelector('.product-price')?.value) || 0; if (n && q > 0 && p > 0) { items.push({ name: n, quantity: q, price: p, total: q * p }); t += q * p; } }); const d = parseFloat(document.getElementById('orderDiscount').value) || 0; t = Math.max(0, t - d); try { await addDoc(collection(db, "orders"), { barcode: bc, customer: cu, email: document.getElementById('orderEmail').value, phone: document.getElementById('orderPhone').value, address: document.getElementById('orderAddress').value, items, discount: d, totalAmount: t, date: document.getElementById('orderDate').value || new Date().toISOString().slice(0, 10), paymentMethod: document.getElementById('orderPaymentMethod').value, paymentStatus: document.getElementById('orderPaymentStatus').value, status: document.getElementById('orderStatus').value, notes: document.getElementById('orderNotes').value, createdBy: currentAdminUser, createdAt: new Date().toISOString() }); showToast('Order aangemaakt!'); ['orderCustomer', 'orderEmail', 'orderPhone', 'orderAddress', 'orderNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); document.getElementById('orderDiscount').value = 0; document.getElementById('orderProductsContainer').innerHTML = ''; addOrderProductRow(); } catch (e) { showToast('Fout', true); } };
+window.deleteOrder = async (id) => { if (!confirm('Verwijderen?')) return; try { await deleteDoc(doc(db, "orders", id)); showToast('Verwijderd'); } catch (e) { showToast('Fout', true); } };
+window.updateOrderStatus = async (id, s) => { try { await updateDoc(doc(db, "orders", id), { status: s }); showToast('Bijgewerkt'); } catch (e) { showToast('Fout', true); } };
+window.viewOrderDetails = (order) => { const c = document.getElementById('orderDetailContent'); c.innerHTML = `<div class="barcode-box"><p class="barcode-text">${order.barcode}</p></div><div class="grid grid-cols-2 gap-4 mb-4"><div><strong>Klant:</strong> ${order.customer}</div><div><strong>Datum:</strong> ${order.date || '-'}</div><div><strong>Email:</strong> ${order.email || '-'}</div><div><strong>Tel:</strong> ${order.phone || '-'}</div></div><table class="w-full mb-4"><thead><tr class="bg-gray-100"><th class="p-2">Product</th><th class="p-2 text-center">Aantal</th><th class="p-2 text-right">Prijs</th><th class="p-2 text-right">Totaal</th></tr></thead><tbody>${(order.items || []).map(i => `<tr><td class="p-2">${i.name}</td><td class="p-2 text-center">${i.quantity}</td><td class="p-2 text-right">€${i.price.toFixed(2)}</td><td class="p-2 text-right font-bold">€${(i.total || i.price * i.quantity).toFixed(2)}</td></tr>`).join('')}</tbody></table><div class="flex justify-between font-bold text-xl"><span>TOTAAL</span><span class="text-indigo-600">€${(order.totalAmount || 0).toFixed(2)}</span></div><button onclick="showReceipt('${order.id}')" class="btn-primary w-full mt-4">🖨️ Print Bon</button>`; document.getElementById('orderDetailModal').classList.remove('hidden'); };
+window.filterOrders = () => renderOrdersList(document.getElementById('orderSearchInput')?.value || '');
+function renderOrdersList(f = '') { const c = document.getElementById('ordersList'); if (!c) return; let l = orders; if (f) { const fl = f.toLowerCase(); l = l.filter(o => o.barcode?.toLowerCase().includes(fl) || o.customer?.toLowerCase().includes(fl)); } if (l.length === 0) { c.innerHTML = '<div class="text-gray-400 p-4">Geen orders</div>'; return; } c.innerHTML = l.map(o => `<div class="bg-white p-4 rounded-xl border"><div class="flex justify-between mb-2"><div><div class="font-bold">${o.customer}</div><div class="text-xs font-mono">${o.barcode}</div></div><span class="badge ${o.status === 'delivered' ? 'badge-delivered' : 'badge-pending'}">${o.status}</span></div><div class="text-sm">📦 ${(o.items || []).length} product(en) | 💰 €${(o.totalAmount || 0).toFixed(2)}</div><div class="flex gap-2 mt-3"><button onclick="viewOrderDetails(JSON.parse('${JSON.stringify(o).replace(/'/g, "\\'")}'))" class="flex-1 bg-indigo-50 text-indigo-700 py-1.5 rounded-lg text-xs font-bold">👁️ Bekijk</button><button onclick="showReceipt('${o.id}')" class="flex-1 bg-gray-100 py-1.5 rounded-lg text-xs font-bold">🖨️ Bon</button><select onchange="updateOrderStatus('${o.id}',this.value)" class="text-xs border rounded px-1"><option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option><option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option><option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option><option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option></select><button onclick="deleteOrder('${o.id}')" class="text-red-400 px-2">🗑️</button></div></div>`).join(''); }
 
-    function renderOrdersList(filter = '') {
-        const container = document.getElementById('ordersList');
-        if (!container) return;
-        let list = orders;
-        if (filter) list = list.filter(o => o.barcode?.toLowerCase().includes(filter) || o.customer?.toLowerCase().includes(filter));
-        if (list.length === 0) { container.innerHTML = '<div class="text-gray-400 text-center p-4">Geen orders</div>'; return; }
-        container.innerHTML = list.map(o => `
-            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <div class="flex justify-between items-start mb-2">
-                    <div>
-                        <div class="font-bold text-gray-800">${o.customer}</div>
-                        <div class="text-xs text-gray-500 font-mono">${o.barcode}</div>
-                    </div>
-                    <span class="badge ${o.status==='delivered'?'badge-delivered':o.status==='shipped'?'badge-shipped':'badge-pending'}">${o.status}</span>
-                </div>
-                <div class="text-sm text-gray-600">
-                    <p>📦 ${(o.items || []).length} product(en) | 💰 €${(o.totalAmount || 0).toFixed(2)}</p>
-                    <p>📅 ${o.date || '-'} | 💳 ${o.paymentStatus || '-'}</p>
-                </div>
-                <div class="flex gap-2 mt-3">
-                    <button onclick="viewOrderDetails(JSON.parse('${JSON.stringify(o).replace(/'/g, "\\'")}'))" class="flex-1 bg-indigo-50 text-indigo-700 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100">👁️ Bekijk</button>
-                    <button onclick="showReceipt('${o.id}')" class="flex-1 bg-gray-100 text-gray-700 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-200">🖨️ Bon</button>
-                    <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs border rounded px-1 py-0.5">
-                        <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
-                        <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
-                        <option value="shipped" ${o.status==='shipped'?'selected':''}>Shipped</option>
-                        <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
-                    </select>
-                    <button onclick="deleteOrder('${o.id}')" class="text-red-400 hover:text-red-600 px-2">🗑️</button>
-                </div>
-            </div>`).join('');
-    }
+// TRACKING
+window.generateTrackingCode = () => { document.getElementById('trackingCode').value = 'AOM' + Date.now().toString(36).toUpperCase(); showToast('Code gegenereerd'); };
+window.addTracking = async () => { const code = document.getElementById('trackingCode').value.trim() || 'AOM' + Date.now().toString(36).toUpperCase(); const cu = document.getElementById('trackingCustomer').value.trim(); const dest = document.getElementById('trackingDestination').value.trim(); if (!cu || !dest) { showToast('Vul klant en bestemming in', true); return; } try { await addDoc(collection(db, "tracking"), { trackingCode: code, carrierTrackingNumber: document.getElementById('carrierTrackingNumber').value, carrierName: document.getElementById('carrierName').value, customer: cu, email: document.getElementById('trackingEmail').value, destination: dest, address: document.getElementById('trackingAddress').value, estimatedDelivery: document.getElementById('trackingEstimatedDelivery').value, priority: document.getElementById('trackingPriority').value, weight: document.getElementById('trackingWeight').value, pieces: parseInt(document.getElementById('trackingPieces').value) || 1, contents: document.getElementById('trackingContents').value, currentStep: document.getElementById('trackingCurrentStep').value, notes: document.getElementById('trackingNotes').value, updates: [{ text: 'Zending aangemaakt', location: dest, timestamp: new Date().toISOString() }], createdBy: currentAdminUser, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }); showToast('✅ Zending aangemaakt!'); ['trackingCode', 'carrierTrackingNumber', 'carrierName', 'trackingCustomer', 'trackingEmail', 'trackingDestination', 'trackingAddress', 'trackingWeight', 'trackingContents', 'trackingNotes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); } catch (e) { showToast('Fout', true); } };
+window.deleteTracking = async (id) => { if (!confirm('Verwijderen?')) return; try { await deleteDoc(doc(db, "tracking", id)); showToast('Verwijderd'); } catch (e) { showToast('Fout', true); } };
+window.viewTrackingDetails = (t) => { const steps = ['bestelling_ontvangen', 'onderweg_naar_vliegveld', 'in_vliegtuig', 'geland', 'in_douane', 'in_sorteercentrum', 'onderweg', 'bezig_met_bezorgen', 'geleverd']; const sl = { 'bestelling_ontvangen': '📥 Ontvangen', 'onderweg_naar_vliegveld': '🚚 Naar vliegveld', 'in_vliegtuig': '✈️ In vliegtuig', 'geland': '🛬 Geland', 'in_douane': '🏛️ Douane', 'in_sorteercentrum': '📦 Sorteren', 'onderweg': '🚛 Onderweg', 'bezig_met_bezorgen': '📬 Bezorgen', 'geleverd': '✅ Geleverd' }; const ci = steps.indexOf(t.currentStep); const pp = Math.max(5, ((ci + 1) / steps.length) * 100); const sh = steps.map((s, i) => { let cls = ''; if (i < ci) cls = 'completed'; else if (i === ci) cls = 'active'; return `<div class="step ${cls}"><div class="step-icon">${i < ci ? '✓' : (i + 1)}</div><div class="step-label">${sl[s].split(' ').pop()}</div></div>`; }).join(''); const uh = (t.updates || []).slice().reverse().map(u => `<div class="flex gap-3 mb-3"><div class="w-3 h-3 bg-indigo-500 rounded-full mt-1"></div><div><div class="text-xs text-gray-400">${u.timestamp ? new Date(u.timestamp).toLocaleString('nl-NL') : '-'}</div><div class="font-medium">${u.text}</div>${u.location ? `<div class="text-sm text-indigo-600">📍 ${u.location}</div>` : ''}</div></div>`).join(''); document.getElementById('trackingDetailContent').innerHTML = `<div class="flex justify-between mb-4"><div><h3 class="text-2xl font-black">${t.trackingCode}</h3></div><span class="badge ${t.currentStep === 'geleverd' ? 'badge-delivered' : 'badge-shipped'}">${sl[t.currentStep] || t.currentStep}</span></div><div class="grid grid-cols-2 gap-2 text-sm mb-4"><div><strong>Klant:</strong> ${t.customer}</div><div><strong>Bestemming:</strong> ${t.destination}</div><div><strong>Vervoerder:</strong> ${t.carrierName || '-'}</div><div><strong>Carrier Nr:</strong> ${t.carrierTrackingNumber || '-'}</div></div><div class="flex gap-2 mb-4">${sh}</div><div class="progress-bar mb-2"><div class="progress-fill" style="width:${pp}%"></div></div><h4 class="font-bold mt-4 mb-2">📝 Updates:</h4><div class="max-h-60 overflow-y-auto">${uh || '<p class="text-gray-400">Geen updates</p>'}</div><div class="flex gap-2 mt-4"><button onclick="openTrackingUpdate('${t.id}')" class="btn-primary flex-1">+ Update</button><button onclick="copyTrackingLink('${t.trackingCode}')" class="btn-outline flex-1">🔗 Link</button></div>`; document.getElementById('trackingDetailModal').classList.remove('hidden'); };
+window.openTrackingUpdate = (id) => { currentTrackingId = id; document.getElementById('updateText').value = ''; document.getElementById('updateLocation').value = ''; document.getElementById('updateTimestamp').value = new Date().toISOString().slice(0, 16); document.getElementById('updatePhotoUrl').value = ''; document.getElementById('updateStep').value = ''; document.getElementById('trackingUpdateModal').classList.remove('hidden'); };
+window.addTrackingUpdate = async () => { if (!currentTrackingId) return; const text = document.getElementById('updateText').value.trim(); if (!text) { showToast('Vul bericht in', true); return; } try { const ref = doc(db, "tracking", currentTrackingId); const snap = await getDoc(ref); const d = snap.data(); const u = d.updates || []; u.push({ text, location: document.getElementById('updateLocation').value, timestamp: document.getElementById('updateTimestamp').value || new Date().toISOString(), photoUrl: document.getElementById('updatePhotoUrl').value }); const ud = { updates: u, updatedAt: new Date().toISOString() }; const ns = document.getElementById('updateStep').value; if (ns) ud.currentStep = ns; await updateDoc(ref, ud); showToast('✅ Update toegevoegd!'); closeModal('trackingUpdateModal'); currentTrackingId = null; } catch (e) { showToast('Fout', true); } };
+window.copyTrackingLink = (code) => { navigator.clipboard.writeText(`${location.origin}${location.pathname}#track=${code}`).then(() => showToast('🔗 Link gekopieerd!')).catch(() => showToast('Mislukt', true)); };
+window.filterTracking = () => renderTrackingList(document.getElementById('searchTrackingInput')?.value || '', document.getElementById('trackingFilterStatus')?.value || 'all');
+function renderTrackingList(sf = '', stf = 'all') { const c = document.getElementById('trackingList'); if (!c) return; let l = trackingData; if (sf) { const fl = sf.toLowerCase(); l = l.filter(t => t.trackingCode?.toLowerCase().includes(fl) || t.customer?.toLowerCase().includes(fl) || t.destination?.toLowerCase().includes(fl)); } if (stf === 'geleverd') l = l.filter(t => t.currentStep === 'geleverd'); else if (stf === 'actief') l = l.filter(t => t.currentStep !== 'geleverd'); updateTrackingStats(); if (l.length === 0) { c.innerHTML = '<div class="text-gray-400 p-4">Geen zendingen</div>'; return; } const sl = { 'bestelling_ontvangen': '📥 Ontvangen', 'onderweg_naar_vliegveld': '🚚 Naar vliegveld', 'in_vliegtuig': '✈️ In vliegtuig', 'geland': '🛬 Geland', 'in_douane': '🏛️ Douane', 'in_sorteercentrum': '📦 Sorteren', 'onderweg': '🚛 Onderweg', 'bezig_met_bezorgen': '📬 Bezorgen', 'geleverd': '✅ Geleverd' }; c.innerHTML = l.map(t => `<div class="bg-white p-4 rounded-xl border"><div class="flex justify-between mb-2"><span class="font-bold text-indigo-700">${t.trackingCode}</span><span class="badge ${t.currentStep === 'geleverd' ? 'badge-delivered' : 'badge-shipped'}">${sl[t.currentStep] || t.currentStep}</span></div><div class="grid grid-cols-2 gap-1 text-sm"><div>👤 ${t.customer}</div><div>📍 ${t.destination}</div></div><div class="flex gap-2 mt-3"><button onclick="viewTrackingDetails(JSON.parse('${JSON.stringify(t).replace(/'/g, "\\'")}'))" class="flex-1 bg-indigo-50 text-indigo-700 py-1.5 rounded-lg text-xs font-bold">👁️ Details</button><button onclick="openTrackingUpdate('${t.id}')" class="flex-1 bg-green-50 text-green-700 py-1.5 rounded-lg text-xs font-bold">+ Update</button><button onclick="copyTrackingLink('${t.trackingCode}')" class="bg-gray-100 px-3 py-1.5 rounded-lg text-xs">🔗</button><button onclick="deleteTracking('${t.id}')" class="text-red-400 px-2">🗑️</button></div></div>`).join(''); }
+function updateTrackingStats() { const c = document.getElementById('trackingStats'); if (!c) return; const total = trackingData.length, active = trackingData.filter(t => t.currentStep !== 'geleverd').length, delivered = trackingData.filter(t => t.currentStep === 'geleverd').length; c.innerHTML = `<div class="bg-white rounded-xl p-4 text-center border"><div class="text-2xl font-black">${total}</div><div class="text-xs">Totaal</div></div><div class="bg-white rounded-xl p-4 text-center border"><div class="text-2xl font-black text-indigo-600">${active}</div><div class="text-xs">Actief</div></div><div class="bg-white rounded-xl p-4 text-center border"><div class="text-2xl font-black text-green-600">${delivered}</div><div class="text-xs">Geleverd</div></div>`; }
+window.publicTrack = async () => { const code = document.getElementById('publicTrackingInput').value.trim(); const r = document.getElementById('trackingResult'); if (!code) { r.innerHTML = '<div class="bg-yellow-50 p-4 rounded-xl">Voer code in</div>'; return; } r.innerHTML = '<div class="flex justify-center p-8"><div class="loading"></div></div>'; try { const q = query(collection(db, "tracking"), where("trackingCode", "==", code)); const snap = await getDocs(q); if (snap.empty) { r.innerHTML = `<div class="bg-white p-4 rounded-xl"><p>Geen tracking voor <strong>${code}</strong></p><div class="flex gap-3 mt-3"><a href="https://www.dhl.com/nl-nl/home/tracking.html?tracking-id=${code}" target="_blank" class="btn-outline text-sm">DHL</a><a href="https://jouw.postnl.nl/track-and-trace/${code}" target="_blank" class="btn-outline text-sm">PostNL</a></div></div>`; return; } const t = snap.docs[0].data(); const steps = ['bestelling_ontvangen', 'onderweg_naar_vliegveld', 'in_vliegtuig', 'geland', 'in_douane', 'in_sorteercentrum', 'onderweg', 'bezig_met_bezorgen', 'geleverd']; const sl = { 'bestelling_ontvangen': '📥 Ontvangen', 'onderweg_naar_vliegveld': '🚚 Naar vliegveld', 'in_vliegtuig': '✈️ In vliegtuig', 'geland': '🛬 Geland', 'in_douane': '🏛️ Douane', 'in_sorteercentrum': '📦 Sorteren', 'onderweg': '🚛 Onderweg', 'bezig_met_bezorgen': '📬 Bezorgen', 'geleverd': '✅ Geleverd' }; const ci = steps.indexOf(t.currentStep); const pp = Math.max(5, ((ci + 1) / steps.length) * 100); const uh = (t.updates || []).slice().reverse().map(u => `<div class="flex gap-3 mb-3"><div class="w-3 h-3 bg-indigo-500 rounded-full mt-1"></div><div><div class="text-xs text-gray-400">${u.timestamp ? new Date(u.timestamp).toLocaleString('nl-NL') : '-'}</div><div class="font-medium">${u.text}</div>${u.location ? `<div class="text-sm text-indigo-600">📍 ${u.location}</div>` : ''}</div></div>`).join(''); r.innerHTML = `<div class="bg-white p-6 rounded-2xl"><div class="flex justify-between mb-4"><div><h3 class="text-2xl font-black">${t.trackingCode}</h3><p>${t.carrierName || 'AOM'}</p></div><span class="badge ${t.currentStep === 'geleverd' ? 'badge-delivered' : 'badge-shipped'}">${sl[t.currentStep] || t.currentStep}</span></div><div class="progress-bar mb-2"><div class="progress-fill" style="width:${pp}%"></div></div><p><strong>📍</strong> ${t.destination} | <strong>📅</strong> ${t.estimatedDelivery || 'Onbekend'}</p><h4 class="font-bold mt-4">Updates:</h4><div class="max-h-60 overflow-y-auto mt-2">${uh || '<p class="text-gray-400">Geen updates</p>'}</div></div>`; } catch (e) { r.innerHTML = '<div class="bg-red-50 p-4 rounded-xl text-red-700">Fout</div>'; } };
 
-    // ==================== UITGEBREIDE BON MET BARCODE ====================
-    window.showReceipt = (orderId) => {
-        const order = orders.find(o => o.id === orderId);
-        if (!order) { showToast('Order niet gevonden', true); return; }
-        
-        const content = document.getElementById('receiptContent');
-        const receiptNumber = 'BON-' + Date.now().toString(36).toUpperCase();
-        const now = new Date().toLocaleString('nl-NL');
-        
-        content.innerHTML = `
-            <div style="text-align:center;margin-bottom:20px;">
-                <h2 style="font-size:22px;font-weight:800;color:#1e293b;margin:0;">${companyName}</h2>
-                <p style="color:#64748b;margin:2px 0;font-size:12px;">${companyEmail}</p>
-                <p style="color:#94a3b8;font-size:10px;margin:0;">KVK: 12345678 | BTW: NL001234567B01</p>
-                <hr style="margin:12px 0;border-color:#e2e8f0;">
-            </div>
-            
-            <!-- BARCODE -->
-            <div style="background:white;padding:15px;text-align:center;border:2px dashed #cbd5e1;border-radius:8px;margin-bottom:16px;">
-                <p style="font-size:10px;color:#94a3b8;margin:0 0 4px 0;">ORDER BARCODE</p>
-                <p style="font-family:'Courier New',monospace;font-size:20px;font-weight:700;letter-spacing:3px;color:#1e293b;margin:4px 0;">${order.barcode || 'NVT'}</p>
-                <p style="font-size:9px;color:#94a3b8;margin:4px 0 0 0;">Scan voor orderdetails</p>
-            </div>
-            
-            <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:11px;">
-                <div><strong>Bonnummer:</strong> ${receiptNumber}<br><strong>Datum:</strong> ${now}</div>
-                <div style="text-align:right;"><strong>Aangemaakt door:</strong> ${order.createdBy || currentAdminUser}<br><strong>Order ID:</strong> ${orderId.substring(0,8)}</div>
-            </div>
-            
-            <div style="background:#f8fafc;padding:10px;border-radius:8px;margin-bottom:12px;font-size:11px;">
-                <strong>Klantgegevens:</strong><br>
-                Naam: ${order.customer || '-'}<br>
-                Email: ${order.email || '-'}<br>
-                Telefoon: ${order.phone || '-'}<br>
-                Adres: ${order.address || '-'}
-            </div>
-            
-            <table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;">
-                <thead><tr style="background:#f1f5f9;"><th style="text-align:left;padding:6px;border-bottom:2px solid #e2e8f0;">Product</th><th style="text-align:center;padding:6px;border-bottom:2px solid #e2e8f0;">Aantal</th><th style="text-align:right;padding:6px;border-bottom:2px solid #e2e8f0;">Prijs p/st</th><th style="text-align:right;padding:6px;border-bottom:2px solid #e2e8f0;">Totaal</th></tr></thead>
-                <tbody>${(order.items || []).map(i => `<tr><td style="padding:6px;border-bottom:1px solid #e5e7eb;">${i.name}</td><td style="text-align:center;padding:6px;border-bottom:1px solid #e5e7eb;">${i.quantity}</td><td style="text-align:right;padding:6px;border-bottom:1px solid #e5e7eb;">€${i.price.toFixed(2)}</td><td style="text-align:right;padding:6px;border-bottom:1px solid #e5e7eb;font-weight:600;">€${(i.total || i.price * i.quantity).toFixed(2)}</td></tr>`).join('')}</tbody>
-            </table>
-            
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin:4px 0;"><span>Subtotaal:</span><span>€${((order.totalAmount||0)+(order.discount||0)).toFixed(2)}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;color:#16a34a;"><span>Korting:</span><span>-€${(order.discount||0).toFixed(2)}</span></div>
-            <hr style="border-color:#e2e8f0;margin:8px 0;">
-            <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;color:#4f46e5;margin:8px 0;"><span>TOTAAL:</span><span>€${(order.totalAmount||0).toFixed(2)}</span></div>
-            
-            <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:8px;"><span>Betaalmethode:</span><span>${order.paymentMethod||'-'}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;"><span>Betaalstatus:</span><span style="color:${order.paymentStatus==='Betaald'?'#16a34a':'#dc2626'};font-weight:600;">${order.paymentStatus||'-'}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;"><span>Status:</span><span>${(order.status||'pending').toUpperCase()}</span></div>
-            
-            ${order.notes ? `<div style="background:#fefce8;padding:8px;border-radius:6px;margin-top:8px;font-size:10px;"><strong>📝 Notities:</strong> ${order.notes}</div>` : ''}
-            
-            <p style="text-align:center;color:#94a3b8;font-size:9px;margin-top:16px;">Bedankt voor uw bestelling bij ${companyName}!</p>
-        `;
-        
-        document.getElementById('receiptModal').classList.remove('hidden');
-    };
+// BON
+window.showReceipt = (orderId) => { const order = orders.find(o => o.id === orderId); if (!order) { showToast('Niet gevonden', true); return; } document.getElementById('receiptContent').innerHTML = `<div style="text-align:center;margin-bottom:20px"><h2 style="font-size:22px;font-weight:800;margin:0">${companyName}</h2><p style="color:#64748b;margin:2px 0;font-size:12px">${companyEmail}</p><hr style="margin:12px 0"></div><div style="background:#fff;padding:15px;text-align:center;border:2px dashed #cbd5e1;border-radius:8px;margin-bottom:16px"><p style="font-family:'Courier New',monospace;font-size:20px;font-weight:700;letter-spacing:3px;margin:4px 0">${order.barcode}</p></div><div style="margin-bottom:12px"><strong>Klant:</strong> ${order.customer}<br><strong>Email:</strong> ${order.email || '-'}<br><strong>Tel:</strong> ${order.phone || '-'}</div><table style="width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px"><thead><tr style="background:#f1f5f9"><th style="text-align:left;padding:6px">Product</th><th style="text-align:center;padding:6px">Aantal</th><th style="text-align:right;padding:6px">Prijs</th><th style="text-align:right;padding:6px">Totaal</th></tr></thead><tbody>${(order.items || []).map(i => `<tr><td style="padding:6px">${i.name}</td><td style="text-align:center;padding:6px">${i.quantity}</td><td style="text-align:right;padding:6px">€${i.price.toFixed(2)}</td><td style="text-align:right;padding:6px;font-weight:600">€${(i.total || i.price * i.quantity).toFixed(2)}</td></tr>`).join('')}</tbody></table><div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;color:#4f46e5"><span>TOTAAL</span><span>€${(order.totalAmount || 0).toFixed(2)}</span></div><p style="text-align:center;color:#94a3b8;font-size:9px;margin-top:16px">Bedankt voor uw bestelling!</p>`; document.getElementById('receiptModal').classList.remove('hidden'); };
+window.printReceipt = () => window.print();
 
-    window.printReceipt = () => window.print();
+// OVERIG
+window.addProduct = () => { const n = document.getElementById('productName').value.trim(), p = parseFloat(document.getElementById('productPrice').value); if (!n || isNaN(p)) { showToast('Vul naam en prijs in', true); return; } products.push({ id: Date.now(), name: n, price: p, stock: parseInt(document.getElementById('productStock').value) || 0, imageUrl: document.getElementById('productImageUrl').value }); saveProducts(); renderProductsList(); showToast('Toegevoegd!'); };
+window.deleteProduct = (id) => { products = products.filter(p => p.id != id); saveProducts(); renderProductsList(); };
+window.addSale = async () => { const n = document.getElementById('saleName').value.trim(); if (!n) { showToast('Vul naam in', true); return; } try { await addDoc(collection(db, "sales"), { name: n, customer: document.getElementById('customerName').value, unitPrice: parseFloat(document.getElementById('saleUnitPrice').value) || 0, discount: parseFloat(document.getElementById('saleDiscount').value) || 0, totalAmount: (parseFloat(document.getElementById('saleUnitPrice').value) || 0) - (parseFloat(document.getElementById('saleDiscount').value) || 0), date: document.getElementById('saleDate').value, seller: document.getElementById('saleSeller').value, createdAt: new Date().toISOString() }); showToast('Toegevoegd!'); } catch (e) { showToast('Fout', true); } };
+window.saveCompanySettings = () => { companyName = document.getElementById('companyNameSetting').value.trim() || "AOM Supplies"; companyEmail = document.getElementById('companyEmailSetting').value.trim() || "support@aomsupplies.com"; localStorage.setItem('aom_company_name', companyName); localStorage.setItem('aom_company_email', companyEmail); showToast('Opgeslagen'); };
+window.addToCart = (id) => { const p = products.find(x => x.id == id); if (!p) return; const e = cart.find(i => i.id == id); if (e) e.quantity++; else cart.push({ id: p.id, name: p.name, price: p.price, quantity: 1, imageUrl: p.imageUrl }); saveCart(); showToast(`${p.name} toegevoegd`); };
 
-    // ==================== SCANNER FUNCTIES ====================
-    window.selectDevice = (device) => { selectedScanDevice = device; document.getElementById('deviceCamera').classList.toggle('selected', device==='camera'); document.getElementById('deviceScanner').classList.toggle('selected', device==='scanner'); document.getElementById('scannerView').classList.toggle('hidden', device!=='camera'); document.getElementById('scannerInputView').classList.toggle('hidden', device!=='scanner'); if(device==='scanner'){stopPublicScannerCamera();setupScannerInput('public');}else{removeScannerInput('public');startPublicScannerCamera();} };
-    window.selectAdminDevice = (device) => { adminSelectedDevice = device; document.getElementById('adminDeviceCamera').classList.toggle('selected', device==='camera'); document.getElementById('adminDeviceScanner').classList.toggle('selected', device==='scanner'); document.getElementById('adminScannerView').classList.toggle('hidden', device!=='camera'); document.getElementById('adminScannerInputView').classList.toggle('hidden', device!=='scanner'); if(device==='scanner'){stopAdminScannerCamera();setupScannerInput('admin');}else{removeScannerInput('admin');startAdminScannerCamera();} };
+function renderShopProducts() { const c = document.getElementById('shopProductsContainer'); if (!c) return; if (products.length === 0) { c.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400">Geen producten</div>'; return; } c.innerHTML = products.map(p => `<div class="product-card"><div class="product-image-container">${p.imageUrl ? `<img src="${p.imageUrl}" class="product-image">` : '📦'}</div><div class="p-4"><h3 class="font-bold">${p.name}</h3><p class="text-indigo-600 font-bold">€${p.price.toFixed(2)}</p><button onclick="addToCart(${p.id})" class="bg-gray-900 text-white px-4 py-2 rounded-full text-sm mt-3">In winkelwagen</button></div></div>`).join(''); }
+function renderCartPage() { const c = document.getElementById('cartPageContent'); if (!c) return; if (cart.length === 0) { c.innerHTML = '<div class="text-center py-20">🛒 Leeg</div>'; return; } let t = 0; c.innerHTML = cart.map(i => { const it = i.price * i.quantity; t += it; return `<div class="flex justify-between bg-white p-4 rounded-xl border mb-3"><span>${i.name} x${i.quantity}</span><span>€${it.toFixed(2)}</span></div>`; }).join('') + `<div class="text-right font-bold text-xl">Totaal: €${t.toFixed(2)}</div>`; }
+function renderSalesList() { const c = document.getElementById('salesList'); if (!c) return; if (sales.length === 0) { c.innerHTML = '<div class="text-gray-400">Geen sales</div>'; return; } c.innerHTML = sales.map(s => `<div class="bg-white p-3 rounded-lg border"><strong>${s.name}</strong> - €${(s.totalAmount || 0).toFixed(2)}</div>`).join(''); }
+function renderProductsList() { const c = document.getElementById('productsList'); if (!c) return; if (products.length === 0) { c.innerHTML = '<div class="text-gray-400">Geen producten</div>'; return; } c.innerHTML = products.map(p => `<div class="bg-white p-3 rounded-lg border flex justify-between"><span>${p.name} - €${p.price.toFixed(2)}</span><button onclick="deleteProduct('${p.id}')" class="text-red-500">X</button></div>`).join(''); }
+function updateDashboardStats() { const c = document.getElementById('statsContainer'); if (!c) return; c.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border"><div class="text-3xl font-black">${orders.length}</div><div class="text-sm">Orders</div></div><div class="bg-white rounded-2xl p-6 text-center border"><div class="text-3xl font-black">${trackingData.length}</div><div class="text-sm">Tracking</div></div><div class="bg-white rounded-2xl p-6 text-center border"><div class="text-3xl font-black">${registeredProducts.length}</div><div class="text-sm">Producten</div></div><div class="bg-white rounded-2xl p-6 text-center border"><div class="text-3xl font-black text-green-600">€${sales.reduce((a,s) => a + (s.totalAmount || 0), 0).toFixed(0)}</div><div class="text-sm">Omzet</div></div>`; }
+function initCharts() { const rc = document.getElementById('chartRevenue')?.getContext('2d'), pc = document.getElementById('chartProfit')?.getContext('2d'); if (!rc || !pc) return; if (chartRevenueInstance) chartRevenueInstance.destroy(); if (chartProfitInstance) chartProfitInstance.destroy(); const l = sales.slice(-10).map(s => s.date || '?'); chartRevenueInstance = new Chart(rc, { type: 'bar', data: { labels: l, datasets: [{ label: 'Omzet', data: sales.slice(-10).map(s => s.totalAmount || 0), backgroundColor: '#4f46e5' }] }, options: { responsive: true } }); chartProfitInstance = new Chart(pc, { type: 'line', data: { labels: l, datasets: [{ label: 'Winst', data: sales.slice(-10).map(s => s.totalAmount || 0), borderColor: '#10b981' }] }, options: { responsive: true } }); }
 
-    function setupScannerInput(type) { const id = type==='public'?'scannerInput':'adminScannerInput'; const input = document.getElementById(id); if(!input)return; input.value=''; input.focus(); const listener = (e) => { if(e.key==='Enter'){ const bc = input.value.trim(); if(bc){ if(type==='public')searchProductByBarcode(bc); else{document.getElementById('regBarcode').value=bc;stopAdminScanner();showToast('Gescan: '+bc);} } input.value=''; } }; input.addEventListener('keydown',listener); if(type==='public')scannerInputListener={input,listener}; else adminScannerInputListener={input,listener}; }
-    function removeScannerInput(type) { const d = type==='public'?scannerInputListener:adminScannerInputListener; if(d){d.input.removeEventListener('keydown',d.listener); if(type==='public')scannerInputListener=null; else adminScannerInputListener=null;} }
+function startListeners() {
+    if (unsubSales) unsubSales(); if (unsubOrders) unsubOrders(); if (unsubTracking) unsubTracking(); if (unsubRegistered) unsubRegistered();
+    unsubSales = onSnapshot(collection(db, "sales"), snap => { sales = snap.docs.map(d => ({ id: d.id, ...d.data() })); if (!document.getElementById('admin-sales')?.classList.contains('hidden')) renderSalesList(); if (!document.getElementById('admin-dashboard')?.classList.contains('hidden')) updateDashboardStats(); document.getElementById('lastUpdateTime').innerText = `Sync: ${new Date().toLocaleTimeString('nl-NL')}`; });
+    unsubOrders = onSnapshot(collection(db, "orders"), snap => { orders = snap.docs.map(d => ({ id: d.id, ...d.data() })); if (!document.getElementById('admin-orders')?.classList.contains('hidden')) renderOrdersList(); });
+    unsubTracking = onSnapshot(collection(db, "tracking"), snap => { trackingData = snap.docs.map(d => ({ id: d.id, ...d.data() })); if (!document.getElementById('admin-tracking-admin')?.classList.contains('hidden')) renderTrackingList(); });
+    unsubRegistered = onSnapshot(collection(db, "registeredProducts"), snap => { registeredProducts = snap.docs.map(d => ({ id: d.id, ...d.data() })); if (!document.getElementById('admin-register')?.classList.contains('hidden')) renderRegisteredProducts(); });
+}
 
-    window.openPublicScanner = () => { document.getElementById('publicScannerModal').classList.remove('hidden'); document.getElementById('scanResult').classList.add('hidden'); document.getElementById('scanNotFound').classList.add('hidden'); if(selectedScanDevice==='camera'){document.getElementById('scannerView').classList.remove('hidden');document.getElementById('scannerInputView').classList.add('hidden');startPublicScannerCamera();}else{document.getElementById('scannerView').classList.add('hidden');document.getElementById('scannerInputView').classList.remove('hidden');setupScannerInput('public');} };
-    async function startPublicScannerCamera() { try{ const cr = new ZXing.BrowserMultiFormatReader(); publicScanner=cr; const ve=document.getElementById('scannerVideo'); const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); ve.srcObject=stream; ve.play(); cr.decodeFromVideoDevice(null,ve,(r,e)=>{if(r)searchProductByBarcode(r.text);}); }catch(e){showToast('Camera niet beschikbaar',true);} }
-    function stopPublicScannerCamera() { if(publicScanner){publicScanner.reset();const v=document.getElementById('scannerVideo');if(v&&v.srcObject){v.srcObject.getTracks().forEach(t=>t.stop());}publicScanner=null;} }
-    window.stopPublicScanner = () => { stopPublicScannerCamera(); removeScannerInput('public'); document.getElementById('publicScannerModal').classList.add('hidden'); };
-
-    function searchProductByBarcode(bc) { const p = registeredProducts.find(x=>x.barcode===bc); if(p){ document.getElementById('scanResult').classList.remove('hidden'); document.getElementById('scanNotFound').classList.add('hidden'); document.getElementById('scanProductInfo').innerHTML=`<p class="font-bold">${p.name}</p><p class="text-sm">Status: ${(p.status||'in_stock').replace(/_/g,' ')}</p>${p.ownerName?`<p class="text-sm">👤 ${p.ownerName}</p>`:''}`; } else { document.getElementById('scanResult').classList.add('hidden'); document.getElementById('scanNotFound').classList.remove('hidden'); } }
-
-    window.openAdminScanner = () => { document.getElementById('adminScannerModal').classList.remove('hidden'); if(adminSelectedDevice==='camera'){document.getElementById('adminScannerView').classList.remove('hidden');document.getElementById('adminScannerInputView').classList.add('hidden');startAdminScannerCamera();}else{document.getElementById('adminScannerView').classList.add('hidden');document.getElementById('adminScannerInputView').classList.remove('hidden');setupScannerInput('admin');} };
-    window.openAdminScannerForSearch = () => { document.getElementById('adminScannerModal').classList.remove('hidden'); if(adminSelectedDevice==='camera'){document.getElementById('adminScannerView').classList.remove('hidden');document.getElementById('adminScannerInputView').classList.add('hidden');startAdminScannerForSearchCamera();}else{setupScannerInput('admin');} };
-    async function startAdminScannerCamera() { try{ const cr = new ZXing.BrowserMultiFormatReader(); adminScanner=cr; const ve=document.getElementById('adminScannerVideo'); const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); ve.srcObject=stream; ve.play(); cr.decodeFromVideoDevice(null,ve,(r,e)=>{if(r){document.getElementById('regBarcode').value=r.text;stopAdminScanner();showToast('Gescan: '+r.text);}}); }catch(e){showToast('Camera fout',true);} }
-    async function startAdminScannerForSearchCamera() { try{ const cr = new ZXing.BrowserMultiFormatReader(); adminScanner=cr; const ve=document.getElementById('adminScannerVideo'); const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); ve.srcObject=stream; ve.play(); cr.decodeFromVideoDevice(null,ve,(r,e)=>{if(r){document.getElementById('scanSearchBarcode').value=r.text;stopAdminScanner();searchRegisteredProduct();}}); }catch(e){showToast('Camera fout',true);} }
-    function stopAdminScannerCamera() { if(adminScanner){adminScanner.reset();const v=document.getElementById('adminScannerVideo');if(v&&v.srcObject){v.srcObject.getTracks().forEach(t=>t.stop());}adminScanner=null;} }
-    window.stopAdminScanner = () => { stopAdminScannerCamera(); removeScannerInput('admin'); document.getElementById('adminScannerModal').classList.add('hidden'); };
-    window.generateBarcode = () => { const bc = 'AOM'+Date.now().toString(36).toUpperCase(); document.getElementById('regBarcode').value=bc; showToast('Barcode: '+bc); };
-
-    window.registerProduct = async () => { const bc=document.getElementById('regBarcode').value.trim(), nm=document.getElementById('regProductName').value.trim(); if(!bc||!nm){showToast('Vul barcode en naam in',true);return;} try{await addDoc(collection(db,"registeredProducts"),{barcode:bc,name:nm,description:document.getElementById('regDescription').value,price:parseFloat(document.getElementById('regPrice').value)||0,weight:document.getElementById('regWeight').value,status:document.getElementById('regStatus').value,location:document.getElementById('regLocation').value,imageUrl:document.getElementById('regImageUrl').value,registeredBy:currentAdminUser,registeredAt:new Date().toISOString()});showToast('✅ Geregistreerd!');['regBarcode','regProductName','regDescription','regPrice','regWeight','regLocation','regImageUrl'].forEach(id=>document.getElementById(id).value='');}catch(e){showToast('Fout',true);} };
-    window.deleteRegisteredProduct = async (id) => { if(!confirm('Verwijderen?'))return; try{await deleteDoc(doc(db,"registeredProducts",id));showToast('Verwijderd');}catch(e){showToast('Fout',true);} };
-    function renderRegisteredProducts(f='') { const c=document.getElementById('registeredProductsList'); if(!c)return; let l=registeredProducts; if(f){const fl=f.toLowerCase();l=l.filter(p=>p.barcode?.toLowerCase().includes(fl)||p.name?.toLowerCase().includes(fl));} if(l.length===0){c.innerHTML='<div class="text-gray-400 p-4">Geen producten</div>';return;} c.innerHTML=l.map(p=>`<div class="bg-white p-3 rounded-lg border flex justify-between"><div><div class="font-bold">${p.name}</div><div class="text-xs font-mono">${p.barcode}</div></div><button onclick="deleteRegisteredProduct('${p.id}')" class="text-red-500">🗑️</button></div>`).join(''); }
-    window.filterRegisteredProducts = () => renderRegisteredProducts(document.getElementById('regSearchInput')?.value||'');
-    window.searchRegisteredProduct = () => { const bc=document.getElementById('scanSearchBarcode')?.value.trim(); if(!bc){showToast('Voer barcode in',true);return;} const p=registeredProducts.find(x=>x.barcode===bc); const r=document.getElementById('scanSearchResult'); if(p){r.innerHTML=`<div class="bg-green-50 p-4 rounded-xl"><p class="font-bold">✅ ${p.name}</p><p class="text-sm">Barcode: ${p.barcode}</p><p class="text-sm">Status: ${(p.status||'in_stock').replace(/_/g,' ')}</p></div>`;}else{r.innerHTML='<div class="bg-yellow-50 p-4 rounded-xl">❌ Niet gevonden</div>';} };
-
-    // ==================== OVERIGE FUNCTIES ====================
-    function renderShopProducts() { const c=document.getElementById('shopProductsContainer'); if(!c)return; if(products.length===0){c.innerHTML='<div class="col-span-full text-center py-20 text-gray-400">Geen producten</div>';return;} c.innerHTML=products.map(p=>`<div class="product-card"><div class="product-image-container">${p.imageUrl?`<img src="${p.imageUrl}" class="product-image">`:'📦'}</div><div class="p-4"><h3 class="font-bold">${p.name}</h3><p class="text-indigo-600 font-bold">€${p.price.toFixed(2)}</p><button onclick="addToCart(${p.id})" class="bg-gray-900 text-white px-4 py-2 rounded-full text-sm mt-3">In winkelwagen</button></div></div>`).join(''); }
-    window.addToCart = (id) => { const p=products.find(x=>x.id==id); if(!p)return; const e=cart.find(i=>i.id==id); if(e)e.quantity++; else cart.push({id:p.id,name:p.name,price:p.price,quantity:1,imageUrl:p.imageUrl}); saveCart(); showToast(`${p.name} toegevoegd`); };
-    function renderCartPage() { const c=document.getElementById('cartPageContent'); if(!c)return; if(cart.length===0){c.innerHTML='<div class="text-center py-20">🛒 Leeg</div>';return;} let t=0; c.innerHTML=cart.map(i=>{const it=i.price*i.quantity;t+=it;return`<div class="flex justify-between bg-white p-4 rounded-xl border mb-3"><span>${i.name} x${i.quantity}</span><span>€${it.toFixed(2)}</span></div>`;}).join('')+`<div class="text-right font-bold text-xl">Totaal: €${t.toFixed(2)}</div>`; }
-    window.addProduct = () => { const n=document.getElementById('productName').value.trim(),p=parseFloat(document.getElementById('productPrice').value); if(!n||isNaN(p)){showToast('Vul naam en prijs in',true);return;} products.push({id:Date.now(),name:n,price:p,stock:parseInt(document.getElementById('productStock').value)||0,imageUrl:document.getElementById('productImageUrl').value}); saveProducts(); renderProductsList(); showToast('Toegevoegd!'); };
-    window.deleteProduct = (id) => { products=products.filter(p=>p.id!=id); saveProducts(); renderProductsList(); };
-    function renderProductsList() { const c=document.getElementById('productsList'); if(!c)return; if(products.length===0){c.innerHTML='<div class="text-gray-400">Geen</div>';return;} c.innerHTML=products.map(p=>`<div class="bg-white p-3 rounded-lg border flex justify-between"><span>${p.name} - €${p.price.toFixed(2)}</span><button onclick="deleteProduct('${p.id}')" class="text-red-500">X</button></div>`).join(''); }
-    function renderSalesList() { const c=document.getElementById('salesList'); if(!c)return; if(sales.length===0){c.innerHTML='<div class="text-gray-400">Geen sales</div>';return;} c.innerHTML=sales.map(s=>`<div class="bg-white p-3 rounded-lg border"><strong>${s.name}</strong> - €${s.profit?.toFixed(2)} winst</div>`).join(''); }
-    function renderTrackingList() { const c=document.getElementById('trackingList'); if(!c)return; if(tracking.length===0){c.innerHTML='<div class="text-gray-400">Geen</div>';return;} c.innerHTML=tracking.map(t=>`<div class="bg-white p-3 rounded-lg border"><strong>${t.trackingCode}</strong> - ${t.customer}</div>`).join(''); }
-    window.addTracking = async () => { const code=document.getElementById('trackingCode').value.trim()||'AOM'+Date.now().toString(36); try{await addDoc(collection(db,"tracking"),{trackingCode:code,customer:document.getElementById('trackingCustomer').value,destination:document.getElementById('trackingDestination').value,createdAt:new Date().toISOString()});showToast('Aangemaakt!');}catch(e){showToast('Fout',true);} };
-    window.addSale = async () => { const n=document.getElementById('saleName').value.trim(); if(!n){showToast('Vul naam in',true);return;} try{await addDoc(collection(db,"sales"),{name:n,customer:document.getElementById('customerName').value,unitPrice:parseFloat(document.getElementById('saleUnitPrice').value)||0,discount:parseFloat(document.getElementById('saleDiscount').value)||0,totalAmount:(parseFloat(document.getElementById('saleUnitPrice').value)||0)-(parseFloat(document.getElementById('saleDiscount').value)||0),profit:(parseFloat(document.getElementById('saleUnitPrice').value)||0)-(parseFloat(document.getElementById('saleDiscount').value)||0),date:document.getElementById('saleDate').value,seller:document.getElementById('saleSeller').value,createdAt:new Date().toISOString()});showToast('Toegevoegd!');}catch(e){showToast('Fout',true);} };
-    window.saveCompanySettings = () => { companyName=document.getElementById('companyNameSetting').value.trim()||"AOM Supplies"; companyEmail=document.getElementById('companyEmailSetting').value.trim()||"support@aomsupplies.com"; localStorage.setItem('aom_company_name',companyName); localStorage.setItem('aom_company_email',companyEmail); showToast('Opgeslagen'); };
-    function updateDashboardStats() { const c=document.getElementById('statsContainer'); if(!c)return; c.innerHTML=`<div class="bg-white rounded-2xl p-6 text-center shadow-sm border"><div class="text-3xl font-black">${sales.length}</div><div class="text-sm">Sales</div></div><div class="bg-white rounded-2xl p-6 text-center shadow-sm border"><div class="text-3xl font-black">${orders.length}</div><div class="text-sm">Orders</div></div><div class="bg-white rounded-2xl p-6 text-center shadow-sm border"><div class="text-3xl font-black">${registeredProducts.length}</div><div class="text-sm">Producten</div></div><div class="bg-white rounded-2xl p-6 text-center shadow-sm border"><div class="text-3xl font-black text-green-600">€${sales.reduce((a,s)=>a+(s.totalAmount||0),0).toFixed(0)}</div><div class="text-sm">Omzet</div></div>`; }
-    function initCharts() { const rc=document.getElementById('chartRevenue')?.getContext('2d'),pc=document.getElementById('chartProfit')?.getContext('2d'); if(!rc||!pc)return; if(chartRevenueInstance)chartRevenueInstance.destroy(); if(chartProfitInstance)chartProfitInstance.destroy(); const l=sales.slice(-10).map(s=>s.date||'?'); chartRevenueInstance=new Chart(rc,{type:'bar',data:{labels:l,datasets:[{label:'Omzet',data:sales.slice(-10).map(s=>s.totalAmount||0),backgroundColor:'#4f46e5'}]},options:{responsive:true}}); chartProfitInstance=new Chart(pc,{type:'line',data:{labels:l,datasets:[{label:'Winst',data:sales.slice(-10).map(s=>s.profit||0),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',fill:true}]},options:{responsive:true}}); }
-
-    function startListeners() {
-        if(unsubSales)unsubSales(); if(unsubOrders)unsubOrders(); if(unsubTracking)unsubTracking(); if(unsubRegistered)unsubRegistered();
-        unsubSales=onSnapshot(collection(db,"sales"),snap=>{sales=snap.docs.map(d=>({id:d.id,...d.data()})); if(!document.getElementById('admin-sales').classList.contains('hidden'))renderSalesList(); if(!document.getElementById('admin-dashboard').classList.contains('hidden'))updateDashboardStats(); document.getElementById('lastUpdateTime').innerText=`Sync: ${new Date().toLocaleTimeString('nl-NL')}`;});
-        unsubOrders=onSnapshot(collection(db,"orders"),snap=>{orders=snap.docs.map(d=>({id:d.id,...d.data()})); if(!document.getElementById('admin-orders').classList.contains('hidden'))renderOrdersList();});
-        unsubTracking=onSnapshot(collection(db,"tracking"),snap=>{tracking=snap.docs.map(d=>({id:d.id,...d.data()})); if(!document.getElementById('admin-tracking-admin').classList.contains('hidden'))renderTrackingList();});
-        unsubRegistered=onSnapshot(collection(db,"registeredProducts"),snap=>{registeredProducts=snap.docs.map(d=>({id:d.id,...d.data()})); if(!document.getElementById('admin-register').classList.contains('hidden'))renderRegisteredProducts();});
-    }
-
-    setTimeout(() => { const od=document.getElementById('orderDate'); if(od)od.valueAsDate=new Date(); const sd=document.getElementById('saleDate'); if(sd)sd.valueAsDate=new Date(); addOrderProductRow(); }, 100);
-    updateCartCount();
-    showPublicPage('home');
+// INIT
+setTimeout(() => { const od = document.getElementById('orderDate'); if (od) od.valueAsDate = new Date(); const sd = document.getElementById('saleDate'); if (sd) sd.valueAsDate = new Date(); addOrderProductRow(); }, 100);
+updateCartCount();
+showPublicPage('home');
+if (location.hash.startsWith('#track=')) { const code = location.hash.substring(7); setTimeout(() => { showPublicPage('tracking'); document.getElementById('publicTrackingInput').value = code; window.publicTrack(); }, 300); }
 </script>
 </body>
 </html>
